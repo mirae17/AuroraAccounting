@@ -67,7 +67,20 @@
                         <tr><th>Bulan</th><th>Jualan (RM)</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>month</td><td>RM </td></tr>
+                    <tbody>
+                    <tr><td>January</td><td>RM </td></tr>
+                    <tr><td>February</td><td>RM </td></tr>
+                    <tr><td>March</td><td>RM </td></tr>
+                    <tr><td>April</td><td>RM </td></tr>
+                    <tr><td>May</td><td>RM </td></tr>
+                    <tr><td>June</td><td>RM </td></tr>
+                    <tr><td>July</td><td>RM </td></tr>
+                    <tr><td>August</td><td>RM </td></tr>
+                    <tr><td>September</td><td>RM </td></tr>
+                    <tr><td>October</td><td>RM </td></tr>
+                    <tr><td>November</td><td>RM </td></tr>
+                    <tr><td>December</td><td>RM </td></tr>
+                    </tbody>
                     </tbody>
                 </table>
                 <div class="text-center p-3 bg-light">
@@ -85,7 +98,20 @@
                         <tr><th>Bulan</th><th>Belian (RM)</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>month</td><td>RM </td></tr>
+                    <tbody>
+                    <tr><td>January</td><td>RM </td></tr>
+                    <tr><td>February</td><td>RM </td></tr>
+                    <tr><td>March</td><td>RM </td></tr>
+                    <tr><td>April</td><td>RM </td></tr>
+                    <tr><td>May</td><td>RM </td></tr>
+                    <tr><td>June</td><td>RM </td></tr>
+                    <tr><td>July</td><td>RM </td></tr>
+                    <tr><td>August</td><td>RM </td></tr>
+                    <tr><td>September</td><td>RM </td></tr>
+                    <tr><td>October</td><td>RM </td></tr>
+                    <tr><td>November</td><td>RM </td></tr>
+                    <tr><td>December</td><td>RM </td></tr>
+                    </tbody>
                     </tbody>
                 </table>
                 <div class="text-center p-3 bg-light">
@@ -103,7 +129,18 @@
                         <tr><th>Bulan</th><th>Perbelanjaan (RM)</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>month</td><td>RM </td></tr>
+                    <tr><td>January</td><td>RM </td></tr>
+                    <tr><td>February</td><td>RM </td></tr>
+                    <tr><td>March</td><td>RM </td></tr>
+                    <tr><td>April</td><td>RM </td></tr>
+                    <tr><td>May</td><td>RM </td></tr>
+                    <tr><td>June</td><td>RM </td></tr>
+                    <tr><td>July</td><td>RM </td></tr>
+                    <tr><td>August</td><td>RM </td></tr>
+                    <tr><td>September</td><td>RM </td></tr>
+                    <tr><td>October</td><td>RM </td></tr>
+                    <tr><td>November</td><td>RM </td></tr>
+                    <tr><td>December</td><td>RM </td></tr>
                     </tbody>
                 </table>
                 <div class="text-center p-3 bg-light">
