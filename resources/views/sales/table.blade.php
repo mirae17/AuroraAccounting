@@ -123,10 +123,10 @@
             <td>{{ $sale->dsmasdate }}</td>
             <td>{{ $sale->csmasdesc }}</td>
             <td>{{ number_format($sale->ysmasdeposit, 2) }}</td>
-            <td>{{ $sale->ismasPymtdfk ?? 'N/A' }}</td>
-            <td>{{ $sale->ismasSuppfk ?? 'N/A' }}</td>
+            <td>{{ $sale->paymentMethod->cPymtdDesc ?? 'N/A' }}</td>
+            <td>{{ $sale->supplier->iSuppCode ?? 'N/A' }}-{{ $sale->supplier->iSuppDesc ?? 'N/A' }}</td>
             <td>{{ $sale->ismasinvoiceref ?? 'N/A' }}</td>
-            <td>{{ $sale->ysmasdeposit == $sale->ysmaspayment ? 'Cash' : 'Credit' }}</td>
+            <td>{{ $sale->ysmasdeposit == $sale->ysmaspayment ? 'CASH' : 'CREDIT' }}</td>
             <td>{{ number_format($sale->ysmaspayment, 2) }}</td>
             <td>{{ $sale->ismasusersfk ?? 'N/A' }}</td>
         </tr>

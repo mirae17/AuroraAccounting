@@ -100,19 +100,15 @@
   <div class="content-wrapper">
     <!-- Content Header -->
     <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content -->
+       <!-- Main Content -->
     <section class="content">
       <div class="container-fluid">
         @yield('content')
       </div>
     </section>
+    </div>
+
+   
   </div>
 
   <!-- Footer -->

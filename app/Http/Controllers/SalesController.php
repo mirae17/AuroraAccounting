@@ -15,7 +15,15 @@ class SalesController extends Controller
     {
         $currentYear = date('Y');
         $totalSales = SalesMaster::whereYear('dsmasdate', $currentYear)->sum('ysmasdeposit');
-        $sales = SalesMaster::all();
+      
+    
+        // Join with PaymentMethod to get the payment method description
+        $sales = SalesMaster::with(['paymentMethod' => function($query) {
+            $query->select('iPymtdPk', 'cPymtdDesc'); // Payment method description
+        }, 'supplier' => function($query) {
+            $query->select('iSuppPk', 'iSuppCode','iSuppDesc'); // Supplier description
+        }])->get();
+    
 
         return view('sales.index', compact('sales', 'totalSales'));
     }
