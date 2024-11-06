@@ -82,12 +82,7 @@
               <p>Inventory</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="fas fa-calendar-alt"></i>
-              <p>Timetables</p>
-            </a>
-          </li>
+          
           <li class="nav-item">
             <a href="{{ route('logout') }}" class="nav-link"
                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

@@ -31,28 +31,28 @@
             <div class="form-group mb-3">
                 <label for="ismasPymtdfk" class="form-label">Cara Bayaran</label>
                 <select id="ismasPymtdfk" name="ismasPymtdfk" class="form-select" required>
-                    <option value="">Select Payment Method</option>
-                    <option value="CIMB">CIMB</option>
-                    <option value="MAYBANK">MAYBANK</option>
-                    <option value="TUNAI">TUNAI</option>
-                    <option value="RHB">RHB</option>
-                    <option value="BSN">BSN</option>
-                    <option value="BANK ISLAM">BANK ISLAM</option>
-                    <option value="BANK RAKYAT">BANK RAKYAT</option>
-                    <option value="SHOPEE">SHOPEE</option>
+                <option value="">Select Payment Method</option>
+                    @foreach($paymentMethods as $method)
+                        <option value="{{ $method->iPymtdPk}}">{{ $method->cPymtdDesc }}</option>
+                    @endforeach
                 </select>
             </div>
 
             <!-- Kod Penghutang -->
             <div class="form-group mb-3">
                 <label for="ismasSuppfk" class="form-label">Kod Penghutang</label>
-                <input type="text" class="form-control" id="ismasSuppfk" name="ismasSuppfk" >
+                <select id="ismasSuppfk" name="ismasSuppfk" class="form-select" required>
+                <option value="">Select Penghutang</option>
+                    @foreach($suppliers as $supp)
+                        <option value="{{ $supp->iSuppPk }}">{{ $supp->iSuppCode }} - {{ $supp->iSuppDesc }} </option>
+                    @endforeach
+                </select>
             </div>
 
             <!-- Invoice Reference -->
             <div class="form-group mb-3">
                 <label for="ismasinvoiceref" class="form-label">Invoice Reference</label>
-                <input type="text" class="form-control" id="ismasinvoiceref" name="ismasinvoiceref">
+                <input type="text" class="form-control" id="ismasinvoiceref" name="ismasinvoiceref" required>
             </div>
 
             <!-- Cara Jualan (Auto-detected) -->
