@@ -23,15 +23,15 @@
         <div class="col-md-4">
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #f9fafb; border-radius: 10px;">
                 <h6 class="text-muted">Total Current Sale</h6>
-                <h3 class="text-primary" style="font-weight: bold;">RM </h3>
+                <h3 class="text-primary" style="font-weight: bold;">RM {{ number_format($totalCurrentSale, 2) }}</h3>
             </div>
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #f9fafb; border-radius: 10px;">
                 <h6 class="text-muted">Total Yesterday Sale</h6>
-                <h3 class="text-primary" style="font-weight: bold;">RM </h3>
+                <h3 class="text-primary" style="font-weight: bold;">RM {{ number_format($totalYesterdaySale, 2) }}</h3>
             </div>
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #f9fafb; border-radius: 10px;">
                 <h6 class="text-muted">Total Today Sale</h6>
-                <h3 class="text-primary" style="font-weight: bold;">RM </h3>
+                <h3 class="text-primary" style="font-weight: bold;">RM {{ number_format($totalTodaySale, 2) }}</h3>
             </div>
         </div>
 
