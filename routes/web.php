@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SalesController;
+use App\Http\Controllers\ExpensesController;
+use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\SupplierController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,16 +29,25 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-//sales master
-Route::get('/sales', 'App\Http\Controllers\SalesController@index')->name('sales.index');
-Route::get('/sales/create', 'App\Http\Controllers\SalesController@create')->name('sales.create');
-Route::post('/sales', 'App\Http\Controllers\SalesController@store')->name('sales.store');
-Route::get('/sales/{sales_master}', 'App\Http\Controllers\SalesController@show')->name('sales.show');
-Route::get('/sales/{sales_master}/edit', 'App\Http\Controllers\SalesController@edit')->name('sales.edit');
-Route::put('/sales/{sales_master}', 'App\Http\Controllers\SalesController@update')->name('sales.update');
-Route::delete('/sales/{sales_master}', 'App\Http\Controllers\SalesController@destroy')->name('sales.destroy');
-
 //dashboard
 Route::get('/dashboard', 'App\Http\Controllers\DashboardController@index')->name('dashboard.index');
+
+//sales master
+Route::resource('sales', SalesController::class);
+Route::delete('/sales/{sales}', 'App\Http\Controllers\SalesController@destroy')->name('sales.destroy');
+
+
+//expenses
+Route::resource('expenses', ExpensesController::class);
+Route::delete('/expenses/{expenses}', 'App\Http\Controllers\ExpensesController@destroy')->name('expenses.destroy');
+
+//payment methods
+Route::resource('payments', PaymentMethodController::class);
+Route::delete('/payments/{payments}', 'App\Http\Controllers\PaymentMethodController@destroy')->name('payments.destroy');
+
+
+//suppliers
+Route::resource('suppliers', SupplierController::class);
+Route::delete('/suppliers/{suppliers}', 'App\Http\Controllers\ExpensesController@destroy')->name('suppliers.destroy');
 
 

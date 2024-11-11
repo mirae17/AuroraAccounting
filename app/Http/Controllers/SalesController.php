@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\SalesMaster;
+use App\Models\Sales;
 use App\Models\PaymentMethod;
 use App\Models\Supplier;
 use App\Models\User;
@@ -14,11 +14,11 @@ class SalesController extends Controller
     public function index()
     {
         $currentYear = date('Y');
-        $totalSales = SalesMaster::whereYear('dsmasdate', $currentYear)->sum('ysmasdeposit');
+        $totalSales = Sales::whereYear('dsmasdate', $currentYear)->sum('ysmasdeposit');
       
     
         // Join with PaymentMethod to get the payment method description
-        $sales = SalesMaster::with(['paymentMethod' => function($query) {
+        $sales = Sales::with(['paymentMethod' => function($query) {
             $query->select('iPymtdPk', 'cPymtdDesc'); // Payment method description
         }, 'supplier' => function($query) {
             $query->select('iSuppPk', 'iSuppCode','iSuppDesc'); // Supplier description
@@ -43,7 +43,7 @@ class SalesController extends Controller
             'dsmasdate' => 'required|date',
             'csmasdesc' => 'required|string|max:150',
             'ysmasdeposit' => 'required|numeric',
-            'ismasPymtdfk' => 'required|exists:payment_methods,iPymtdPk',
+            'ismasPymtdfk' => 'required|exists:payments,iPymtdPk',
             'ismasSuppfk' => 'required|exists:suppliers,iSuppPk',
             'ismasinvoiceref' => 'required|string|max:150',
             'ysmaspayment' => 'required|numeric',
@@ -53,7 +53,7 @@ class SalesController extends Controller
         // Debugging to verify incoming data
         // dd($request->all()); // This will stop execution and display form data
 
-        SalesMaster::create([
+        Sales::create([
             'dsmasdate' => $request->dsmasdate,
             'csmasdesc' => $request->csmasdesc,
             'ysmasdeposit' => $request->ysmasdeposit,
@@ -69,46 +69,43 @@ class SalesController extends Controller
     }
 
 
-    // Show individual sale record
-    public function show($id)
-    {
-        $sale = SalesMaster::findOrFail($id);
-        return view('sales.show', compact('sale'));
-    }
-
     // Show form to edit a sale
-    public function edit($id)
+    public function edit($sale)
     {
-        $sale = SalesMaster::findOrFail($id);
+        $sale = Sales::findOrFail($sale);
         $paymentMethods = PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
-        $suppliers = Supplier::all(['iSuppPk', 'supplier_name']);
+        $suppliers = Supplier::all(['iSuppPk', 'iSuppDesc']);
         return view('sales.edit', compact('sale', 'paymentMethods', 'suppliers'));
     }
 
     // Update existing sale
-    public function update(Request $request, $id)
+    public function update(Request $request, $sale)
     {
         $request->validate([
             'dsmasdate' => 'required|date',
             'csmasdesc' => 'required|string|max:150',
             'ysmasdeposit' => 'required|numeric',
             'ysmaspayment' => 'required|numeric',
-            'ismasPymtdfk' => 'required|exists:payment_methods,iPymtdPk',
+            'ismasPymtdfk' => 'required|exists:payments,iPymtdPk',
             'ismasSuppfk' => 'required|exists:suppliers,iSuppPk',
         ]);
 
-        $sale = SalesMaster::findOrFail($id);
+        $sale = Sales::findOrFail($sale);
         $sale->update($request->all());
 
         return redirect()->route('sales.index')->with('success', 'Sale record updated successfully.');
     }
 
     // Delete sale record
-    public function destroy($id)
+    public function destroy($ismaspk)
     {
-        $sale = SalesMaster::findOrFail($id);
+        $sale = Sales::findOrFail($ismaspk);
         $sale->delete();
 
         return redirect()->route('sales.index')->with('success', 'Sale record deleted successfully.');
     }
+
+  
+    
+
 }

@@ -17,19 +17,19 @@
 
             <!-- Description -->
             <div class="form-group mb-3">
-                <label for="csmasdesc" class="form-label">Perkara/Customer Details</label>
+                <label for="csmasdesc" class="form-label">Description</label>
                 <input type="text" class="form-control" id="csmasdesc" name="csmasdesc" required>
             </div>
 
             <!-- Deposit -->
             <div class="form-group mb-3">
-                <label for="ysmasdeposit" class="form-label">Deposit/Bayaran Penuh</label>
+                <label for="ysmasdeposit" class="form-label">Deposit/Full Payment</label>
                 <input type="number" step="0.01" class="form-control" id="ysmasdeposit" name="ysmasdeposit" required>
             </div>
 
             <!-- Payment Method -->
             <div class="form-group mb-3">
-                <label for="ismasPymtdfk" class="form-label">Cara Bayaran</label>
+                <label for="ismasPymtdfk" class="form-label">Payment Method</label>
                 <select id="ismasPymtdfk" name="ismasPymtdfk" class="form-select" required>
                 <option value="">Select Payment Method</option>
                     @foreach($paymentMethods as $method)
@@ -40,7 +40,7 @@
 
             <!-- Kod Penghutang -->
             <div class="form-group mb-3">
-                <label for="ismasSuppfk" class="form-label">Kod Penghutang</label>
+                <label for="ismasSuppfk" class="form-label">Debtor Code</label>
                 <select id="ismasSuppfk" name="ismasSuppfk" class="form-select" required>
                 <option value="">Select Penghutang</option>
                     @foreach($suppliers as $supp)
@@ -57,7 +57,7 @@
 
             <!-- Cara Jualan (Auto-detected) -->
             <div class="form-group mb-3">
-                <label for="cara_jualan" class="form-label">Cara Jualan</label>
+                <label for="cara_jualan" class="form-label">Sale Method</label>
                 <input type="text" class="form-control" id="cara_jualan" name="cara_jualan" readonly>
             </div>
 

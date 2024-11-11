@@ -1,27 +1,35 @@
 @section('content')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AdminLTE 3 | DataTables</title>
+
 <style>
-    /* Center align text in the table header */
-    .table thead th {
-        text-align: center;
-        vertical-align: middle;
-    }
+  /* Center align text in the table header */
+  .table thead th {
+          text-align: center;
+          vertical-align: middle;
+      }
 
-    /* Optional: Center-align text in the entire table if desired */
-    .table td, .table th {
-        text-align: center;
-        vertical-align: middle;
-    }
+      /* Left-align text columns */
+      .text-left {
+          text-align: left !important;
+      }
+
+      /* Right-align number columns */
+      .text-right {
+          text-align: right !important;
+      }
 </style>
-
+<body>
 <div class="row mb-3 align-items-center">
     <div class="col-lg-6">
         <h2>Sales Records</h2>
     </div>
     <div class="col-lg-6 text-right d-flex justify-content-end align-items-center">
-        <!-- Buttons for Data Management -->
-        <button type="button" class="btn btn-danger mr-2" onclick="showDeleteConfirmation()">Buang Data</button>
-        <a href="{{ route('sales.create') }}" id="rekodJualanButton" class="btn btn-success mr-2">Rekod Jualan</a>
-        <a href="#" class="btn btn-primary mr-2">Jualan Stok</a>
+       
 
         <!-- Total Sales Display -->
         <div class="mr-3">
@@ -35,65 +43,7 @@
     </div>
 </div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Confirmation</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Please select the data you want to delete.</p>
-                <p>Are you sure you want to delete the selected sales records?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" id="confirmDeleteButton" class="btn btn-danger">Delete</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Filter and Sorting Options -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <label for="year">Year:</label>
-        <select id="year" name="year" class="form-control">
-            <option value="">Select Year</option>
-            @for($y = date('Y'); $y >= 2000; $y--)
-                <option value="{{ $y }}">{{ $y }}</option>
-            @endfor
-        </select>
-    </div>
-    <div class="col-md-3">
-        <label for="month">Susun Bulan:</label>
-        <select id="month" name="month" class="form-control">
-            <option value="">Select Month</option>
-            @for($m = 1; $m <= 12; $m++)
-                <option value="{{ $m }}">{{ date('F', mktime(0, 0, 0, $m, 1)) }}</option>
-            @endfor
-        </select>
-    </div>
-    <div class="col-md-3">
-        <label for="debtor_code">Penghutang:</label>
-        <input type="text" id="debtor_code" name="debtor_code" class="form-control" placeholder="Enter Debtor Code">
-    </div>
-    <div class="col-md-3">
-        <label for="invoice_ref">No Rujukan:</label>
-        <input type="text" id="invoice_ref" name="invoice_ref" class="form-control" placeholder="Enter Invoice Reference">
-    </div>
-</div>
-
-<!-- Clear and Sort Buttons -->
-<div class="row mb-4">
-    <div class="col-md-3 offset-md-9 d-flex justify-content-end">
-        <button id="clearFilter" class="btn btn-secondary mr-2">Clear Filter</button>
-        <button id="sortByDate" class="btn btn-info">Sort by Date</button>
-    </div>
-</div>
 
 <!-- Display Success Message -->
 @if ($message = Session::get('success'))
@@ -103,104 +53,60 @@
 @endif
 
 <!-- Sales Records Table -->
-<table class="table table-bordered table-striped">
+<div class="card-body">
+<div class="col-lg-6 d-flex">
+        <a href="{{ route('sales.create') }}" id="rekodJualanButton" class="btn btn-success mr-2">Add Sales</a>
+    </div>
+<table id="example1" class="table table-bordered table-striped">
+
     <thead>
         <tr>
-            <th>Tarikh</th>
-            <th>Perkara/Customer Detail</th>
-            <th>Deposit/Bayaran Penuh (RM)</th>
-            <th>Cara Bayaran</th>
-            <th>Kod Penghutang</th>
-            <th>No Ruj. Invoice/Receipt</th>
-            <th>Cara Jualan</th>
-            <th>Jumlah Jualan (RM)</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th >Deposit/Full Payment (RM)</th>
+            <th>Payment Method</th>
+            <th>Debtor Code</th>
+            <th>No Ref. Invoice/Receipt</th>
+            <th>Sale Method</th>
+            <th>Total Sale (RM)</th>
             <th>Salesperson</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody id="salesTableBody">
         @foreach($sales as $sale)
-        <tr>
+        <tr >
             <td>{{ $sale->dsmasdate }}</td>
             <td>{{ $sale->csmasdesc }}</td>
-            <td>{{ number_format($sale->ysmasdeposit, 2) }}</td>
+            <td class="text-right">{{ number_format($sale->ysmasdeposit, 2) }}</td>
             <td>{{ $sale->paymentMethod->cPymtdDesc ?? 'N/A' }}</td>
             <td>{{ $sale->supplier->iSuppCode ?? 'N/A' }}-{{ $sale->supplier->iSuppDesc ?? 'N/A' }}</td>
             <td>{{ $sale->ismasinvoiceref ?? 'N/A' }}</td>
             <td>{{ $sale->ysmasdeposit == $sale->ysmaspayment ? 'CASH' : 'CREDIT' }}</td>
-            <td>{{ number_format($sale->ysmaspayment, 2) }}</td>
+            <td  class="text-right">{{ number_format($sale->ysmaspayment, 2) }}</td>
             <td>{{ $sale->ismasusersfk ?? 'N/A' }}</td>
+            <td> <!-- Edit and Delete Icons -->
+                <a href="{{ route('sales.edit', $sale->ismaspk) }}" class="btn btn-custom-edit btn-sm">
+                    <i class="fa fa-edit"></i>
+                </a>
+                <form action="{{ route('sales.destroy', $sale->ismaspk) }}" method="POST" style="display: inline-block;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-custom-delete btn-sm" onclick="return confirm('Are you sure?')">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </form>
+            </td>
+            
         </tr>
         @endforeach
     </tbody>
 </table>
+</div>
 
-<!-- Hidden Form for Deletion -->
-<form id="deleteForm" action="{{ route('sales.destroy', ['sales_master' => 'all']) }}" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-</form>
+
 
 @endsection
 
-@push('scripts')
-<script>
-    function showDeleteConfirmation() {
-        // Show the delete confirmation modal
-        $('#deleteConfirmationModal').modal('show');
-    }
 
-    document.getElementById('confirmDeleteButton').addEventListener('click', function() {
-        // Submit the form when user confirms delete
-        document.getElementById('deleteForm').submit();
-    });
 
-    document.getElementById('clearFilter').addEventListener('click', function() {
-        // Clear all filter values
-        document.getElementById('year').value = '';
-        document.getElementById('month').value = '';
-        document.getElementById('debtor_code').value = '';
-        document.getElementById('invoice_ref').value = '';
-        
-        // Refresh table or apply cleared filter
-        applyFilters();
-    });
-
-    document.getElementById('sortByDate').addEventListener('click', function() {
-        // Sort sales by date (can implement further logic based on backend requirements)
-        applyFilters();
-    });
-
-    function applyFilters() {
-        const year = document.getElementById('year').value;
-        const month = document.getElementById('month').value;
-        const debtorCode = document.getElementById('debtor_code').value;
-        const invoiceRef = document.getElementById('invoice_ref').value;
-
-        // Fetch data based on filters
-        fetch(`/sales/filter?year=${year}&month=${month}&debtor_code=${debtorCode}&invoice_ref=${invoiceRef}`)
-            .then(response => response.json())
-            .then(data => {
-                const tbody = document.getElementById('salesTableBody');
-                tbody.innerHTML = ''; // Clear the existing rows
-
-                data.sales.forEach(sale => {
-                    let row = `
-                        <tr>
-                            <td>${sale.dsmasdate}</td>
-                            <td>${sale.csmasdesc}</td>
-                            <td>${parseFloat(sale.ysmasdeposit).toFixed(2)}</td>
-                            <td>${sale.ismasPymtdfk ?? 'N/A'}</td>
-                            <td>${sale.ismasSuppfk ?? 'N/A'}</td>
-                            <td>${sale.ismasinvoiceref ?? 'N/A'}</td>
-                            <td>${sale.saleType ?? ''}</td>
-                            <td>${parseFloat(sale.ysmaspayment).toFixed(2)}</td>
-                            <td>${sale.ismasusersfk ?? 'N/A'}</td>
-                        </tr>
-                    `;
-                    tbody.insertAdjacentHTML('beforeend', row);
-                });
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    }
-</script>
-@endpush

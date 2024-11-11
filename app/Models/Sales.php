@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SalesMaster extends Model
+class Sales extends Model
 {
     use HasFactory;
 
     protected $primaryKey = 'ismaspk';
-    protected $table = 'sales_master';
+    protected $table = 'sales';
     protected $fillable = [
         'dsmasdate', 'csmasdesc', 'ysmasdeposit', 'ismasPymtdfk', 
         'ismasSuppfk', 'ismasinvoiceref', 'ysmaspayment', 'ismasusersfk'
