@@ -56,15 +56,21 @@
 
 <!-- Payment Records Table -->
 <div class="card-body">
-    <div class="col-lg-6 d-flex">
-        <button class="btn btn-success mr-2" data-toggle="modal" data-target="#ModalCreate">Add Supplier</button>
-    </div>
+
+    <button class="btn btn-success rounded-pill shadow-sm px-4" data-toggle="modal" data-target="#ModalCreate">
+
+        <i class="fas fa-plus-circle"></i> Add Supplier
+        </button>
+       
     <div id="datatable">
         <table id="example1" class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>Supplier Code</th>
                     <th>Supplier Details</th>
+                    @if(Auth::user()->role === 'system admin')
+                    <th>Company Name</th>
+                    @endif
                     <th>Action</th>
                 </tr>
             </thead>
@@ -73,6 +79,9 @@
                 <tr>
                     <td>{{ $supply->iSuppCode }}</td>
                     <td>{{ $supply->iSuppDesc }}</td>
+                    @if(Auth::user()->role === 'system admin')
+                       <td>{{ $supply->company->description ?? 'N/A' }}</td>
+                     @endif
                     <td>
                         <!-- Edit Button with Modal -->
                         <button class="btn btn-custom-edit btn-sm" data-toggle="modal" data-target="#ModalEdit{{ $supply->iSuppPk }}">

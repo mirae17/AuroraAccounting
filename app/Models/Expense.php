@@ -7,12 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
+    use HasFactory;
     protected $table = 'expenses';
     protected $primaryKey = 'iExpPk';
 
     protected $fillable = [
         'cExpCode',
         'cExpDesc',
+        'company_id',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
 
 }

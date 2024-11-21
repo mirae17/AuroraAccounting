@@ -1,4 +1,4 @@
-@extends('layouts.template_paymentMethods')
+@extends('layouts.template')
 
 @section('content')
 @include('payments.table')

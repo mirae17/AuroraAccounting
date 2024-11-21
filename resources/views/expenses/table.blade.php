@@ -20,7 +20,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="exampleModalLabel">Add Expenses</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -100,15 +100,21 @@
 
 <!-- Expenses Records Table -->
  <div class="card-body">
- <div class="col-lg-6 d-flex">
-        <button class="btn btn-success mr-2" data-toggle="modal" data-target="#ModalCreate">Add Expenses</button>
-    </div>
-<div id="datatable">
+  <div class="col-lg-6 d-flex">
+      <button class="btn btn-success rounded-pill shadow-sm px-4" data-toggle="modal" data-target="#ModalCreate">
+
+      <i class="fas fa-plus-circle"></i> Add Expenses
+      </button>
+  </div >
+  
 <table id="example1" class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Expenses Code</th>
             <th>Expenses Details</th>
+            @if(Auth::user()->role === 'system admin')
+            <th>Company Name</th>
+            @endif
             <th>Action</th>
         </tr>
     </thead>
@@ -117,6 +123,10 @@
         <tr>
             <td>{{ $expenses->cExpCode }}</td>
             <td>{{ $expenses->cExpDesc }}</td>
+            @if(Auth::user()->role === 'system admin')
+                <td>{{ $expenses->company->description ?? 'N/A' }}</td>
+            @endif
+          
             <td>
                 <!-- Edit and Delete Icons -->
                 <a class="btn btn-custom-edit btn-sm" data-toggle="modal" data-target="#ModalEdit{{ $expenses->iExpPk }}">
@@ -137,25 +147,5 @@
 </div>
 </div>
 
-<script>
-    $(document).ready(function(){
-        var table = $('#datatable').DataTable();
-
-        table.on('click','.edit',function(){
-            $tr = $(this).closet('tr');
-            if($($tr).hasClass('child')){
-                $tr=$tr.prev('.parent');
-            }
-            var data = table.row($tr).data();
-            console.log(data);
-
-            $('#cExpCode').val(data[1]);
-            $('#cExpDesc').val(data[2]);
-
-            $('#editForm').attr('action','/expenses/'+data[0]);
-            $('#editModal').modal('show');
-        })
-    })
-</script>
 @endsection
 

@@ -2,14 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\Supplier;
+use App\Models\Company;
 
 class SupplierController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
+    
     public function index()
     {
-        $suppliers= Supplier::all();
+        $user = Auth::user();
+
+        if ($user->role === 'system admin') {
+           
+            $suppliers= Supplier::with('company')->get();;
+        } else {
+           
+            $suppliers= Supplier::with('company')->where('company_id', $user->company_id)->get();
+        }
+
+       
+
         return view('suppliers.index', compact('suppliers'));
     }
 
@@ -25,10 +45,11 @@ class SupplierController extends Controller
             'iSuppDesc' => 'required|string|max:100',
         ]);
 
-        Supplier::create([
-            'iSuppCode' => $request->iSuppCode,
-            'iSuppDesc' => $request->iSuppDesc,
-        ]);
+        $suppliers= new Supplier();
+        $suppliers->iSuppCode = $request->iSuppCode;
+        $suppliers->iSuppDesc = $request->iSuppDesc;
+        $suppliers->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
+        $suppliers->save();
 
         return redirect()->route('suppliers.index')
                          ->with('success', 'Supplier added successfully.');
@@ -46,11 +67,12 @@ class SupplierController extends Controller
             'iSuppDesc' => 'required|string|max:100',
         ]);
 
-        $suppliers = Supplier::findOrFail($iSuppPk);
-        $suppliers->update([
-            'iSuppCode' => $request->iSuppCode,
-            'iSuppDesc' => $request->iSuppDesc,
-        ]);
+        
+        $suppliers= new Supplier();
+        $suppliers->iSuppCode = $request->iSuppCode;
+        $suppliers->iSuppDesc = $request->iSuppDesc;
+        $suppliers->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
+        $suppliers->save();
 
         return redirect()->route('suppliers.index')
                          ->with('success', 'Supplier updated successfully.');

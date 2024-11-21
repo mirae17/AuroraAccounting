@@ -1,4 +1,4 @@
-@extends('layouts.template_sales')
+@extends('layouts.template')
 
 @section('content')
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
@@ -35,10 +35,10 @@
 
         <!-- Kod Penghutang -->
         <div class="form-group mb-3">
-                <label for="ismasSuppfk" >Debtor Code</label>
-                <select id="ismasSuppfk" name="ismasSuppfk" class="form-control" required>
-                    @foreach($suppliers as $supp)
-                        <option value="{{ $supp->iSuppPk }}" {{ $sale->ismasPymtdfk == $supp->iSuppPk ? 'selected' : ''}}> -{{ $supp->iSuppDesc }} </option>
+                <label for="csmasDebtorfk" >Debtor Code</label>
+                <select id="csmasDebtorfk" name="csmasDebtorfk" class="form-control" required>
+                    @foreach($debtor as $debt)
+                        <option value="{{ $debt->iDebtorPk }}" {{ $sale->csmasDebtorfk == $debt->cDebtorPk ? 'selected' : ''}}> -{{ $debt->cDebtorDesc }} </option>
                     @endforeach
                 </select>
          </div>
@@ -77,20 +77,24 @@
 </div>
 
 <!-- JavaScript to auto-detect Cara Jualan -->
+<!-- JavaScript to auto-detect Cara Jualan -->
 <script>
-    document.getElementById('ysmasdeposit').addEventListener('input', detectCaraJualan);
-    document.getElementById('ysmaspayment').addEventListener('input', detectCaraJualan);
+    document.getElementById('ysmasdeposit').addEventListener('input', handleCaraJualan);
+    document.getElementById('ysmaspayment').addEventListener('input', handleCaraJualan);
 
-    function detectCaraJualan() {
+    function handleCaraJualan() {
         const deposit = parseFloat(document.getElementById('ysmasdeposit').value) || 0;
         const totalPayment = parseFloat(document.getElementById('ysmaspayment').value) || 0;
         const caraJualan = document.getElementById('cara_jualan');
+        const debtorField = document.getElementById('csmasDebtorfk');
 
-        // Determine Cara Jualan based on deposit and total payment
         if (deposit === totalPayment) {
             caraJualan.value = 'Cash';
+            debtorField.value = ''; // Clear debtor field
+            debtorField.disabled = true; // Disable debtor selection
         } else {
             caraJualan.value = 'Credit';
+            debtorField.disabled = false; // Enable debtor selection
         }
     }
 </script>

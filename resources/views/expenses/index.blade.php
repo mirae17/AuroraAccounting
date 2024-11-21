@@ -1,4 +1,4 @@
-@extends('layouts.template_expenses')
+@extends('layouts.template')
 
 @section('content')
 @include('expenses.table')

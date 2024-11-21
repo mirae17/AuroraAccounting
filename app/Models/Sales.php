@@ -4,16 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Sales extends Model
 {
     use HasFactory;
 
     protected $primaryKey = 'ismaspk';
-    protected $table = 'sales';
+    protected $table = 'sales_master';
     protected $fillable = [
-        'dsmasdate', 'csmasdesc', 'ysmasdeposit', 'ismasPymtdfk', 
-        'ismasSuppfk', 'ismasinvoiceref', 'ysmaspayment', 'ismasusersfk'
+        'dsmasdate', 
+        'csmasdesc', 
+        'ysmasdeposit', 
+        'ismasPymtdfk', 
+        'csmasDebtorfk', 
+        'ismasinvoiceref', 
+        'cara_jualan',
+        'ysmaspayment', 
+        'ismasusersfk',
+        'csmasDebtorfk',
     ];
 
     public function paymentMethod()
@@ -21,8 +30,24 @@ class Sales extends Model
         return $this->belongsTo(PaymentMethod::class, 'ismasPymtdfk', 'iPymtdPk');
     }
 
-    public function supplier()
+    public function debtor()
     {
-        return $this->belongsTo(Supplier::class, 'ismasSuppfk', 'iSuppPk');
+        return $this->belongsTo(Debtor::class, 'csmasDebtorfk', 'iDebtorPk');
     }
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($sale) {
+            if (Auth::check()) {
+                $sale->company_id = Auth::user()->company_id;
+            }
+        });
+    }
+
 }

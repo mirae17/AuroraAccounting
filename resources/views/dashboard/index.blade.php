@@ -1,22 +1,33 @@
-@extends('layouts.template_dashboard')
+@extends('layouts.template')
 
 @section('content')
+
 <div class="container my-5">
-    <!-- Main Title -->
-    <h2 class="text-center mb-5" style="font-size: 2.2rem; font-weight: bold; color: #444;">Main Dashboard</h2>
-    <!-- Year Selection Dropdown -->
-    <form method="GET" action="{{ route('dashboard.index') }}" class="mb-4">
-        <div class="form-group d-flex justify-content-center align-items-center">
-            <label for="year" class="mr-3">Select Year:</label>
-            <select name="year" id="year" class="form-control w-25">
-                @foreach($years as $yearOption)
-                    <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
-                @endforeach
-            </select>
-            <button type="submit" class="btn btn-primary ml-3">Filter</button>
-        </div>
-    </form>
-    
+   <!-- Main Title and Year & Company Filters -->
+   <div class="d-flex justify-content-between align-items-center mb-5">
+        <h2 class="text-center" style="font-size: 2.2rem; font-weight: bold; color: #444;">
+            Dashboard 
+        </h2>
+
+        <form method="GET" action="{{ route('dashboard.index') }}" class="d-flex align-items-center">
+           
+               
+
+            <!-- Year Selection -->
+            <div class="p-3 shadow-sm" style="background-color: #f1f1f1; border-radius: 15px; display: flex; align-items: center;">
+                <label for="year" class="mr-2" style="font-weight: bold; font-size: 1.1rem; color: #444;">Select Year:</label>
+                <select name="year" id="year" class="form-control" style="width: 120px; border-radius: 8px;">
+                    @foreach($years as $yearOption)
+                        <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="btn btn-primary ml-3" style="border-radius: 8px; font-weight: bold;">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Main Dashboard Metrics -->
     <div class="row">
         <!-- Sales Summary Column -->
@@ -37,13 +48,16 @@
 
         <!-- Expenses and Debts Column -->
         <div class="col-md-4">
+            <!-- Total Current Purchase + Expenses -->
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #fef6f6; border-radius: 10px;">
-                <h6 class="text-muted">Total Curent Purchase + Expenses</h6>
-                <h3 class="text-danger" style="font-weight: bold;">RM </h3>
+                <h6 class="text-muted">Total Current Purchase + Expenses</h6>
+                <h3 class="text-danger" style="font-weight: bold;">
+                    RM {{ number_format($totalAnnualPurchase + $totalAnnualExpenses, 2) }}
+                </h3>
             </div>
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #fef6f6; border-radius: 10px;">
                 <h6 class="text-muted">Total Debtor</h6>
-                <h3 class="text-danger" style="font-weight: bold;">RM </h3>
+                <h3 class="text-danger" style="font-weight: bold;">{{ number_format($totalDebtor)}} </h3>
             </div>
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #fef6f6; border-radius: 10px;">
                 <h6 class="text-muted">Total Creditor</h6>
@@ -63,7 +77,7 @@
             </div> -->
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #fff5e5; border-radius: 10px;">
                 <h6 class="text-muted">Current Net Profit</h6>
-                <h3 style="color: #333; font-weight: bold;">RM </h3>
+                <h3 style="color: #333; font-weight: bold;">RM {{ number_format($currentNetProfit, 2) }} </h3>
             </div>
         </div>
     </div>
@@ -103,25 +117,17 @@
                         <tr><th>Month</th><th>Purchase (RM)</th></tr>
                     </thead>
                     <tbody>
-                    <tbody>
-                    <tr><td>January</td><td>RM </td></tr>
-                    <tr><td>February</td><td>RM </td></tr>
-                    <tr><td>March</td><td>RM </td></tr>
-                    <tr><td>April</td><td>RM </td></tr>
-                    <tr><td>May</td><td>RM </td></tr>
-                    <tr><td>June</td><td>RM </td></tr>
-                    <tr><td>July</td><td>RM </td></tr>
-                    <tr><td>August</td><td>RM </td></tr>
-                    <tr><td>September</td><td>RM </td></tr>
-                    <tr><td>October</td><td>RM </td></tr>
-                    <tr><td>November</td><td>RM </td></tr>
-                    <tr><td>December</td><td>RM </td></tr>
+                    @foreach($monthlyPurchasesData as $month => $total)
+                        <tr>
+                            <td>{{ DateTime::createFromFormat('!m', $month)->format('F') }}</td>
+                            <td>RM {{ number_format($total, 2) }}</td>
+                        </tr>
+                    @endforeach
                     </tbody>
-                    </tbody>
-                </table>
-                <div class="text-center p-3 bg-light">
-                    <strong>Total Annual Purchase: RM </strong>
-                </div>
+                    </table>
+                    <div class="text-center p-3 bg-light">
+                        <strong>Total Annual Purchase: RM {{ number_format($totalAnnualPurchase, 2) }}</strong>
+                 </div>
             </div>
         </div>
 
@@ -134,68 +140,46 @@
                         <tr><th>Month</th><th>Expenses (RM)</th></tr>
                     </thead>
                     <tbody>
-                    <tr><td>January</td><td>RM </td></tr>
-                    <tr><td>February</td><td>RM </td></tr>
-                    <tr><td>March</td><td>RM </td></tr>
-                    <tr><td>April</td><td>RM </td></tr>
-                    <tr><td>May</td><td>RM </td></tr>
-                    <tr><td>June</td><td>RM </td></tr>
-                    <tr><td>July</td><td>RM </td></tr>
-                    <tr><td>August</td><td>RM </td></tr>
-                    <tr><td>September</td><td>RM </td></tr>
-                    <tr><td>October</td><td>RM </td></tr>
-                    <tr><td>November</td><td>RM </td></tr>
-                    <tr><td>December</td><td>RM </td></tr>
-                    </tbody>
+                    @foreach($monthlyExpensesData as $month => $total)
+                    <tr>
+                        <td>{{ DateTime::createFromFormat('!m', $month)->format('F') }}</td>
+                        <td>RM {{ number_format($total, 2) }}</td>
+                    </tr>
+                @endforeach
+                </tbody>
                 </table>
                 <div class="text-center p-3 bg-light">
-                    <strong>Total Annual Expenses: RM </strong>
+                    <strong>Total Annual Expenses: RM {{ number_format($totalAnnualExpenses, 2) }}</strong>
                 </div>
             </div>
         </div>
     </div>
+<!-- Net Profit Table -->
+<div class="table-responsive mt-5 shadow-sm" style="border-radius: 10px; overflow-x: auto;">
+    <h5 class="bg-secondary text-white text-center p-3">Net Profit</h5>
+    <table class="table table-bordered text-center mb-0">
+        <thead class="bg-dark text-white">
+            <tr>
+                @foreach ($monthlyNetProfitData as $month => $total)
+                    <td>{{DateTime::createFromFormat('!m', $month)->format('F') }}</td>
+                @endforeach
+                <td>Average Net Profit</td>
+                <td>Annual Net Profit</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @foreach ($monthlyNetProfitData as $total)
+                    <td>RM {{ number_format($total, 2) }}</td>
+                @endforeach
+                <td>RM {{ number_format($averageMonthlyNetProfit, 2) }}</td>
+                <td>RM {{ number_format($annualNetProfit, 2) }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
-    <!-- Net Profit Table -->
-    <div class="table-responsive mt-5 shadow-sm" style="border-radius: 10px; overflow: hidden;">
-        <h5 class="bg-secondary text-white text-center p-3">Net Profit</h5>
-        <table class="table table-bordered text-center mb-0">
-            <thead class="bg-dark text-white">
-                <tr>
-                <tr><td>January</td>
-                    <td>February</td>
-                    <td>March</td>
-                    <td>April</td>
-                    <td>May</td>
-                    <td>June</td>
-                    <td>July</td>
-                    <td>August</td>
-                    <td>September</td>
-                    <td>October</td>
-                    <td>November</td>
-                    <td>December</td>
-                <th>Yearly Net</th>
-                <th>Averange Month</th></tr>
-            </thead>
-            <tbody>
-                <tr>
-                <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM</td>
-                    <td>RM </td>
-                    <td>RM </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+
 
 
 </div>
@@ -210,7 +194,8 @@
         const ctx = document.getElementById('salesChart').getContext('2d');
         
         const salesData = @json($monthlySalesData); // Dynamic data for sales
-      
+        const expensesData = @json($monthlyExpensesData); // Dynamic data for expenses
+        const purchasesData = @json($monthlyPurchasesData); // Dynamic data for purchases
 
         const salesChart = new Chart(ctx, {
             type: 'line',
@@ -225,6 +210,22 @@
                         fill: true,
                         tension: 0.3
                     },
+                    {
+                        label: 'Expenses',
+                        data: expensesData,
+                        borderColor: 'yellow',
+                        backgroundColor: 'rgba(255, 255, 0, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Purchases',
+                        data: purchasesData,
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(255, 0, 0, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }
                     
                  
                 ]

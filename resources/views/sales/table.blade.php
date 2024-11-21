@@ -26,7 +26,7 @@
 <body>
 <div class="row mb-3 align-items-center">
     <div class="col-lg-6">
-        <h2>Sales Records</h2>
+        <h2>Sales Records </h2>
     </div>
     <div class="col-lg-6 text-right d-flex justify-content-end align-items-center">
        
@@ -36,12 +36,13 @@
             <div class="small-card">
                 <div class="card-body p-1">
                     <p>Total Sales: <strong>RM{{ number_format($totalSales, 2) }}</strong></p>
-                    <p>Year: <strong>{{ date('Y') }}</strong></p>
+                    <p>Year:<strong>{{ $selectedYear }}</strong></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -54,9 +55,14 @@
 
 <!-- Sales Records Table -->
 <div class="card-body">
-<div class="col-lg-6 d-flex">
-        <a href="{{ route('sales.create') }}" id="rekodJualanButton" class="btn btn-success mr-2">Add Sales</a>
-    </div>
+<div class="col-lg-6 d-flex ">
+        <a href="{{ route('sales.pdf') }}" class="btn btn-info rounded-pill shadow-sm px-4 mr-2">
+            <i class="fas fa-file-pdf"></i> Save as PDF
+        </a>
+        <a href="{{ route('sales.create') }}" class="btn btn-success rounded-pill shadow-sm px-4">
+            <i class="fas fa-plus-circle"></i> Add Sales
+        </a>
+</div>
 <table id="example1" class="table table-bordered table-striped">
 
     <thead>
@@ -70,6 +76,9 @@
             <th>Sale Method</th>
             <th>Total Sale (RM)</th>
             <th>Salesperson</th>
+            @if(Auth::user()->role === 'system admin')
+            <th>Company Name</th>
+            @endif
             <th>Action</th>
         </tr>
     </thead>
@@ -80,11 +89,14 @@
             <td>{{ $sale->csmasdesc }}</td>
             <td class="text-right">{{ number_format($sale->ysmasdeposit, 2) }}</td>
             <td>{{ $sale->paymentMethod->cPymtdDesc ?? 'N/A' }}</td>
-            <td>{{ $sale->supplier->iSuppCode ?? 'N/A' }}-{{ $sale->supplier->iSuppDesc ?? 'N/A' }}</td>
+            <td>{{ $sale->debtor->cDebtorCode ?? 'N/A' }}-{{ $sale->debtor->cDebtorDesc ?? 'N/A' }}</td>
             <td>{{ $sale->ismasinvoiceref ?? 'N/A' }}</td>
             <td>{{ $sale->ysmasdeposit == $sale->ysmaspayment ? 'CASH' : 'CREDIT' }}</td>
             <td  class="text-right">{{ number_format($sale->ysmaspayment, 2) }}</td>
             <td>{{ $sale->ismasusersfk ?? 'N/A' }}</td>
+            @if(Auth::user()->role === 'system admin')
+                <td>{{ $sale->company->description ?? 'N/A' }}</td>
+            @endif
             <td> <!-- Edit and Delete Icons -->
                 <a href="{{ route('sales.edit', $sale->ismaspk) }}" class="btn btn-custom-edit btn-sm">
                     <i class="fa fa-edit"></i>

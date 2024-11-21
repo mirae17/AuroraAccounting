@@ -28,5 +28,12 @@ class PaymentMethod extends Model
     protected $fillable = [
         'cPymtdCode',
         'cPymtdDesc',
+        'company_id',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'company_id');
+    }
+
 }

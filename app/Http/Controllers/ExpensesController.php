@@ -3,16 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use App\Models\Company;
 
 class ExpensesController extends Controller
 {
-    /**
-     * Display a listing of the expenses.
-     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index()
     {
-        $expense = Expense::all();
+        $user = Auth::user();
+
+        if ($user->role === 'system admin') {
+           
+            $expense = Expense::with('company')->get();
+        } else {
+           
+            $expense = Expense::with('company')->where('company_id', $user->company_id)->get();
+        }
+
+       
         return view('expenses.index', compact('expense'));
     }
 
@@ -34,7 +49,13 @@ class ExpensesController extends Controller
             'cExpDesc' => 'required|max:50',
         ]);
 
-        Expense::create($request->all());
+       
+
+        $expense = new Expense();
+        $expense->cExpCode = $request->cExpCode;
+        $expense->cExpDesc = $request->cExpDesc;
+        $expense->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
+        $expense->save();
 
         return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
     }
