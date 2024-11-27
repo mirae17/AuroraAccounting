@@ -10,6 +10,7 @@
 
 <div class="row mb-3 align-items-center">
     <div class="col-lg-6">
+    <br>
         <h2>Expenses List</h2>
     </div>
 </div>
@@ -33,15 +34,34 @@
             <!--code -->
             <div class="form-group mb-3">
                 <label for="cExpCode" class="form-label">EXPENSES CODE</label>
-                <input type="text" class="form-control" id="cExpCode" name="cExpCode" required>
+                <input type="text" class="form-control @error('expenses code') is-invalid @enderror" id="cExpCode" name="cExpCode" maxlength="6" required>
+                @error('expenses code')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
             </div>
 
             <!-- Description -->
             <div class="form-group mb-3">
                 <label for="cExpDesc" class="form-label">EXPENSES DETAILS</label>
-                <input type="text" class="form-control" id="cExpDesc" name="cExpDesc" required>
+                <input type="text" class="form-control" id="cExpDesc" maxlength="50" name="cExpDesc" required>
             </div>
 
+            <div class="form-group mb-3">
+               @if(Auth::user()->role === 'system admin')
+            <label for="company_id" class="form-label">Company</label>
+          
+                <select class="form-control" id="company_id" name="company_id" required>
+                    <option value="">Select a Company</option>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}">{{ $company->description }}</option>
+                    @endforeach
+                </select>
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+        </div>
         
       </div>
       <div class="modal-footer">
@@ -72,14 +92,30 @@
           <!-- Code -->
           <div class="form-group mb-3">
             <label for="cExpCode{{ $expenses->iExpPk }}" class="form-label">EXPENSES CODE</label>
-            <input type="text" class="form-control" id="cExpCode{{ $expenses->iExpPk }}" name="cExpCode" value="{{ $expenses->cExpCode }}" required>
+            <input type="text" class="form-control" id="cExpCode{{ $expenses->iExpPk }}" name="cExpCode" maxlength="6" value="{{ $expenses->cExpCode }}" required>
           </div>
 
           <!-- Description -->
           <div class="form-group mb-3">
             <label for="cExpDesc{{ $expenses->iExpPk }}" class="form-label">EXPENSES DETAILS</label>
-            <input type="text" class="form-control" id="cExpDesc{{ $expenses->iExpPk }}" name="cExpDesc" value="{{ $expenses->cExpDesc }}" required>
+            <input type="text" class="form-control" id="cExpDesc{{ $expenses->iExpPk }}" name="cExpDesc" maxlength="50" value="{{ $expenses->cExpDesc }}" required>
           </div>
+        
+        <div class="form-group mb-3">
+          @if(Auth::user()->role === 'system admin')
+            <label for="company_id{{ $expenses->iExpPk }}" class="form-label">Company</label>
+           
+                <select class="form-control" id="company_id{{ $expenses->iExpPk}}" name="company_id" required>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}" {{ $expenses->company_id == $company->id ? 'selected' : '' }}>
+                            {{ $company->description }}
+                        </option>
+                    @endforeach
+                </select>
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+        </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -97,15 +133,15 @@
         <p>{{ $message }}</p>
     </div>
 @endif
-
-<!-- Expenses Records Table -->
- <div class="card-body">
-  <div class="col-lg-6 d-flex">
+<div class="col-lg-6 d-flex">
       <button class="btn btn-success rounded-pill shadow-sm px-4" data-toggle="modal" data-target="#ModalCreate">
 
       <i class="fas fa-plus-circle"></i> Add Expenses
       </button>
   </div >
+<!-- Expenses Records Table -->
+ <div class="card-body">
+ 
   
 <table id="example1" class="table table-bordered table-striped">
     <thead>

@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use App\Models\User;
 use App\Models\Company;
+use Illuminate\Database\QueryException;
 
 class PaymentMethodController extends Controller
 {
@@ -16,79 +16,112 @@ class PaymentMethodController extends Controller
         $this->middleware('auth');
     }
     
+    public function index(Request $request)
+{
+    $user = Auth::user();
+    $selectedCompanyId = session('selected_company_id', null);
 
-    public function index()
-    {
+    // Fetch the selected company details
+    $selectedCompany = $selectedCompanyId ? Company::find($selectedCompanyId) : null;
 
-        $user = Auth::user();
+    // Pass the description or a default value if no company is selected
+    $selectedCompanyDescription = $selectedCompany ? $selectedCompany->description : 'All Companies';
 
-        if ($user->role === 'system admin') {
-           
-            $paymentMethods = PaymentMethod::with('company')->get();
+    if ($user->role === 'system admin') {
+        if ($selectedCompanyId) {
+            // Filter payment methods by the selected company for system admin
+            $paymentMethods = PaymentMethod::with('company')
+                ->where('company_id', $selectedCompanyId)
+                ->get();
         } else {
-           
-            $paymentMethods = PaymentMethod::with('company')->where('company_id', $user->company_id)->get();
+            // If no company is selected, show all payment methods
+            $paymentMethods = PaymentMethod::with('company')->get();
         }
-
-        
-        return view('payments.index', compact('paymentMethods'));
+        $companies = Company::all(); // Fetch all companies for selection
+    } else {
+        // For regular users, filter by their company
+        $paymentMethods = PaymentMethod::with('company')
+            ->where('company_id', $user->company_id)
+            ->get();
+        $companies = []; // Regular users don't need to select a company
     }
 
-    public function create()
-    {
-        return view('payments.create');
-    }
+    return view('payments.index', compact('paymentMethods', 'companies', 'selectedCompany','selectedCompanyDescription'));
+}
+
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+
         $request->validate([
-            'cPymtdCode' => 'required|string|max:10',
-            'cPymtdDesc' => 'required|string|max:100',
+            'cPymtdCode' => 'required|string|max:6',
+            'cPymtdDesc' => 'required|string|max:50',
+            'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
-        
 
+        $paymentMethod = new PaymentMethod();
+        $paymentMethod->cPymtdCode = $request->cPymtdCode;
+        $paymentMethod->cPymtdDesc = $request->cPymtdDesc;
 
-         // Create a new asset
-         $paymentMethod = new PaymentMethod();
-         $paymentMethod->cPymtdCode = $request->cPymtdCode;
-         $paymentMethod->cPymtdDesc = $request->cPymtdDesc;
-         $paymentMethod->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
-         $paymentMethod->save();
+        if ($user->role === 'system admin') {
+            $paymentMethod->company_id = $request->company_id;
+        } else {
+            $paymentMethod->company_id = $user->company_id;
+        }
 
-     
+        $paymentMethod->save();
 
         return redirect()->route('payments.index')
                          ->with('success', 'Payment method added successfully.');
     }
 
-    public function edit(PaymentMethod $paymentMethod)
-    {
-        return view('payments.edit', compact('paymentMethod'));
-    }
-
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
+
         $request->validate([
             'cPymtdCode' => 'required|string|max:10',
             'cPymtdDesc' => 'required|string|max:100',
+            'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
 
         $paymentMethod = PaymentMethod::findOrFail($id);
-        $paymentMethod->update([
-            'cPymtdCode' => $request->cPymtdCode,
-            'cPymtdDesc' => $request->cPymtdDesc,
-        ]);
+        $paymentMethod->cPymtdCode = $request->cPymtdCode;
+        $paymentMethod->cPymtdDesc = $request->cPymtdDesc;
+
+        if ($user->role === 'system admin') {
+            $paymentMethod->company_id = $request->company_id;
+        }
+
+        $paymentMethod->save();
 
         return redirect()->route('payments.index')
                          ->with('success', 'Payment method updated successfully.');
     }
-    
-  
 
     public function destroy($iPymtdPk)
     {
-        $paymentMethod= PaymentMethod::findOrFail($iPymtdPk);
-        $paymentMethod->delete();
-        return redirect()->route('payments.index')->with('success', 'Payment method deleted successfully.');
+        
+            try {
+                $paymentMethod = PaymentMethod::findOrFail($iPymtdPk);
+                $paymentMethod->delete();
+        
+                return redirect()->route('payments.index')
+                                 ->with('success', 'Payment method deleted successfully.');
+            } catch (QueryException $e) {
+                // Check if the error is a foreign key constraint violation
+                if ($e->getCode() === '23000') { // Code for constraint violation
+                    return redirect()->route('payments.index')
+                                     ->with('error', 'This payment method is in use in Sales, Purchases, or Expenses and cannot be deleted.');
+                }
+        
+                // If it's another type of error, rethrow it or handle it accordingly
+                throw $e;
+            }
+        
+
+
+                         
     }
 }

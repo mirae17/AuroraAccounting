@@ -52,11 +52,11 @@
             <div id="addCompanyFields">
                 <div class="form-group mb-3">
                     <label for="code" class="form-label">Company Code:</label>
-                    <input type="text" class="form-control" name="code" id="code">
+                    <input type="text" class="form-control" name="code" maxlength="6" id="code">
                 </div>
                 <div class="form-group mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <input type="text" class="form-control" name="description" id="description">
+                    <label for="description" class="form-label">Company Name:</label>
+                    <input type="text" class="form-control" name="description" maxlength="50" id="description">
                 </div>
                 <button type="button" id="addCompanyBtn" class="btn btn-primary">Add Company</button>
                 <a href="{{ route('users.index') }}" class="btn btn-secondary" id="backCompanyBtn">Back</a>

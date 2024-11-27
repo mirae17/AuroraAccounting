@@ -18,5 +18,15 @@ class CompanyController extends Controller
     
         return response()->json(['company' => $company], 201); // Return the created company as JSON
     }
+    public function getRelatedData($companyId)
+    {
+        $paymentMethods = PaymentMethod::where('company_id', $companyId)->get(['iPymtdPk', 'cPymtdDesc']);
+        $debtors = Debtor::where('company_id', $companyId)->get(['iDebtorPk', 'cDebtorCode', 'cDebtorDesc']);
+
+        return response()->json([
+            'paymentMethods' => $paymentMethods,
+            'debtors' => $debtors,
+        ]);
+    }
     
 }

@@ -30,13 +30,13 @@
         </div>
     @endif
 
-    
+    <a href="{{ route('users.create') }}" class="btn btn-success rounded-pill shadow-sm px-4">
+            <i class="fas fa-plus-circle"></i> Add Companies and Users
+</a>
 <!-- Payment Records Table -->
 <div class="card-body">
 
-<a href="{{ route('users.create') }}" class="btn btn-success rounded-pill shadow-sm px-4">
-            <i class="fas fa-plus-circle"></i> Add Companies and Users
-</a>
+
 
 <div id="datatable">
     <table id="example1" class="table table-bordered table-striped">

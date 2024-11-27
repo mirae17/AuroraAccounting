@@ -10,9 +10,13 @@
 
 <div class="row mb-3 align-items-center">
     <div class="col-lg-6">
-        <h2>Payment Method Record</h2>
+    <br>
+        <h2>Payment Method Code {{ $selectedCompanyDescription }}</h2>
     </div>
 </div>
+
+
+
 
 <!-- Modal Create -->
 <div class="modal fade" id="ModalCreate" tabindex="-1" role="dialog" aria-labelledby="ModalCreateLabel" aria-hidden="true">
@@ -30,13 +34,36 @@
             <!-- Code -->
             <div class="form-group mb-3">
                 <label for="cPymtdCode" class="form-label">PAYMENT METHOD CODE</label>
-                <input type="text" class="form-control" id="cPymtdCode" name="cPymtdCode" required>
+                <input  type="text" class="form-control @error('payment code') is-invalid @enderror"  id="cPymtdCode" name="cPymtdCode" maxlength="6" required>
+                @error('payment code')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
             </div>
             <!-- Description -->
             <div class="form-group mb-3">
                 <label for="cPymtdDesc" class="form-label">PAYMENT METHOD DETAILS</label>
-                <input type="text" class="form-control" id="cPymtdDesc" name="cPymtdDesc" required>
+                <input type="text" class="form-control @error('cPymtdDesc') is-invalid @enderror"  id="cPymtdDesc" maxlength="50" name="cPymtdDesc" required>
+                @error('cPymtdDesc')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+                @enderror
             </div>
+            @if(Auth::user()->role === 'system admin')
+                @if($selectedCompany)
+                    <input type="hidden" name="company_id" value="{{ $selectedCompany->id }}">
+                    <div class="form-group mb-3">
+                        <label for="company_id" class="form-label">Company</label>
+                        <input type="text" class="form-control" value="{{ $selectedCompany->description }}" readonly>
+                    </div>
+                @endif
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+
+            
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -47,22 +74,27 @@
   </div>
 </div>
 
-<!-- Display Success Message -->
-@if ($message = Session::get('success'))
+@if(session('success'))
     <div class="alert alert-success">
-        <p>{{ $message }}</p>
+        {{ session('success') }}
     </div>
 @endif
 
-<!-- Payment Records Table -->
-<div class="card-body">
-    <div class="col-lg-6 d-flex">
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+<div class="col-lg-6 d-flex">
         <button class="btn btn-success rounded-pill shadow-sm px-4" data-toggle="modal" data-target="#ModalCreate">
 
         <i class="fas fa-plus-circle"></i> Add Payment Method
         </button>
     </div>
 
+<!-- Payment Records Table -->
+<div class="card-body">
+    
     <div id="datatable">
         <table id="example1" class="table table-bordered table-striped">
             <thead>
@@ -117,13 +149,24 @@
                             <!-- Code -->
                             <div class="form-group mb-3">
                                 <label for="cPymtdCode" class="form-label">PAYMENT METHOD CODE</label>
-                                <input type="text" class="form-control" name="cPymtdCode" value="{{ $method->cPymtdCode }}" required>
+                                <input type="text" class="form-control" name="cPymtdCode" maxlength="6" value="{{ $method->cPymtdCode }}" required>
                             </div>
                             <!-- Description -->
                             <div class="form-group mb-3">
                                 <label for="cPymtdDesc" class="form-label">PAYMENT METHOD DETAILS</label>
                                 <input type="text" class="form-control" name="cPymtdDesc" value="{{ $method->cPymtdDesc }}" required>
                             </div>
+
+                            @if(Auth::user()->role === 'system admin')
+                            @if($selectedCompany)
+                                <input type="hidden" name="company_id" value="{{ $selectedCompany->id }}">
+                                <div class="form-group mb-3">
+                                    <label for="company_id" class="form-label">Company</label>
+                                    <input type="text" class="form-control" value="{{ $selectedCompany->description }}" readonly>
+                                </div>
+                              @endif
+                            @endif
+
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -138,5 +181,26 @@
         </table>
     </div>
 </div>
+<script>
+    document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const form = this.closest('form');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This action cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    });
+});
 
+    </script>
 @endsection

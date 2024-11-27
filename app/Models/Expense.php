@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Expense extends Model
 {
@@ -21,5 +22,9 @@ class Expense extends Model
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
+
+    
+   
+
 
 }

@@ -15,61 +15,76 @@ class DebtorController extends Controller
     {
 
         $user = Auth::user();
+        $companyId = $request->input('selected_company_id');
 
        if ($user->role === 'system admin') {
            
             $debtors = Debtor::with('company')->get();
+            $companies = Company::all(); // Get all companies
         } else {
            
             $debtors = Debtor::with('company')->where('company_id', $user->company_id)->get();
+            $companies = []; 
         }
 
         
-        return view(' debtor.index', compact('debtors'));
+        return view(' debtor.index', compact('debtors','companies'));
     }
 
-    public function create()
-    {
-        return view('debtor.create');
-    }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'cDebtorCode' => 'required|string|max:10',
-            'cDebtorDesc' => 'required|string|max:100',
-        ]);
+{
+    $user = Auth::user();
 
-        $debtors= new Debtor();
-        $debtors->cDebtorCode = $request->cDebtorCode;
-        $debtors->cDebtorDesc = $request->cDebtorDesc;
-        $debtors->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
-        $debtors->save();
 
-        return redirect()->route('debtor.index')
-                         ->with('success', 'Debtor added successfully.');
+    $request->validate([
+        'cDebtorCode' => 'required|string|max:10',
+        'cDebtorDesc' => 'required|string|max:50',
+        'company_id' => $user->role === 'system admin' 
+        ? 'required|exists:companies,id' 
+        : 'required',
+    ]);
+
+    // Create a new Debtor
+    $debtors = new Debtor();
+    $debtors->cDebtorCode = $request->cDebtorCode;
+    $debtors->cDebtorDesc = $request->cDebtorDesc;
+
+    if ($user->role === 'system admin') {
+        $debtors->company_id = $request->company_id;
+    } else {
+        $debtors->company_id = $user->company_id;
     }
+   
+    
+    $debtors->save();
 
-    public function edit(Debtor $debtors)
-    {
-        return view('debtor.edit', compact('debtors'));
-    }
+    // Redirect with success message
+    return redirect()->route('debtor.index')->with('success', 'Debtor added successfully.');
+}
+
 
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
         $request->validate([
             'cDebtorCode' => 'required|string|max:10',
-            'cDebtorDesc' => 'required|string|max:100',
+            'cDebtorDesc' => 'required|string|max:50',
+            'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
 
         $debtors = Debtor::findOrFail($id);
-        $debtors->update([
-            'cDebtorCode' => $request->cDebtorCode,
-            'cDebtorDesc' => $request->cDebtorDesc,
-            
-        ]);
+        $debtors->cDebtorCode = $request->cDebtorCode;
+        $debtors->cDebtorDesc = $request->cDebtorDesc;
+        if ($user->role === 'system admin') {
+            $debtors->company_id = $request->company_id;
+        }
 
-        return redirect()->route('payments.index')
+    
+
+        $debtors->save();
+
+        return redirect()->route('debtor.index')
                          ->with('success', 'Debtor updated successfully.');
     }
     

@@ -7,7 +7,10 @@
 </style>
 
 <div class="row mb-3 align-items-center">
+  
     <div class="col-lg-6">
+   
+    <br>
         <h2>Debtor List</h2>
     </div>
 </div>
@@ -28,13 +31,26 @@
             <!-- Debtor Code -->
             <div class="form-group mb-3">
                 <label for="cDebtorCode" class="form-label">DEBTOR CODE</label>
-                <input type="text" class="form-control" id="cDebtorCode" name="cDebtorCode" required>
+                <input type="text" class="form-control" maxlength="6" id="cDebtorCode" name="cDebtorCode" required>
             </div>
             <!-- Description -->
             <div class="form-group mb-3">
                 <label for="cDebtorDesc" class="form-label">DEBTOR DETAILS</label>
-                <input type="text" class="form-control" id="cDebtorDesc" name="cDebtorDesc" required>
+                <input type="text" class="form-control" id="cDebtorDesc" maxlength="50" name="cDebtorDesc" required>
             </div>
+            @if(Auth::user()->role === 'system admin')
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">COMPANY</label>
+                    <select name="company_id" id="company_id" class="form-control" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}">{{ $company->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -63,13 +79,29 @@
           <!-- Code -->
           <div class="form-group mb-3">
             <label for="cDebtorCode{{ $debtor->iDebtorPk }}" class="form-label">DEBTOR CODE</label>
-            <input type="text" class="form-control" id="cDebtorCode{{ $debtor->iDebtorPk }}" name="cDebtorCode" value="{{ $debtor->cDebtorCode }}" required>
+            <input type="text" class="form-control" id="cDebtorCode{{ $debtor->iDebtorPk }}" maxlength="6" name="cDebtorCode" value="{{ $debtor->cDebtorCode }}" required>
           </div>
           <!-- Description -->
           <div class="form-group mb-3">
             <label for="cDebtorDesc{{ $debtor->iDebtorPk }}" class="form-label">DEBTOR DETAILS</label>
-            <input type="text" class="form-control" id="cDebtorDesc{{ $debtor->iDebtorPk }}" name="cDebtorDesc" value="{{ $debtor->cDebtorDesc }}" required>
+            <input type="text" class="form-control" id="cDebtorDesc{{ $debtor->iDebtorPk }}" maxlength="50" name="cDebtorDesc" value="{{ $debtor->cDebtorDesc }}" required>
           </div>
+       
+        <div class="form-group mb-3">
+          @if(Auth::user()->role === 'system admin')
+            <label for="company_id{{ $debtor->iDebtorPk }}" class="form-label">Company</label>
+           
+                <select class="form-control" id="company_id{{ $debtor->iDebtorPk }}" name="company_id" required>
+                    @foreach($companies as $company)
+                        <option value="{{ $company->id }}" {{ $debtor->company_id == $company->id ? 'selected' : '' }}>
+                            {{ $company->description }}
+                        </option>
+                    @endforeach
+                </select>
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+        </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -87,14 +119,14 @@
         <p>{{ $message }}</p>
     </div>
 @endif
-
-<!-- Debtor Records Table -->
-<div class="card-body">
-  <div class="col-lg-6 d-flex">
+<div class="col-lg-6 d-flex">
       <button class="btn btn-success rounded-pill shadow-sm px-4" data-toggle="modal" data-target="#ModalCreate">
       <i class="fas fa-plus-circle"></i> Add Debtor
       </button>
   </div>
+<!-- Debtor Records Table -->
+<div class="card-body">
+  
   
   <table id="example1" class="table table-bordered table-striped">
     <thead>

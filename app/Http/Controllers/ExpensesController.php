@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Company;
+use App\Models\User;
 
 class ExpensesController extends Controller
 {
@@ -22,21 +23,15 @@ class ExpensesController extends Controller
         if ($user->role === 'system admin') {
            
             $expense = Expense::with('company')->get();
+            $companies = Company::all(); // Get all companies
         } else {
            
             $expense = Expense::with('company')->where('company_id', $user->company_id)->get();
+            $companies = []; 
         }
 
        
-        return view('expenses.index', compact('expense'));
-    }
-
-    /**
-     * Show the form for creating a new expense.
-     */
-    public function create()
-    {
-        return view('expenses.create');
+        return view('expenses.index', compact('expense', 'companies'));
     }
 
     /**
@@ -44,9 +39,12 @@ class ExpensesController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+        
         $request->validate([
             'cExpCode' => 'required|max:6|unique:expenses,cExpCode',
             'cExpDesc' => 'required|max:50',
+            'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
 
        
@@ -55,17 +53,14 @@ class ExpensesController extends Controller
         $expense->cExpCode = $request->cExpCode;
         $expense->cExpDesc = $request->cExpDesc;
         $expense->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
+        if ($user->role === 'system admin') {
+            $expense->company_id = $request->company_id;
+        } else {
+            $expense->company_id = $user->company_id;
+        }
         $expense->save();
 
         return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
-    }
-
-    /**
-     * Show the form for editing the specified expense.
-     */
-    public function edit(Expense $expense)
-    {
-        return view('expenses.edit', compact('expense'));
     }
 
     /**
@@ -73,14 +68,20 @@ class ExpensesController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $user = Auth::user();
         $request->validate([
             'cExpCode' => 'required|string|max:6',
             'cExpDesc' => 'required|string|max:50',
+            'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
     
         $expense = Expense::findOrFail($id);
         $expense->cExpCode = $request->cExpCode;
         $expense->cExpDesc = $request->cExpDesc;
+        
+        if ($user->role === 'system admin') {
+            $expense->company_id = $request->company_id;
+        }
         $expense->save();
     
         return redirect()->route('expenses.index')

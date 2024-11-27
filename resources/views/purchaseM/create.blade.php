@@ -74,7 +74,19 @@
                 <label for="cpmasnotes" class="form-label">Notes</label>
                 <input type="text" class="form-control" id="cpmasnotes" name="cpmasnotes" required>
             </div>
-
+            @if(Auth::user()->role === 'system admin')
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">Company</label>
+                    <select class="form-control" id="company_id" name="company_id" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}">{{ $company->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
             <!-- Submit Button -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary me-2">Save Purchase</button>

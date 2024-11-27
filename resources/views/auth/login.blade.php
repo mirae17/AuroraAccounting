@@ -67,7 +67,7 @@
             </form>
         </div>
         <div class="card-footer text-center text-muted" style="border-radius: 0 0 12px 12px;">
-            <small>© {{ date('Y') }} Your Company Name</small>
+            <small>© {{ date('Y') }} Aurora Cloud Work Sdn. Bhd</small>
         </div>
     </div>
 </div>

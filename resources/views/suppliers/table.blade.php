@@ -10,7 +10,8 @@
 
 <div class="row mb-3 align-items-center">
     <div class="col-lg-6">
-        <h2>Suuplier List</h2>
+    <br>
+        <h2>Supplier List</h2>
     </div>
 </div>
 
@@ -30,13 +31,26 @@
             <!-- Code -->
             <div class="form-group mb-3">
                 <label for="iSuppCode" class="form-label">SUPPLIER CODE</label>
-                <input type="text" class="form-control" id="iSuppCode" name="iSuppCode" required>
+                <input type="text" class="form-control" id="iSuppCode" maxlength="6" name="iSuppCode" required>
             </div>
             <!-- Description -->
             <div class="form-group mb-3">
                 <label for="iSuppDesc" class="form-label">SUPPLIER DETAILS</label>
-                <input type="text" class="form-control" id="iSuppDesc" name="iSuppDesc" required>
+                <input type="text" class="form-control" id="iSuppDesc" maxlength="50"  name="iSuppDesc" required>
             </div>
+            @if(Auth::user()->role === 'system admin')
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">Company</label>
+                    <select class="form-control" id="company_id" name="company_id" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}">{{ $company->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -54,13 +68,14 @@
     </div>
 @endif
 
-<!-- Payment Records Table -->
-<div class="card-body">
-
-    <button class="btn btn-success rounded-pill shadow-sm px-4" data-toggle="modal" data-target="#ModalCreate">
+<button class="btn btn-success rounded-pill shadow-sm px-4" data-toggle="modal" data-target="#ModalCreate">
 
         <i class="fas fa-plus-circle"></i> Add Supplier
         </button>
+<!-- Payment Records Table -->
+<div class="card-body">
+
+    
        
     <div id="datatable">
         <table id="example1" class="table table-bordered table-striped">
@@ -116,13 +131,28 @@
                             <!-- Code -->
                             <div class="form-group mb-3">
                                 <label for="iSuppCode" class="form-label">SUPPLIER CODE</label>
-                                <input type="text" class="form-control" name="iSuppCode" value="{{ $supply->iSuppCode }}" required>
+                                <input type="text" class="form-control" name="iSuppCode" maxlength="6" value="{{ $supply->iSuppCode }}" required>
                             </div>
                             <!-- Description -->
                             <div class="form-group mb-3">
                                 <label for="iSuppDesc" class="form-label">SUPPLIER DETAILS</label>
-                                <input type="text" class="form-control" name="iSuppDesc" value="{{ $supply->iSuppDesc }}" required>
+                                <input type="text" class="form-control" name="iSuppDesc" maxlength="50"  value="{{ $supply->iSuppDesc }}" required>
                             </div>
+                            <div class="form-group mb-3">
+                                @if(Auth::user()->role === 'system admin')
+                                    <label for="company_id{{ $supply->iSuppPk }}" class="form-label">Company</label>
+                                
+                                        <select class="form-control" id="company_id{{ $supply->iSuppPk }}" name="company_id" required>
+                                            @foreach($companies as $company)
+                                                <option value="{{ $company->id }}" {{ $supply->company_id == $company->id ? 'selected' : '' }}>
+                                                    {{ $company->description }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    @else
+                                        <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+                                    @endif
+                                </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

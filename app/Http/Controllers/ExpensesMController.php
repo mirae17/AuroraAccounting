@@ -54,13 +54,15 @@ class ExpensesMController extends Controller
             // System admin sees all payment methods and expenses
             $paymentMethods = PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
             $expenses = Expense::all(['iExpPk', 'cExpDesc']);
+            $companies = Company::all(['id', 'description']);
         } else {
             // Regular users only see payment methods and expenses for their company
             $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
             $expenses = Expense::where('company_id', $user->company_id)->get(['iExpPk', 'cExpDesc']);
+            $companies = [];
         }
 
-        return view('expensesM.create', compact('paymentMethods', 'expenses'));
+        return view('expensesM.create', compact('paymentMethods', 'expenses','companies'));
    }
 
  // Store new sale
@@ -73,6 +75,7 @@ class ExpensesMController extends Controller
          'iexmasPymtdfk' => 'required|exists:payments,iPymtdPk',
          'iexmasinvoiceref' => 'required|string|max:150',
          'cexmasnotes' => 'required|string|max:150',  
+         'company_id' => Rule::requiredIf($user->role === 'system admin'),
 
      ]);
  
@@ -84,7 +87,12 @@ class ExpensesMController extends Controller
         $expenseM->yexmaspayment = $request->yexmaspayment;
         $expenseM->iexmasPymtdfk = $request->iexmasPymtdfk;
         $expenseM->cexmasnotes = $request->cexmasnotes;
-        $expenseM->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
+       
+        if (Auth::user()->role === 'system admin') {
+            $expenseM->company_id = $request->company_id; // Admin selects company
+        } else {
+            $expenseM->company_id = Auth::user()->company_id; // Regular user uses their company ID
+        }
         $expenseM->save();
  
    
@@ -104,12 +112,14 @@ class ExpensesMController extends Controller
         if ($user->role === 'system admin') {
             $paymentMethods = PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
             $expenses = Expense::all(['iExpPk', 'cExpDesc']);
+            $companies = Company::all(['id', 'description']);
         } else {
             $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
             $expenses = Expense::where('company_id', $user->company_id)->get(['iExpPk', 'cExpDesc']);
+            $companies = [];
         }
 
-        return view('expensesM.edit', compact('expenseM', 'paymentMethods', 'expenses'));
+        return view('expensesM.edit', compact('expenseM', 'paymentMethods', 'expenses','companies'));
     }
 
 
@@ -135,6 +145,7 @@ class ExpensesMController extends Controller
         'iexmasPymtdfk' => $request->iexmasPymtdfk,
         'iexmasinvoiceref' => $request->iexmasinvoiceref,
         'cexmasnotes' => $request->cexmasnotes, 
+        'company_id' => Auth::user()->role === 'system admin' ? $request->company_id : Auth::user()->company_id,
       ]);
      
        return redirect()->route('expensesM.index')->with('success', 'Expenses record updated successfully.');

@@ -66,6 +66,23 @@
                 <input type="text" class="form-control" id="cpmasnotes" name="cpmasnotes" value="{{ $purchaseM->cpmasnotes }}"  required>
             </div>
 
+            <div class="form-group mb-3">
+            @if(Auth::user()->role === 'system admin')
+                <label for="company_id{{ $purchaseM->ipmaspk }}" class="form-label">Company</label>
+            
+                    <select class="form-control" id="company_id{{ $purchaseM->ipmaspk }}" name="company_id" required>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}" {{  $purchaseM->company_id == $company->id ? 'selected' : '' }}>
+                                {{ $company->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+                @endif
+         </div>
+
+
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Update Sale</button>
             <a href="{{ route('purchaseM.index') }}" class="btn btn-secondary">Back</a>

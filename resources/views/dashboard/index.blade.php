@@ -12,19 +12,35 @@
         <form method="GET" action="{{ route('dashboard.index') }}" class="d-flex align-items-center">
            
                
-
-            <!-- Year Selection -->
-            <div class="p-3 shadow-sm" style="background-color: #f1f1f1; border-radius: 15px; display: flex; align-items: center;">
-                <label for="year" class="mr-2" style="font-weight: bold; font-size: 1.1rem; color: #444;">Select Year:</label>
+        <!-- Year Selection -->
+        <div class="p-3 shadow-sm" style="background-color: #f1f1f1; border-radius: 15px;">
+                <label for="year" style="font-weight: bold; font-size: 1.1rem; color: #444;">Year:</label>
                 <select name="year" id="year" class="form-control" style="width: 120px; border-radius: 8px;">
                     @foreach($years as $yearOption)
-                        <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
+                        <option value="{{ $yearOption }}" {{ $year == $yearOption ? 'selected' : '' }}>
+                            {{ $yearOption }}
+                        </option>
                     @endforeach
                 </select>
-                <button type="submit" class="btn btn-primary ml-3" style="border-radius: 8px; font-weight: bold;">
-                    <i class="fas fa-filter"></i>
-                </button>
             </div>
+            
+            @if (Auth::user()->role === 'system admin')
+           <!-- Company Selection -->
+        <div class="p-3 shadow-sm ml-3" style="background-color: #f1f1f1; border-radius: 15px;">
+            <label for="company_id" style="font-weight: bold; font-size: 1.1rem; color: #444;">Company:</label>
+            <select name="company_id" id="company_id" class="form-control" style="width: 150px; border-radius: 8px;">
+                @foreach($companies as $company)
+                    <option value="{{ $company->id }}" {{ $companyId == $company->id ? 'selected' : '' }}>
+                        {{ $company->description }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+            @endif
+             <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary ml-3" style="border-radius: 8px; font-weight: bold;">
+                <i class="fas fa-filter"></i>
+            </button>
         </form>
     </div>
 
@@ -57,7 +73,7 @@
             </div>
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #fef6f6; border-radius: 10px;">
                 <h6 class="text-muted">Total Debtor</h6>
-                <h3 class="text-danger" style="font-weight: bold;">{{ number_format($totalDebtor)}} </h3>
+                <h3 class="text-danger" style="font-weight: bold;">RM {{ number_format($totalDebtor, 2) }} </h3>
             </div>
             <div class="mb-4 p-4 text-center shadow-sm" style="background-color: #fef6f6; border-radius: 10px;">
                 <h6 class="text-muted">Total Creditor</h6>

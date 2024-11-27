@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('admin/dist/css/adminlte.min.css') }}">
     <!-- Additional Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     
     <!-- Google Font: Source Sans Pro -->
@@ -20,6 +21,13 @@
     <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+    <style>
+    div.dataTables_wrapper div.dataTables_filter input {
+        width: 400px !important;
+        height: 35px !important;
+    }
+</style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
@@ -41,9 +49,9 @@
   <!-- Sidebar -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="{{ route('home') }}" class="brand-link">
-      <img src="{{ asset('admin/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" 
+      <img src="{{ asset('admin/dist/img/logo-aurora.png') }}" alt="AdminLTE Logo" 
         class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">Admin Panel</span>
+      <span class="brand-text font-weight-light">Aurora Ledger</span>
     </a>
 
     <div class="sidebar">
@@ -58,6 +66,25 @@
               <p> Dashboard</p>
             </a>
           </li>
+
+          
+
+           <!-- Manage Users (System Admin Only) -->
+           @if(Auth::user()->role !== 'system admin')
+           <li class="nav-header text-uppercase font-weight-bold" 
+              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
+           
+          </li>
+            <li class="nav-item">
+              <a href="" 
+                class="nav-link ">
+                <i class="fas fa-briefcase"></i>
+                <p>Company Maintenance</p>
+              </a>
+            </li>
+           
+          
+          @endif
 
           <li class="nav-header text-uppercase font-weight-bold" 
               style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
@@ -146,15 +173,25 @@
                 <p>Manage Users</p>
               </a>
             </li>
-            <li class="nav-item">
+           
+          
+          @endif
+          <li class="nav-item">
+              <a href="{{ route('employees.index') }}" 
+                class="nav-link {{ request()->routeIs('employees.index') ? 'active' : '' }} ">
+                <i class="fas fa-user-cog"></i>
+                <p>Manage Employee</p>
+              </a>
+            </li>
+            @if(Auth::user()->role === 'system admin')
+          <li class="nav-item">
               <a href="#" 
                 class="nav-link ">
                 <i class="fas fa-user-lock"></i>
                 <p>Manage Admin</p>
               </a>
             </li>
-          @endif
-
+            @endif
           <!-- Logout -->
           <li class="nav-item">
             <a href="{{ route('logout') }}" class="nav-link" 
@@ -182,9 +219,9 @@
 
   <!-- Footer -->
   <footer class="main-footer">
-    <strong>&copy; 2024 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+    <strong>&copy; 2024 Aurora Cloud Works Sdn. Bhd</a>.</strong> All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.1.0
+      <b>Version</b> 0.0.1
     </div>
   </footer>
 </div>
@@ -194,6 +231,8 @@
 <script src="{{ asset('admin/dist/js/adminlte.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
 <!-- jQuery and Bootstrap JavaScript for modal functionality -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -225,17 +264,10 @@
 <script>
   $(function () {
     $("#example1").DataTable({
-      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "responsive": true, "lengthChange": true, "autoWidth": false,
     }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-    $('#example2').DataTable({
-      "paging": true,
-      "lengthChange": false,
-      "searching": false,
-      "ordering": true,
-      "info": true,
-      "autoWidth": false,
-      "responsive": true,
-    });
+    $('.dataTables_filter input').css('width', '400px');  // Set visual width
+    $('.dataTables_filter input').attr('maxlength', 50); 
   });
 </script>
 </body>

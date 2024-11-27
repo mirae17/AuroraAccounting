@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('expenses_master', function (Blueprint $table) {
-            //
+        Schema::create('employees', function (Blueprint $table) {
+            $table->id('iEmpmasPk');             // Primary Key
+            $table->string('cEmpNo', 6)->default('');
+            $table->string('cEmpName', 50)->default('');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('purchase_master', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('employees');
     }
 };

@@ -10,6 +10,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\PurchaseMController;
 use App\Http\Controllers\ExpensesMController;
 use App\Http\Controllers\DebtorController;
+use App\Http\Controllers\EmployeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,9 @@ Route::get('/sales/pdf', [SalesController::class, 'exportPDF'])->name('sales.pdf
 Route::resource('sales', SalesController::class);
 Route::delete('/sales/{sales}', 'App\Http\Controllers\SalesController@destroy')->name('sales.destroy');
 
+Route::get('/get-debtors/{company_id}', [SalesController::class, 'getDebtors']);
+Route::get('/get-payment-methods/{company_id}', [SalesController::class, 'getPaymentMethods']);
+
 
 //purchase master
 Route::get('/purchaseM/pdf', [PurchaseMController::class, 'exportPDF'])->name('purchaseM.pdf');
@@ -65,6 +69,8 @@ Route::delete('/expensesM/{expensesM}', 'App\Http\Controllers\ExpensesMControlle
 Route::resource('debtor', DebtorController::class);
 Route::delete('/debtor/{debtors}', 'App\Http\Controllers\DebtorController@destroy')->name('debtor.destroy');
 
+Route::resource('employees', EmployeeController::class);
+Route::delete('/employees/{employees}', 'App\Http\Controllers\EmployeeController@destroy')->name('employees.destroy');
 
 //expenses
 Route::resource('expenses', ExpensesController::class);
@@ -78,6 +84,8 @@ Route::delete('/payments/{payments}', 'App\Http\Controllers\PaymentMethodControl
 //suppliers
 Route::resource('suppliers', SupplierController::class);
 Route::delete('/suppliers/{suppliers}', 'App\Http\Controllers\SupplierController@destroy')->name('suppliers.destroy');
+
+
 
 
 

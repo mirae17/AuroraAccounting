@@ -39,6 +39,12 @@ class Sales extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    public function employee()
+{
+    return $this->belongsTo(Employee::class, 'ismasusersfk','iEmpmasPk');
+}
+
+
     protected static function boot()
     {
         parent::boot();

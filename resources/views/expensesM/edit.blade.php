@@ -56,6 +56,22 @@
                 <input type="text" class="form-control" id="cexmasnotes" value="{{  $expenseM->cexmasnotes }}"  name="cexmasnotes" required>
             </div>
 
+            <div class="form-group mb-3">
+            @if(Auth::user()->role === 'system admin')
+                <label for="company_id{{  $expenseM->iexmaspk}}" class="form-label">Company</label>
+            
+                    <select class="form-control" id="company_id{{  $expenseM->iexmaspk}}" name="company_id" required>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}" {{  $expenseM->company_id == $company->id ? 'selected' : '' }}>
+                                {{ $company->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+                @endif
+         </div>
+
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Update Expenses</button>
             <a href="{{ route('expensesM.index') }}" class="btn btn-secondary">Back</a>

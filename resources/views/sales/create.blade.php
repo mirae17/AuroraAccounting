@@ -73,6 +73,20 @@
                 <input type="text" class="form-control" id="ismasusersfk" name="ismasusersfk" required>
             </div>
 
+            @if(Auth::user()->role === 'system admin')
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">Company</label>
+                    <select class="form-control" id="company_id" name="company_id" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}">{{ $company->description }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+
             <!-- Submit Button -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary me-2">Save Sale</button>
@@ -102,6 +116,46 @@
             debtorField.disabled = false; // Enable debtor selection
         }
     }
+
+    // When company is selected, update debtor and payment method
+// When company is selected, update debtor and payment method
+$('#company_id').change(function () {
+    var companyId = $(this).val();
+
+    // Get debtors related to the selected company
+    $.ajax({
+        url: '/get-debtors/' + companyId,  // Correct URL
+        method: 'GET',
+        success: function (data) {
+            // Clear previous options
+            $('#csmasDebtorfk').empty();
+            $('#csmasDebtorfk').append('<option value="">Select Debtor</option>');  // Add placeholder option
+
+            // Add new options
+            data.debtors.forEach(function (debtor) {
+                $('#csmasDebtorfk').append('<option value="' + debtor.id + '">' + debtor.name + '</option>');
+            });
+        }
+    });
+
+    // Get payment methods related to the selected company
+    $.ajax({
+        url: '/get-payment-methods/' + companyId,  // Correct URL
+        method: 'GET',
+        success: function (data) {
+            // Clear previous options
+            $('#ismasPymtdfk').empty();
+            $('#ismasPymtdfk').append('<option value="">Select Payment Method</option>');  // Add placeholder option
+
+            // Add new options
+            data.paymentMethods.forEach(function (paymentMethod) {
+                $('#ismasPymtdfk').append('<option value="' + paymentMethod.id + '">' + paymentMethod.name + '</option>');
+            });
+        }
+    });
+});
+
+
 </script>
 
 

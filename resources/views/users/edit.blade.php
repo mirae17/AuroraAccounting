@@ -60,13 +60,13 @@
 
             <div class="form-group mb-3">
                 <label for="company_code" class="form-label">Company Code:</label>
-                <input type="text" class="form-control" id="company_code" name="company_code" 
+                <input type="text" class="form-control" id="company_code" maxlength="6" name="company_code" 
                     value="{{ $user->company->code ?? '' }}" required>
             </div>
 
             <div class="form-group mb-3">
                 <label for="company_description" class="form-label">Company Description:</label>
-                <input type="text" class="form-control" id="company_description" name="company_description" 
+                <input type="text" class="form-control" id="company_description" maxlength="50" name="company_description" 
                     value="{{ $user->company->description ?? '' }}" required>
             </div>
 

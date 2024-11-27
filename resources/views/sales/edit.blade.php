@@ -61,12 +61,30 @@
             <input type="number" class="form-control" id="ysmaspayment" name="ysmaspayment" value="{{ $sale->ysmaspayment }}" required>
         </div>
 
+            <div class="form-group  mb-3">
+            <label for="ismasusersfk">Salesperson</label>
+            <select id="ismasusersfk" name="ismasusersfk" class="form-control" required>
+                @foreach($employee as $emp)
+                    <option value="{{ $emp->iEmpmasPk }}" {{ $sale->ismasusersfk == $emp->iEmpmasPk ? 'selected' : '' }}>{{ $emp->cEmpName }}</option>
+                @endforeach
+            </select>
+        </div>
 
-         <!-- Salesperson -->
-         <div class="form-group mb-3">
-                <label for="ismausersfk" >Salesperson</label>
-                <input type="text" class="form-control" id="ismausersfk" name="ismausersfk" value="{{ $sale->ismasusersfk }}"  required>
-            </div>
+        <div class="form-group mb-3">
+            @if(Auth::user()->role === 'system admin')
+                <label for="company_id{{ $sale->ismaspk }}" class="form-label">Company</label>
+            
+                    <select class="form-control" id="company_id{{ $sale->ismaspk }}" name="company_id" required>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}" {{  $sale->company_id == $company->id ? 'selected' : '' }}>
+                                {{ $company->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+                @endif
+         </div>
 
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Update Sale</button>

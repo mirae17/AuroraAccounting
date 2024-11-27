@@ -24,14 +24,5 @@ class Debtor extends Model
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($sale) {
-            if (Auth::check()) {
-                $sale->company_id = Auth::user()->company_id;
-            }
-        });
-    }
+   
 }

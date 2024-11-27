@@ -22,61 +22,70 @@ class SupplierController extends Controller
 
         if ($user->role === 'system admin') {
            
-            $suppliers= Supplier::with('company')->get();;
+            $suppliers = Supplier::with('company')->get();
+            $companies = Company::all(); // Get all companies
         } else {
            
-            $suppliers= Supplier::with('company')->where('company_id', $user->company_id)->get();
+            $suppliers = Supplier::with('company')->where('company_id', $user->company_id)->get();
+            $companies = []; 
         }
 
        
 
-        return view('suppliers.index', compact('suppliers'));
-    }
-
-    public function create()
-    {
-        return view('suppliers.create');
+        return view('suppliers.index', compact('suppliers','companies'));
     }
 
     public function store(Request $request)
     {
+        $user = Auth::user();
         $request->validate([
             'iSuppCode' => 'required|string|max:10',
-            'iSuppDesc' => 'required|string|max:100',
+            'iSuppDesc' => 'required|string|max:50',
+            'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
 
         $suppliers= new Supplier();
         $suppliers->iSuppCode = $request->iSuppCode;
         $suppliers->iSuppDesc = $request->iSuppDesc;
-        $suppliers->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
+        if ($user->role === 'system admin') {
+            $suppliers->company_id = $request->company_id;
+        } else {
+            $suppliers->company_id = $user->company_id;
+        }
         $suppliers->save();
 
         return redirect()->route('suppliers.index')
                          ->with('success', 'Supplier added successfully.');
     }
+    
 
-    public function edit(Supplier $suppliers)
-    {
-        return view('suppliers.edit', compact('suppliers'));
+    public function update(Request $request, $id)
+{
+    $user = Auth::user();
+
+    // Validate input
+    $request->validate([
+        'iSuppCode' => 'required|string|max:10',
+        'iSuppDesc' => 'required|string|max:50',
+        'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
+    ]);
+
+    // Fetch the existing supplier by ID
+    $supplier = Supplier::findOrFail($id);
+
+    // Update the supplier details
+    $supplier->iSuppCode = $request->iSuppCode;
+    $supplier->iSuppDesc = $request->iSuppDesc;
+    if ($user->role === 'system admin') {
+        $supplier->company_id = $request->company_id;
     }
+    $supplier->save(); // Save the updated record
 
-    public function update(Request $request, $iSuppPk)
-    {
-        $request->validate([
-            'iSuppCode' => 'required|string|max:10',
-            'iSuppDesc' => 'required|string|max:100',
-        ]);
+    // Redirect with success message
+    return redirect()->route('suppliers.index')
+                     ->with('success', 'Supplier updated successfully.');
+}
 
-        
-        $suppliers= new Supplier();
-        $suppliers->iSuppCode = $request->iSuppCode;
-        $suppliers->iSuppDesc = $request->iSuppDesc;
-        $suppliers->company_id = Auth::user()->company_id; // Set the user_id based on the authenticated user
-        $suppliers->save();
-
-        return redirect()->route('suppliers.index')
-                         ->with('success', 'Supplier updated successfully.');
-    }
     
   
 
