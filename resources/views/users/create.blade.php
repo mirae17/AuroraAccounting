@@ -85,23 +85,23 @@
 
             <div class="form-group mb-3">
                 <label for="name" class="form-label">User Name:</label>
-                <input type="text" class="form-control" id="name" name="name" required>
+                <input type="text" class="form-control" id="name" maxlength="255" name="name" required>
             </div>
             <div class="form-group mb-3">
                 <label for="email" class="form-label">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" maxlength="255" name="email" required>
             </div>
             <div class="form-group mb-3">
                 <label for="role" class="form-label">Role:</label>
-                <input type="text" class="form-control" id="role" name="role" required>
+                <input type="text" class="form-control" id="role" maxlength="255" name="role" required>
             </div>
             <div class="form-group mb-3">
                 <label for="password" class="form-label">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="password" name="password" minlength="8" required>
             </div>
             <div class="form-group mb-3">
                 <label for="password_confirmation" class="form-label">Confirm Password:</label>
-                <input type="password" class="form-control" id="confirm-password" name="password_confirmation" required>
+                <input type="password" class="form-control" id="confirm-password" minlength="8" name="password_confirmation" required>
                 <small id="passwordError" class="text-danger" style="display: none;">Passwords do not match.</small>
             </div>
             <button type="button" class="btn btn-success" id="submitUserForm">Add User</button>

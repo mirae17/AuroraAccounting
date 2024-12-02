@@ -81,7 +81,7 @@ class PurchaseMController extends Controller
           'ypmaspayment' => 'required|numeric',
           'ypmasdeposit' => 'required|numeric',
           'ipmasPymtdfk' => 'required|exists:payments,iPymtdPk',
-          'ipmasinvoiceref' => 'required|string|max:150',
+          'ipmasinvoiceref' => 'required|string|max:50',
           'cpmasnotes' => 'required|string|max:150',
          'company_id' => Rule::requiredIf($user->role === 'system admin'),
       ]);
@@ -141,7 +141,7 @@ class PurchaseMController extends Controller
             'ypmaspayment' => 'required|numeric',
             'ypmasdeposit' => 'required|numeric',
             'ipmasPymtdfk' => 'required|exists:payments,iPymtdPk',
-            'ipmasinvoiceref' => 'required|string|max:150',
+            'ipmasinvoiceref' => 'required|string|max:50',
             'cpmasnotes' => 'required|string|max:150',
         ]);
     

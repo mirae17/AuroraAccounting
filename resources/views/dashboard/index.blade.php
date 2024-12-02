@@ -24,19 +24,7 @@
                 </select>
             </div>
             
-            @if (Auth::user()->role === 'system admin')
-           <!-- Company Selection -->
-        <div class="p-3 shadow-sm ml-3" style="background-color: #f1f1f1; border-radius: 15px;">
-            <label for="company_id" style="font-weight: bold; font-size: 1.1rem; color: #444;">Company:</label>
-            <select name="company_id" id="company_id" class="form-control" style="width: 150px; border-radius: 8px;">
-                @foreach($companies as $company)
-                    <option value="{{ $company->id }}" {{ $companyId == $company->id ? 'selected' : '' }}>
-                        {{ $company->description }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-            @endif
+        
              <!-- Submit Button -->
             <button type="submit" class="btn btn-primary ml-3" style="border-radius: 8px; font-weight: bold;">
                 <i class="fas fa-filter"></i>

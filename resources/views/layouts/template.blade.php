@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Aurora Accounting</title>
+  <title>Aurora Ledger</title>
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
@@ -48,7 +48,7 @@
 
   <!-- Sidebar -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="{{ route('home') }}" class="brand-link">
+    <a href="{{ route('dashboard.index') }}" class="brand-link">
       <img src="{{ asset('admin/dist/img/logo-aurora.png') }}" alt="AdminLTE Logo" 
         class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">Aurora Ledger</span>
@@ -65,10 +65,22 @@
               <i class="fas fa-home"></i>
               <p> Dashboard</p>
             </a>
+
           </li>
 
+          <li class="nav-header text-uppercase font-weight-bold" 
+              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
+           
+          </li>
           
-
+          <!-- Customer Database-->
+          <li class="nav-item">
+            <a href="#" 
+              class="nav-link">
+              <i class="fas fa-address-book"></i>
+              <p> Customer Database</p>
+            </a>
+          </li>
            <!-- Manage Users (System Admin Only) -->
            @if(Auth::user()->role !== 'system admin')
            <li class="nav-header text-uppercase font-weight-bold" 
@@ -79,7 +91,7 @@
               <a href="" 
                 class="nav-link ">
                 <i class="fas fa-briefcase"></i>
-                <p>Company Maintenance</p>
+                <p> Company Maintenance</p>
               </a>
             </li>
            
@@ -126,8 +138,18 @@
             <p> Debtor Code</p>
           </a>
         </li>
-        <li class="nav-header text-uppercase font-weight-bold" 
-              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
+
+        <!-- Invoice Code -->
+        <li class="nav-item">
+          <a href="{{ route('inventory.index') }}" 
+            class="nav-link {{ request()->routeIs('inventory.index') ? 'active' : '' }}">
+            <i class="fas fa-boxes"></i>
+            <p> Inventory Code</p>
+          </a>
+        </li>
+
+
+        <li class="nav-header text-uppercase font-weight-bold"  style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
            
           </li>
           <!-- Sales -->
@@ -135,7 +157,7 @@
             <a href="{{ route('sales.index') }}" 
               class="nav-link {{ request()->routeIs('sales.index') ? 'active' : '' }}">
               <i class="fas fa-chart-line"></i>
-              <p>Sales</p>
+              <p> Sales</p>
             </a>
           </li>
 
@@ -144,7 +166,7 @@
             <a href="{{ route('purchaseM.index') }}" 
               class="nav-link {{ request()->routeIs('purchaseM.index') ? 'active' : '' }}">
               <i class="fas fa-shopping-bag "></i>
-              <p>Purchase</p>
+              <p> Purchase</p>
             </a>
           </li>
 
@@ -153,7 +175,7 @@
             <a href="{{ route('expensesM.index') }}" 
               class="nav-link {{ request()->routeIs('expensesM.index') ? 'active' : '' }}">
               <i class="fas fa-receipt"></i>
-              <p>Expenses</p>
+              <p> Expenses</p>
             </a>
           </li>
 
@@ -170,7 +192,7 @@
               <a href="{{ route('users.index') }}" 
                 class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
                 <i class="fas fa-user-shield"></i>
-                <p>Manage Users</p>
+                <p> Manage Users</p>
               </a>
             </li>
            
@@ -180,7 +202,7 @@
               <a href="{{ route('employees.index') }}" 
                 class="nav-link {{ request()->routeIs('employees.index') ? 'active' : '' }} ">
                 <i class="fas fa-user-cog"></i>
-                <p>Manage Employee</p>
+                <p> Manage Employee</p>
               </a>
             </li>
             @if(Auth::user()->role === 'system admin')
@@ -188,7 +210,7 @@
               <a href="#" 
                 class="nav-link ">
                 <i class="fas fa-user-lock"></i>
-                <p>Manage Admin</p>
+                <p> Manage Admin</p>
               </a>
             </li>
             @endif
@@ -197,7 +219,7 @@
             <a href="{{ route('logout') }}" class="nav-link" 
               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
               <i class="fas fa-power-off"></i>
-              <p>Logout</p>
+              <p> Logout</p>
             </a>
             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
               @csrf

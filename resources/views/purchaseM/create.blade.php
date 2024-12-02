@@ -9,6 +9,25 @@
         <form action="{{ route('purchaseM.store') }}" method="POST">
             @csrf
 
+            @if(Auth::user()->role === 'system admin')
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">Company</label>
+                    <select class="form-control" id="company_id" name="company_id" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option 
+                                value="{{ $company->id }}" 
+                                data-payment-methods='@json($company->payments)' 
+                                data-suppliers='@json($company->suppliers)'>
+                                {{ $company->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @else
+            <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+
             <!-- Date -->
             <div class="form-group mb-3">
                 <label for="dpmasdate" class="form-label">Date</label>
@@ -18,7 +37,7 @@
              <!-- Invoice Reference -->
              <div class="form-group mb-3">
                 <label for="ipmasinvoiceref" class="form-label">Invoice Reference</label>
-                <input type="text" class="form-control" id="ipmasinvoiceref" name="ipmasinvoiceref" required>
+                <input type="text" class="form-control" id="ipmasinvoiceref" maxlength="50" name="ipmasinvoiceref" required>
             </div>
 
                <!-- Supplier -->
@@ -35,7 +54,7 @@
             <!-- Description -->
             <div class="form-group mb-3">
                 <label for="cpmascodeprod" class="form-label">Product Code</label>
-                <input type="text" class="form-control" id="cpmascodeprod" name="cpmascodeprod" required>
+                <input type="text" class="form-control" id="cpmascodeprod" maxlength="50" name="cpmascodeprod" required>
             </div>
 
             <!-- Total Payment -->
@@ -72,21 +91,9 @@
             <!-- Notes -->
             <div class="form-group mb-3">
                 <label for="cpmasnotes" class="form-label">Notes</label>
-                <input type="text" class="form-control" id="cpmasnotes" name="cpmasnotes" required>
+                <input type="text" class="form-control" id="cpmasnotes" maxlength="150" name="cpmasnotes" required>
             </div>
-            @if(Auth::user()->role === 'system admin')
-                <div class="form-group mb-3">
-                    <label for="company_id" class="form-label">Company</label>
-                    <select class="form-control" id="company_id" name="company_id" required>
-                        <option value="">Select Company</option>
-                        @foreach($companies as $company)
-                            <option value="{{ $company->id }}">{{ $company->description }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            @else
-                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
-            @endif
+            
             <!-- Submit Button -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary me-2">Save Purchase</button>
@@ -113,6 +120,25 @@
             caraJualan.value = 'Credit';
         }
     }
+    
+    document.getElementById('company_id')?.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        
+        const paymentMethods = JSON.parse(selectedOption.getAttribute('data-payment-methods')) || [];
+        const suppliers = JSON.parse(selectedOption.getAttribute('data-suppliers')) || [];
+
+        const paymentMethodSelect = document.getElementById('ipmasPymtdfk');
+        paymentMethodSelect.innerHTML = '<option value="">Select Payment Method</option>';
+        paymentMethods.forEach(method => {
+            paymentMethodSelect.innerHTML += `<option value="${method.iPymtdPk}">${method.cPymtdDesc}</option>`;
+        });
+
+        const suppSelect = document.getElementById('ipmasSuppfk');
+        suppSelect.innerHTML = '<option value="">Select Supplier</option>';
+        suppliers.forEach(supp => {
+            suppSelect.innerHTML += `<option value="${supp.iSuppPk}">${supp.iSuppDesc}</option>`;
+        });
+    });
 </script>
 
 <style>

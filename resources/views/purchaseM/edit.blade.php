@@ -1,3 +1,4 @@
+
 @extends('layouts.template')
 
 @section('content')
@@ -8,6 +9,27 @@
     <form action="{{ route('purchaseM.update', $purchaseM->ipmaspk) }}" method="POST">
         @csrf
         @method('PUT')
+
+        @if(Auth::user()->role === 'system admin')
+                <!-- Company Dropdown -->
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">Company</label>
+                    <select class="form-control" id="company_id" name="company_id" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}" 
+                                data-payment-methods='@json($company->payments)'
+                                data-expenses='@json($company->expenses)'
+                                {{ $purchaseM->company_id == $company->id ? 'selected' : '' }}>
+                                {{ $company->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @else
+            <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+
         <div class="form-group mb-3">
             <label for="dpmasdate">Date</label>
             <input type="date" class="form-control" id="dpmasdate" name="dpmasdate" value="{{ $purchaseM->dpmasdate }}" required>
@@ -66,22 +88,7 @@
                 <input type="text" class="form-control" id="cpmasnotes" name="cpmasnotes" value="{{ $purchaseM->cpmasnotes }}"  required>
             </div>
 
-            <div class="form-group mb-3">
-            @if(Auth::user()->role === 'system admin')
-                <label for="company_id{{ $purchaseM->ipmaspk }}" class="form-label">Company</label>
             
-                    <select class="form-control" id="company_id{{ $purchaseM->ipmaspk }}" name="company_id" required>
-                        @foreach($companies as $company)
-                            <option value="{{ $company->id }}" {{  $purchaseM->company_id == $company->id ? 'selected' : '' }}>
-                                {{ $company->description }}
-                            </option>
-                        @endforeach
-                    </select>
-                @else
-                    <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
-                @endif
-         </div>
-
 
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Update Sale</button>
@@ -108,6 +115,27 @@
             caraJualan.value = 'Credit';
         }
     }
+
+    document.getElementById('company_id')?.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        
+        const paymentMethods = JSON.parse(selectedOption.getAttribute('data-payment-methods')) || [];
+        const expenses = JSON.parse(selectedOption.getAttribute('data-expenses')) || [];
+
+        // Update Payment Methods
+        const paymentMethodSelect = document.getElementById('iexmasPymtdfk');
+        paymentMethodSelect.innerHTML = '<option value="">Select Payment Method</option>';
+        paymentMethods.forEach(method => {
+            paymentMethodSelect.innerHTML += `<option value="${method.iPymtdPk}">${method.cPymtdDesc}</option>`;
+        });
+
+        // Update Descriptions
+        const descSelect = document.getElementById('cexmasExpfk');
+        descSelect.innerHTML = '<option value="">Select Description</option>';
+        expenses.forEach(desc => {
+            descSelect.innerHTML += `<option value="${desc.iExpPk}">${desc.cExpDesc}</option>`;
+        });
+    });
 </script>
 
 @endsection

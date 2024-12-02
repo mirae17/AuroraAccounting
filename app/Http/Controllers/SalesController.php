@@ -27,15 +27,7 @@ class SalesController extends Controller
     {
         $user = Auth::user(); // Get the authenticated user
         $selectedYear = session('selected_year', date('Y'));
-        $selectedCompanyId = session('selected_company_id', null);
-
-        // Fetch the selected company details
-        $selectedCompany = $selectedCompanyId ? Company::find($selectedCompanyId) : null;
-
-        // Pass the description or a default value if no company is selected
-        $selectedCompanyDescription = $selectedCompany ? $selectedCompany->description : 'All Companies';
             
-        
     
         // System Admin can view all sales; others only see their company's sales
         $query = Sales::with(['paymentMethod' => function($query) {
@@ -43,17 +35,11 @@ class SalesController extends Controller
             }, 'debtor' => function($query) {
                 $query->select('iDebtorPk', 'cDebtorCode', 'cDebtorDesc');
             },
-            'employee' => function($query) {
-                $query->select('iEmpmasPk', 'cEmpNo', 'cEmpName');
-            },
+            
             'company'
             ])
             ->whereYear('dsmasdate', $selectedYear);
-            // Apply company filter if a company is selected
-            if ($selectedCompanyId) {
-                $query->where('company_id', $selectedCompanyId);
-            }
-    
+         
         if ($user->role !== 'system admin') {
             $query->where('company_id', $user->company_id); 
             $companies = []; // Filter by company for regular users
@@ -62,36 +48,27 @@ class SalesController extends Controller
         $sales = $query->get(); // Execute the query
         $totalSales = $query->sum('ysmasdeposit'); // Calculate the total sales for the selected year
     
-        return view('sales.index', compact('sales', 'totalSales', 'selectedYear','selectedCompanyDescription'));
+        return view('sales.index', compact('sales', 'totalSales', 'selectedYear'));
     }
 
     // Show form to add a new sale
     public function create()
     {
         $user = Auth::user();
-        $selectedCompanyId = session('selected_company_id', null);
 
         if ($user->role === 'system admin') {
-            $paymentMethods = $selectedCompanyId
-                ? PaymentMethod::where('company_id', $selectedCompanyId)->get(['iPymtdPk', 'cPymtdDesc'])
-                : PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
-            $debtor = $selectedCompanyId
-                ? Debtor::where('company_id', $selectedCompanyId)->get(['iDebtorPk', 'cDebtorDesc'])
-                : Debtor::all(['iDebtorPk', 'cDebtorDesc']);
-            $employee = $selectedCompanyId
-                ? Employee::where('company_id', $selectedCompanyId)->get(['iEmpmasPk', 'cEmpName'])
-                : Employee::all(['iEmpmasPk', 'cEmpName']);
-            $companies = $selectedCompanyId
-                ? Company::where('id', $selectedCompanyId)->get(['id', 'description']) // Fetch only the selected company
-                : [];
+            $paymentMethods = PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
+            $debtors = Debtor::all(['iDebtorPk', 'cDebtorDesc']);
+            $employee = Employee::all(['iEmpmasPk', 'cEmpName']);
+            $companies = Company::all(['id', 'description']); // Fetch all companies
         } else {
             $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
-            $debtor = Debtor::where('company_id', $user->company_id)->get(['iDebtorPk', 'cDebtorDesc']);
+            $debtors = Debtor::where('company_id', $user->company_id)->get(['iDebtorPk', 'cDebtorDesc']);
             $employee = Employee::where('company_id', $user->company_id)->get(['iEmpmasPk', 'cEmpName']);
-            $companies = []; // No company selection for regular users
+            $companies = [];
         }
 
-        return view('sales.create', compact('paymentMethods', 'debtor', 'employee', 'companies'));
+        return view('sales.create', compact('paymentMethods', 'debtors','employee' ,'companies'));
     }
 
 
@@ -107,9 +84,10 @@ class SalesController extends Controller
         'ysmasdeposit' => 'required|numeric',
         'ismasPymtdfk' => 'required|exists:payments,iPymtdPk',
         'ysmaspayment' => 'required|numeric',
+        'ismasinvoiceref' => 'required|string|max:50',
         'ismasusersfk' => 'required|exists:employees,iEmpmasPk',
-        'csmasDebtorfk' => 'nullable|exists:debtors,iDebtorPk',
-        'company_id' => Rule::requiredIf($user->role === 'system admin') ,// Require company_id only for System Admin
+        'csmasDebtorfk' => 'nullable|exists:debtor,iDebtorPk',
+        'company_id' => Rule::requiredIf($user->role === 'system admin'),
     ]);
 
     $caraJualan = $request->ysmasdeposit == $request->ysmaspayment ? 'Cash' : 'Credit';
@@ -121,13 +99,15 @@ class SalesController extends Controller
     $sale->ysmasdeposit = $request->ysmasdeposit;
     $sale->ismasPymtdfk = $request->ismasPymtdfk;
     $sale->cara_jualan = $caraJualan;
+    $sale->ismasinvoiceref =$request->ismasinvoiceref;
     $sale->csmasDebtorfk = $caraJualan === 'Cash' ? null : $request->csmasDebtorfk;
+    $sale->ysmaspayment= $request->ysmaspayment;
     $sale->ismasusersfk = $request->ismasusersfk;
     if (Auth::user()->role === 'system admin') {
         $sale->company_id = $request->company_id; // Admin selects company
     } else {
         $sale->company_id = Auth::user()->company_id; // Regular user uses their company ID
-    }
+    } 
     $sale->save();
 
     return redirect()->route('sales.index')->with('success', 'Sale record added successfully.');
@@ -138,21 +118,21 @@ class SalesController extends Controller
     {
         $user = Auth::user();
         $sale = Sales::findOrFail($sale);
-        $selectedCompanyId = $sale->company_id; // Get the company associated with the sale
+       
 
         if ($user->role === 'system admin') {
-            $paymentMethods = PaymentMethod::where('company_id', $selectedCompanyId)->get(['iPymtdPk', 'cPymtdDesc']);
-            $debtor = Debtor::where('company_id', $selectedCompanyId)->get(['iDebtorPk', 'cDebtorDesc']);
+            $paymentMethods = PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
+            $debtors = Debtor::all(['iDebtorPk', 'cDebtorDesc']);
             $employee = Employee::where('company_id', $selectedCompanyId)->get(['iEmpmasPk', 'cEmpName']);
-            $companies = Company::where('id', $selectedCompanyId)->get(['id', 'description']); // Fetch only the selected company
+            $companies = Company::all(['id', 'description']); // Fetch all companies
         } else {
             $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
-            $debtor = Debtor::where('company_id', $user->company_id)->get(['iDebtorPk', 'cDebtorDesc']);
+            $debtors = Debtor::where('company_id', $user->company_id)->get(['iDebtorPk', 'cDebtorDesc']);
             $employee = Employee::where('company_id', $user->company_id)->get(['iEmpmasPk', 'cEmpName']);
             $companies = []; // No company selection for regular users
         }
 
-        return view('sales.edit', compact('sale', 'paymentMethods', 'debtor', 'employee', 'companies'));
+        return view('sales.edit', compact('sale', 'paymentMethods', 'debtors','employee', 'companies'));
     }
 
     public function update(Request $request, $sale)
@@ -160,14 +140,17 @@ class SalesController extends Controller
         $caraJualan = $request->ysmasdeposit == $request->ysmaspayment ? 'Cash' : 'Credit';
 
         $request->validate([
+            
             'dsmasdate' => 'required|date',
             'csmasdesc' => 'required|string|max:150',
             'ysmasdeposit' => 'required|numeric',
-            'ysmaspayment' => 'required|numeric',
             'ismasPymtdfk' => 'required|exists:payments,iPymtdPk',
-            'csmasDebtorfk' => $caraJualan === 'Credit' ? 'required|exists:debtor,iDebtorPk' : 'nullable',
-            'ismasusersfk'=> 'required|exists:employees,iEmpmasPk',
-            
+            'ysmaspayment' => 'required|numeric',
+            'ismasinvoiceref' => 'required|string|max:50',
+            'ismasusersfk' => 'required|string|max:150',
+            'csmasDebtorfk' => 'nullable|exists:debtor,iDebtorPk',
+            'company_id' => Rule::requiredIf($user->role === 'system admin') ,// Require company_id only for System Admin
+ 
         ]);
 
         $sale = Sales::findOrFail($sale);

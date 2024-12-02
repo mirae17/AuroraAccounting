@@ -8,6 +8,26 @@
 
         <form action="{{ route('expensesM.store') }}" method="POST">
             @csrf
+            
+            @if(Auth::user()->role === 'system admin')
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">Company</label>
+                    <select class="form-control" id="company_id" name="company_id" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option 
+                                value="{{ $company->id }}" 
+                                data-payment-methods='@json($company->payments)' 
+                                data-expenses='@json($company->expenses)'>
+                                {{ $company->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @else
+            <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+
 
             <!-- Date -->
             <div class="form-group mb-3">
@@ -18,7 +38,7 @@
               <!-- Invoice Reference -->
               <div class="form-group mb-3">
                 <label for="iexmasinvoiceref" class="form-label">Invoice Reference</label>
-                <input type="text" class="form-control" id="iexmasinvoiceref" name="iexmasinvoiceref" required>
+                <input type="text" class="form-control" id="iexmasinvoiceref" maxlength="50" name="iexmasinvoiceref" required>
             </div>
 
              <!-- Description -->
@@ -52,23 +72,11 @@
             <!-- Notes-->
             <div class="form-group mb-3">
                 <label for="cexmasnotes" class="form-label">Notes</label>
-                <input type="text" class="form-control" id="cexmasnotes" name="cexmasnotes" required>
+                <input type="text" class="form-control" id="cexmasnotes" maxlength="150" name="cexmasnotes" required>
             </div>
 
-            @if(Auth::user()->role === 'system admin')
-                <div class="form-group mb-3">
-                    <label for="company_id" class="form-label">Company</label>
-                    <select class="form-control" id="company_id" name="company_id" required>
-                        <option value="">Select Company</option>
-                        @foreach($companies as $company)
-                            <option value="{{ $company->id }}">{{ $company->description }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            @else
-                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
-            @endif
-
+    
+                
             <!-- Submit Button -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary me-2">Save Expenses</button>
@@ -77,7 +85,26 @@
         </form>
     </div>
 </div>
+<script>
+ document.getElementById('company_id')?.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        
+        const paymentMethods = JSON.parse(selectedOption.getAttribute('data-payment-methods')) || [];
+        const expenses = JSON.parse(selectedOption.getAttribute('data-expenses')) || [];
 
+        const paymentMethodSelect = document.getElementById('iexmasPymtdfk');
+        paymentMethodSelect.innerHTML = '<option value="">Select Payment Method</option>';
+        paymentMethods.forEach(method => {
+            paymentMethodSelect.innerHTML += `<option value="${method.iPymtdPk}">${method.cPymtdDesc}</option>`;
+        });
+
+        const descSelect = document.getElementById('cexmasExpfk');
+        descSelect.innerHTML = '<option value="">Select Description</option>';
+        expenses.forEach(desc => {
+            descSelect.innerHTML += `<option value="${desc.iExpPk}">${desc.cExpDesc}</option>`;
+        });
+    });
+</script>
 
 
 <style>

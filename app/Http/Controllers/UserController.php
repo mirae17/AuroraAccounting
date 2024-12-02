@@ -76,7 +76,7 @@ class UserController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $id,
-                'role' => 'required|string',
+                'role' => 'required|string|max:255',
                 'password' => 'nullable|string|min:8',
                 'company_code' => 'required|string|max:255',
                 'company_description' => 'required|string|max:255',

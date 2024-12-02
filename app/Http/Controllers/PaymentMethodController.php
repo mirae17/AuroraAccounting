@@ -17,37 +17,37 @@ class PaymentMethodController extends Controller
     }
     
     public function index(Request $request)
-{
-    $user = Auth::user();
-    $selectedCompanyId = session('selected_company_id', null);
+    {
+        $user = Auth::user();
+        $selectedCompanyId = session('selected_company_id', null);
 
-    // Fetch the selected company details
-    $selectedCompany = $selectedCompanyId ? Company::find($selectedCompanyId) : null;
+        // Fetch the selected company details
+        $selectedCompany = $selectedCompanyId ? Company::find($selectedCompanyId) : null;
 
-    // Pass the description or a default value if no company is selected
-    $selectedCompanyDescription = $selectedCompany ? $selectedCompany->description : 'All Companies';
+        // Pass the description or a default value if no company is selected
+        $selectedCompanyDescription = $selectedCompany ? $selectedCompany->description : 'All Companies';
 
-    if ($user->role === 'system admin') {
-        if ($selectedCompanyId) {
-            // Filter payment methods by the selected company for system admin
-            $paymentMethods = PaymentMethod::with('company')
-                ->where('company_id', $selectedCompanyId)
-                ->get();
+        if ($user->role === 'system admin') {
+            if ($selectedCompanyId) {
+                // Filter payment methods by the selected company for system admin
+                $paymentMethods = PaymentMethod::with('company')
+                    ->where('company_id', $selectedCompanyId)
+                    ->get();
+            } else {
+                // If no company is selected, show all payment methods
+                $paymentMethods = PaymentMethod::with('company')->get();
+            }
+            $companies = Company::all(); // Fetch all companies for selection
         } else {
-            // If no company is selected, show all payment methods
-            $paymentMethods = PaymentMethod::with('company')->get();
+            // For regular users, filter by their company
+            $paymentMethods = PaymentMethod::with('company')
+                ->where('company_id', $user->company_id)
+                ->get();
+            $companies = []; // Regular users don't need to select a company
         }
-        $companies = Company::all(); // Fetch all companies for selection
-    } else {
-        // For regular users, filter by their company
-        $paymentMethods = PaymentMethod::with('company')
-            ->where('company_id', $user->company_id)
-            ->get();
-        $companies = []; // Regular users don't need to select a company
-    }
 
-    return view('payments.index', compact('paymentMethods', 'companies', 'selectedCompany','selectedCompanyDescription'));
-}
+        return view('payments.index', compact('paymentMethods', 'companies', 'selectedCompany','selectedCompanyDescription'));
+    }
 
 
     public function store(Request $request)
@@ -101,27 +101,33 @@ class PaymentMethodController extends Controller
     }
 
     public function destroy($iPymtdPk)
-    {
-        
-            try {
-                $paymentMethod = PaymentMethod::findOrFail($iPymtdPk);
-                $paymentMethod->delete();
-        
-                return redirect()->route('payments.index')
-                                 ->with('success', 'Payment method deleted successfully.');
-            } catch (QueryException $e) {
-                // Check if the error is a foreign key constraint violation
-                if ($e->getCode() === '23000') { // Code for constraint violation
-                    return redirect()->route('payments.index')
-                                     ->with('error', 'This payment method is in use in Sales, Purchases, or Expenses and cannot be deleted.');
-                }
-        
-                // If it's another type of error, rethrow it or handle it accordingly
-                throw $e;
-            }
-        
+{
+    try {
+        $paymentMethod = PaymentMethod::findOrFail($iPymtdPk);
+        $paymentMethod->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Payment method deleted successfully.'
+        ]);
+    } catch (QueryException $e) {
+        if ($e->getCode() === '23000') {
+            // Foreign key constraint violation
+            return response()->json([
+                'success' => false,
+                'message' => 'This payment method is in use in Sales, Purchases, or Expenses and cannot be deleted.'
+            ]);
+        }
+
+        // Other types of exceptions
+        return response()->json([
+            'success' => false,
+            'message' => 'An unexpected error occurred. Please try again later.'
+        ]);
+    }
+}
+
 
 
                          
     }
-}

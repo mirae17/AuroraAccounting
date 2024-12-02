@@ -44,7 +44,7 @@
 <body>
 <div class="row mb-3 align-items-center">
     <div class="col-lg-6">
-        <h2>Sales Records ({{ $selectedCompanyDescription}})</h2>
+        <h2>Sales Records </h2>
     </div>
 
 

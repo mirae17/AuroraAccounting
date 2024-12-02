@@ -23,6 +23,7 @@ class Sales extends Model
         'ysmaspayment', 
         'ismasusersfk',
         'csmasDebtorfk',
+        'company_id',
     ];
 
     public function paymentMethod()

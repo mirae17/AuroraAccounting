@@ -9,16 +9,35 @@
         <form action="{{ route('sales.store') }}" method="POST">
             @csrf
 
+            @if(Auth::user()->role === 'system admin')
+                <div class="form-group mb-3">
+                    <label for="company_id" class="form-label">Company</label>
+                    <select class="form-control" id="company_id" name="company_id" required>
+                        <option value="">Select Company</option>
+                        @foreach($companies as $company)
+                            <option 
+                                value="{{ $company->id }}" 
+                                data-payment-methods='@json($company->payments)' 
+                                data-debtors='@json($company->debtors)'>
+                                {{ $company->description }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @else
+            <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @endif
+
             <!-- Date -->
             <div class="form-group mb-3">
                 <label for="dsmasdate" class="form-label">Date</label>
-                <input type="date" class="form-control" id="dsmasdate" name="dsmasdate" required>
+                <input type="date" class="form-control" id="dsmasdate"  name="dsmasdate" required>
             </div>
 
             <!-- Description -->
             <div class="form-group mb-3">
                 <label for="csmasdesc" class="form-label">Description</label>
-                <input type="text" class="form-control" id="csmasdesc" name="csmasdesc" required>
+                <input type="text" class="form-control" id="csmasdesc" maxlength="150" name="csmasdesc" required>
             </div>
 
             <!-- Deposit -->
@@ -27,24 +46,22 @@
                 <input type="number" step="0.01" class="form-control" id="ysmasdeposit" name="ysmasdeposit" required>
             </div>
 
-            <!-- Payment Method -->
             <div class="form-group mb-3">
                 <label for="ismasPymtdfk" class="form-label">Payment Method</label>
                 <select id="ismasPymtdfk" name="ismasPymtdfk" class="form-select" required>
-                <option value="">Select Payment Method</option>
+                    <option value="">Select Payment Method</option>
                     @foreach($paymentMethods as $method)
-                        <option value="{{ $method->iPymtdPk}}">{{ $method->cPymtdDesc }}</option>
+                        <option value="{{ $method->iPymtdPk }}">{{ $method->cPymtdDesc }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <!-- Kod Penghutang -->
-            <div class="form-group mb-3">
+             <div class="form-group mb-3">
                 <label for="csmasDebtorfk" class="form-label">Debtor Code</label>
                 <select id="csmasDebtorfk" name="csmasDebtorfk" class="form-select" required>
-                <option value="">Select Penghutang</option>
-                    @foreach($debtor as $debt)
-                        <option value="{{ $debt->iDebtorPk }}">{{ $debt->cDebtorCode }} - {{ $debt->cDebtorDesc }} </option>
+                    <option value="">Select Debtor</option>
+                    @foreach($debtors as $debtor)
+                        <option value="{{ $debtor->iDebtorPk }}">{{ $debtor->cDebtorCode }} - {{ $debtor->cDebtorDesc }}</option>
                     @endforeach
                 </select>
             </div>
@@ -52,7 +69,7 @@
             <!-- Invoice Reference -->
             <div class="form-group mb-3">
                 <label for="ismasinvoiceref" class="form-label">Invoice Reference</label>
-                <input type="text" class="form-control" id="ismasinvoiceref" name="ismasinvoiceref" required>
+                <input type="text" class="form-control" id="ismasinvoiceref" maxlength="50" name="ismasinvoiceref" required>
             </div>
 
             <!-- Cara Jualan (Auto-detected) -->
@@ -67,26 +84,16 @@
                 <input type="number" step="0.01" class="form-control" id="ysmaspayment" name="ysmaspayment" required>
             </div>
 
-            <!-- Salesperson -->
-            <div class="form-group mb-3">
-                <label for="ismasusersfk" class="form-label">Salesperson</label>
-                <input type="text" class="form-control" id="ismasusersfk" name="ismasusersfk" required>
+            <div class="form-group  mb-3">
+            <label for="ismasusersfk">Salesperson</label>
+            <select id="ismasusersfk" name="ismasusersfk" class="form-control" required>
+            <option value="">Select Salesperson</option>
+                @foreach($employee as $emp)
+                    <option value="{{ $emp->iEmpmasPk }}" {{ $emp->ismasusersfk == $emp->iEmpmasPk ? 'selected' : '' }}>{{ $emp->cEmpName }}</option>
+                @endforeach
+            </select>
             </div>
-
-            @if(Auth::user()->role === 'system admin')
-                <div class="form-group mb-3">
-                    <label for="company_id" class="form-label">Company</label>
-                    <select class="form-control" id="company_id" name="company_id" required>
-                        <option value="">Select Company</option>
-                        @foreach($companies as $company)
-                            <option value="{{ $company->id }}">{{ $company->description }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            @else
-                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
-            @endif
-
+           
             <!-- Submit Button -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary me-2">Save Sale</button>
@@ -117,43 +124,24 @@
         }
     }
 
-    // When company is selected, update debtor and payment method
-// When company is selected, update debtor and payment method
-$('#company_id').change(function () {
-    var companyId = $(this).val();
+        document.getElementById('company_id')?.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];
+        
+        const paymentMethods = JSON.parse(selectedOption.getAttribute('data-payment-methods')) || [];
+        const debtors = JSON.parse(selectedOption.getAttribute('data-debtors')) || [];
 
-    // Get debtors related to the selected company
-    $.ajax({
-        url: '/get-debtors/' + companyId,  // Correct URL
-        method: 'GET',
-        success: function (data) {
-            // Clear previous options
-            $('#csmasDebtorfk').empty();
-            $('#csmasDebtorfk').append('<option value="">Select Debtor</option>');  // Add placeholder option
+        const paymentMethodSelect = document.getElementById('ismasPymtdfk');
+        paymentMethodSelect.innerHTML = '<option value="">Select Payment Method</option>';
+        paymentMethods.forEach(method => {
+            paymentMethodSelect.innerHTML += `<option value="${method.iPymtdPk}">${method.cPymtdDesc}</option>`;
+        });
 
-            // Add new options
-            data.debtors.forEach(function (debtor) {
-                $('#csmasDebtorfk').append('<option value="' + debtor.id + '">' + debtor.name + '</option>');
-            });
-        }
+        const debtorSelect = document.getElementById('csmasDebtorfk');
+        debtorSelect.innerHTML = '<option value="">Select Debtor</option>';
+        debtors.forEach(debtor => {
+            debtorSelect.innerHTML += `<option value="${debtor.iDebtorPk}">${debtor.cDebtorDesc}</option>`;
+        });
     });
-
-    // Get payment methods related to the selected company
-    $.ajax({
-        url: '/get-payment-methods/' + companyId,  // Correct URL
-        method: 'GET',
-        success: function (data) {
-            // Clear previous options
-            $('#ismasPymtdfk').empty();
-            $('#ismasPymtdfk').append('<option value="">Select Payment Method</option>');  // Add placeholder option
-
-            // Add new options
-            data.paymentMethods.forEach(function (paymentMethod) {
-                $('#ismasPymtdfk').append('<option value="' + paymentMethod.id + '">' + paymentMethod.name + '</option>');
-            });
-        }
-    });
-});
 
 
 </script>

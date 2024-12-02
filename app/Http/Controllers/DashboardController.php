@@ -18,17 +18,12 @@ use App\Models\ExpensesM;
 class DashboardController extends Controller
 {
     public function index(Request $request)
-    {
-        $user = Auth::user(); // Get the logged-in user
-
-        // Fetch and persist selected year
-        $year = $request->input('year', session('selected_year', date('Y')));
-        session(['selected_year' => $year]);
-
-        // Fetch and persist selected company
-        $companyId = $request->input('company_id', session('selected_company', $user->company_id));
-        session(['selected_company' => $companyId]);
+   {
+       $user = Auth::user(); // Get the logged-in user
+       $year = $request->input('year', date('Y')); // Selected year
+       session(['selected_year' => $year]);
    
+      
        // Fetch companies based on user's role
        $companies = $user->role === 'system admin'
            ? Company::all()
@@ -38,7 +33,7 @@ class DashboardController extends Controller
        $yearsQuery = DB::table('sales_master')
            ->selectRaw('YEAR(dsmasdate) as year')
            ->distinct()
-           ->where('company_id', $companyId); // Filter by company_id
+           ->where('company_id'); // Filter by company_id
    
        $years = $yearsQuery->pluck('year');
    
@@ -46,7 +41,7 @@ class DashboardController extends Controller
        $monthlySalesQuery = DB::table('sales_master')
            ->selectRaw('MONTH(dsmasdate) as month, SUM(ysmaspayment) as total')
            ->whereYear('dsmasdate', $year)
-           ->where('company_id', $companyId) // Filter by company_id
+           ->where('company_id') // Filter by company_id
            ->groupByRaw('MONTH(dsmasdate)');
    
        $monthlySales = $monthlySalesQuery->pluck('total', 'month');
@@ -61,28 +56,28 @@ class DashboardController extends Controller
        $totalCurrentSale = DB::table('sales_master')
            ->whereYear('dsmasdate', $year)
            ->whereMonth('dsmasdate', now()->month)
-           ->where('company_id', $companyId) // Filter by company_id
+           ->where('company_id') // Filter by company_id
            ->sum('ysmaspayment');
    
        // Yesterday's Sale
        $totalYesterdaySale = DB::table('sales_master')
            ->whereYear('dsmasdate', $year)
            ->whereDate('dsmasdate', now()->subDay()->toDateString())
-           ->where('company_id', $companyId) // Filter by company_id
+           ->where('company_id') // Filter by company_id
            ->sum('ysmaspayment');
    
        // Today's Sale
        $totalTodaySale = DB::table('sales_master')
            ->whereYear('dsmasdate', $year)
            ->whereDate('dsmasdate', now()->toDateString())
-           ->where('company_id', $companyId) // Filter by company_id
+           ->where('company_id') // Filter by company_id
            ->sum('ysmaspayment');
    
        // Purchases
        $monthlyPurchases = DB::table('purchase_master')
            ->selectRaw('MONTH(dpmasdate) as month, SUM(ypmaspayment) as total')
            ->whereYear('dpmasdate', $year)
-           ->where('company_id', $companyId) // Filter by company_id
+           ->where('company_id') // Filter by company_id
            ->groupByRaw('MONTH(dpmasdate)')
            ->pluck('total', 'month');
    
@@ -97,7 +92,7 @@ class DashboardController extends Controller
        $monthlyExpenses = DB::table('expenses_master')
            ->selectRaw('MONTH(dexmasdate) as month, SUM(yexmaspayment) as total')
            ->whereYear('dexmasdate', $year)
-           ->where('company_id', $companyId) // Filter by company_id
+           ->where('company_id') // Filter by company_id
            ->groupByRaw('MONTH(dexmasdate)')
            ->pluck('total', 'month');
    
@@ -113,7 +108,7 @@ class DashboardController extends Controller
            ->selectRaw('SUM(ysmaspayment - ysmasdeposit) as total')
            ->whereYear('dsmasdate', $year)
            ->where('cara_jualan', 'Credit')
-           ->where('company_id', $companyId) // Filter by company_id
+           ->where('company_id') // Filter by company_id
            ->value('total') ?? 0;
    
        // Current Net Profit
@@ -130,7 +125,6 @@ class DashboardController extends Controller
        return view('dashboard.index', compact(
            'year',
            'years',
-           'companyId',
            'companies',
            'monthlySalesData',
            'monthlyPurchasesData',

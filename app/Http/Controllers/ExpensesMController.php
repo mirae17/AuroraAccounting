@@ -68,12 +68,13 @@ class ExpensesMController extends Controller
  // Store new sale
  public function store(Request $request)
  {
+    $user = Auth::user(); // Get the authenticated user
      $request->validate([
          'dexmasdate' => 'required|date',
          'cexmasExpfk' => 'required|exists:expenses,iExpPk',
          'yexmaspayment' => 'required|numeric',
          'iexmasPymtdfk' => 'required|exists:payments,iPymtdPk',
-         'iexmasinvoiceref' => 'required|string|max:150',
+         'iexmasinvoiceref' => 'required|string|max:50',
          'cexmasnotes' => 'required|string|max:150',  
          'company_id' => Rule::requiredIf($user->role === 'system admin'),
 
@@ -104,33 +105,32 @@ class ExpensesMController extends Controller
 
    // Show form to edit a sale
    public function edit($expenseM)
-    {
-        $user = Auth::user();
+        {
+            $user = Auth::user();
+            $expenseM = ExpensesM::findOrFail($expenseM);
 
-        $expenseM = ExpensesM::findOrFail($expenseM);
+            if ($user->role === 'system admin') {
+                $companies = Company::with(['payments', 'expenses'])->get(['id', 'description']);
+            } else {
+                $companies = Company::where('id', $user->company_id)
+                    ->with(['payments', 'expenses'])
+                    ->get(['id', 'description']);
+            }
 
-        if ($user->role === 'system admin') {
-            $paymentMethods = PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
-            $expenses = Expense::all(['iExpPk', 'cExpDesc']);
-            $companies = Company::all(['id', 'description']);
-        } else {
-            $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
-            $expenses = Expense::where('company_id', $user->company_id)->get(['iExpPk', 'cExpDesc']);
-            $companies = [];
+            return view('expensesM.edit', compact('expenseM', 'companies'));
         }
 
-        return view('expensesM.edit', compact('expenseM', 'paymentMethods', 'expenses','companies'));
-    }
 
 
    public function update(Request $request, $expenseM)
    {
+    $user = Auth::user(); // Get the authenticated user
        $request->validate([
         'dexmasdate' => 'required|date',
         'cexmasExpfk' => 'required|exists:expenses,iExpPk',
         'yexmaspayment' => 'required|numeric',
         'iexmasPymtdfk' => 'required|exists:payments,iPymtdPk',
-        'iexmasinvoiceref' => 'required|string|max:150',
+        'iexmasinvoiceref' => 'required|string|max:50',
         'cexmasnotes' => 'required|string|max:150', 
        ]);
    

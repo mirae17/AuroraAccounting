@@ -72,7 +72,7 @@
 
             <div class="form-group mb-3">
                 <label for="password" class="form-label">Password (Leave blank to keep current password):</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password">
+                <input type="password" class="form-control" id="password" minlength="8" name="password" placeholder="Enter new password">
             </div>
 
            

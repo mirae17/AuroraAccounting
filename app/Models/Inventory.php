@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Inventory extends Model
+{
+   
+    use HasFactory;
+    protected $table = 'inventories';
+    protected $primaryKey = 'iInvPk';
+
+    protected $fillable = [
+        'cInvName',
+        'cInvCode',
+        'cInvType',
+        'iInvUom',
+        'iInvComfk',
+    ];
+
+  
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'iInvComfk');
+    }
+}
