@@ -45,16 +45,4 @@ class Sales extends Model
     return $this->belongsTo(Employee::class, 'ismasusersfk','iEmpmasPk');
 }
 
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($sale) {
-            if (Auth::check()) {
-                $sale->company_id = Auth::user()->company_id;
-            }
-        });
-    }
-
 }

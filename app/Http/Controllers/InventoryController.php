@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+
 use App\Models\Inventory;
 use App\Models\Company;
 
@@ -93,9 +93,9 @@ class InventoryController extends Controller
     }
 
 
-    public function destroy($iInvPk)
+    public function destroy($iInvPK)
     {
-        $inventory = Inventory::findOrFail($iInvPk);
+        $inventory = Inventory::findOrFail($iInvPK);
         $inventory->delete();
         return redirect()->route('inventory.index')->with('success', 'Inventory deleted successfully.');
     }

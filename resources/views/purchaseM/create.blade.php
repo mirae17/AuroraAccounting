@@ -60,7 +60,7 @@
             <!-- Total Payment -->
             <div class="form-group mb-3">
                 <label for="ypmaspayment" class="form-label">Total Payment</label>
-                <input type="number" step="0.01" class="form-control" id="ypmaspayment" name="ypmaspayment" required>
+                <input type="number" step="0.01" class="form-control" id="ypmaspayment" step="0.01" name="ypmaspayment" required>
             </div>
 
               <!-- Cara Jualan (Auto-detected) -->
@@ -72,7 +72,7 @@
             <!-- Deposit -->
             <div class="form-group mb-3">
                 <label for="ypmasdeposit" class="form-label">Deposit/Full Payment</label>
-                <input type="number" step="0.01" class="form-control" id="ypmasdeposit" name="ypmasdeposit" required>
+                <input type="number" step="0.01" class="form-control" id="ypmasdeposit" step="0.01" name="ypmasdeposit" required>
             </div>
 
             <!-- Payment Method -->

@@ -139,12 +139,21 @@
           </a>
         </li>
 
-        <!-- Invoice Code -->
+        <!-- Inventory Code -->
         <li class="nav-item">
           <a href="{{ route('inventory.index') }}" 
             class="nav-link {{ request()->routeIs('inventory.index') ? 'active' : '' }}">
             <i class="fas fa-boxes"></i>
             <p> Inventory Code</p>
+          </a>
+        </li>
+
+        <!-- Product Code -->
+        <li class="nav-item">
+          <a href="{{ route('product.index') }}" 
+            class="nav-link {{ request()->routeIs('product.index') ? 'active' : '' }}">
+            <i class="fas fa fa-cogs"></i>
+            <p> Product/Service Code</p>
           </a>
         </li>
 

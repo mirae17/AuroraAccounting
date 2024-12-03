@@ -59,12 +59,12 @@
 
          <div class="form-group  mb-3">
             <label for="ypmaspayment">Total Payment</label>
-            <input type="number" class="form-control" id="ypmaspayment" name="ypmaspayment" value="{{ $purchaseM->ypmaspayment }}" required>
+            <input type="number" class="form-control" id="ypmaspayment" name="ypmaspayment" step="0.01" value="{{ $purchaseM->ypmaspayment }}" required>
         </div>
 
         <div class="form-group  mb-3">
             <label for="ypmasdeposit">Deposit/Full Payment</label>
-            <input type="number" class="form-control" id="ypmasdeposit" name="ypmasdeposit" value="{{ $purchaseM->ypmasdeposit }}" required>
+            <input type="number" class="form-control" id="ypmasdeposit" name="ypmasdeposit" step="0.01" value="{{ $purchaseM->ypmasdeposit }}" required>
         </div>
 
         <!-- Cara Jualan (Auto-detected) -->

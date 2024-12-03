@@ -6,8 +6,6 @@ namespace App\Http\Controllers;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use App\Models\User;
 use App\Models\Company;
 use App\Models\Employee;
 

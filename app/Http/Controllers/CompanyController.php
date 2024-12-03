@@ -3,16 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB; 
-use App\Models\Sales;
 use App\Models\PaymentMethod;
-use App\Models\Expense;
-use App\Models\User;
 use App\Models\Company;
-use App\Models\PurchaseM;
-use App\Models\ExpensesM;
-
+use App\Models\Debtor;
 
 class CompanyController extends Controller
 {

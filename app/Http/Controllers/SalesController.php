@@ -123,7 +123,7 @@ class SalesController extends Controller
         if ($user->role === 'system admin') {
             $paymentMethods = PaymentMethod::all(['iPymtdPk', 'cPymtdDesc']);
             $debtors = Debtor::all(['iDebtorPk', 'cDebtorDesc']);
-            $employee = Employee::where('company_id', $selectedCompanyId)->get(['iEmpmasPk', 'cEmpName']);
+            $employee = Employee::where('company_id', )->get(['iEmpmasPk', 'cEmpName']);
             $companies = Company::all(['id', 'description']); // Fetch all companies
         } else {
             $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
@@ -137,6 +137,7 @@ class SalesController extends Controller
 
     public function update(Request $request, $sale)
     {
+        $user = Auth::user(); 
         $caraJualan = $request->ysmasdeposit == $request->ysmaspayment ? 'Cash' : 'Credit';
 
         $request->validate([

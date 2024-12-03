@@ -12,6 +12,7 @@ use App\Http\Controllers\ExpensesMController;
 use App\Http\Controllers\DebtorController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\ProductController;
 
 
 /*
@@ -37,9 +38,6 @@ Auth::routes(['register' => false]);
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard.index');
 
 
-
-// Middleware to restrict access to authenticated users
-
     // Company management routes
     Route::resource('company', CompanyController::class);
 
@@ -48,8 +46,7 @@ Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'inde
         Route::resource('users', UserController::class);
     });
 
-    Route::resource('inventory', InventoryController::class);
-    Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
+   
 
     // Sales master routes
     Route::get('/sales/pdf', [SalesController::class, 'exportPDF'])->name('sales.pdf');
@@ -85,6 +82,14 @@ Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'inde
     // Supplier routes
     Route::resource('suppliers', SupplierController::class);
     Route::delete('/suppliers/{suppliers}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+
+    //Invetory routes
+    Route::resource('inventory', InventoryController::class);
+    Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
+
+    //Product
+    Route::resource('product', ProductController::class);
+    Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
 
   
 

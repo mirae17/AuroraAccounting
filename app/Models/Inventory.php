@@ -10,7 +10,7 @@ class Inventory extends Model
    
     use HasFactory;
     protected $table = 'inventories';
-    protected $primaryKey = 'iInvPk';
+    protected $primaryKey = 'iInvPK';
 
     protected $fillable = [
         'cInvName',

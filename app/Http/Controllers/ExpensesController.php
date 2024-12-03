@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use App\Models\Company;
-use App\Models\User;
+
 
 class ExpensesController extends Controller
 {

@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Debtor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use App\Models\User;
 use App\Models\Company;
 
 class DebtorController extends Controller
@@ -15,7 +13,7 @@ class DebtorController extends Controller
     {
 
         $user = Auth::user();
-        $companyId = $request->input('selected_company_id');
+        
 
        if ($user->role === 'system admin') {
            

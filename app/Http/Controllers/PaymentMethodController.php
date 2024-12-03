@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Company;
 use Illuminate\Database\QueryException;
 
