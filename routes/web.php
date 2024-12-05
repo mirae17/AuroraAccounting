@@ -13,6 +13,7 @@ use App\Http\Controllers\DebtorController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\InventoryMasterController;
 
 
 /*
@@ -38,58 +39,62 @@ Auth::routes(['register' => false]);
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard.index');
 
 
-    // Company management routes
-    Route::resource('company', CompanyController::class);
+// Company management routes
+Route::resource('company', CompanyController::class);
 
-    // Restrict user management to system admin
-    Route::middleware('checkRole:system admin')->group(function () {
-        Route::resource('users', UserController::class);
-    });
+// Restrict user management to system admin
+Route::middleware('checkRole:system admin')->group(function () {
+    Route::resource('users', UserController::class);
+});
 
-   
 
-    // Sales master routes
-    Route::get('/sales/pdf', [SalesController::class, 'exportPDF'])->name('sales.pdf');
-    Route::resource('sales', SalesController::class);
-    Route::delete('/sales/{sales}', [SalesController::class, 'destroy'])->name('sales.destroy');
 
-    // Purchase master routes
-    Route::get('/purchaseM/pdf', [PurchaseMController::class, 'exportPDF'])->name('purchaseM.pdf');
-    Route::resource('purchaseM', PurchaseMController::class);
-    Route::delete('/purchaseM/{purchaseM}', [PurchaseMController::class, 'destroy'])->name('purchaseM.destroy');
+// Sales master routes
+Route::get('/sales/pdf', [SalesController::class, 'exportPDF'])->name('sales.pdf');
+Route::resource('sales', SalesController::class);
+Route::delete('/sales/{sales}', [SalesController::class, 'destroy'])->name('sales.destroy');
 
-    // Expenses master routes
-    Route::get('/expensesM/pdf', [ExpensesMController::class, 'exportPDF'])->name('expensesM.pdf');
-    Route::resource('expensesM', ExpensesMController::class);
-    Route::delete('/expensesM/{expensesM}', [ExpensesMController::class, 'destroy'])->name('expensesM.destroy');
+// Purchase master routes
+Route::get('/purchaseM/pdf', [PurchaseMController::class, 'exportPDF'])->name('purchaseM.pdf');
+Route::resource('purchaseM', PurchaseMController::class);
+Route::delete('/purchaseM/{purchaseM}', [PurchaseMController::class, 'destroy'])->name('purchaseM.destroy');
 
-    // Debtor routes
-    Route::resource('debtor', DebtorController::class);
-    Route::delete('/debtor/{debtors}', [DebtorController::class, 'destroy'])->name('debtor.destroy');
+// Expenses master routes
+Route::get('/expensesM/pdf', [ExpensesMController::class, 'exportPDF'])->name('expensesM.pdf');
+Route::resource('expensesM', ExpensesMController::class);
+Route::delete('/expensesM/{expensesM}', [ExpensesMController::class, 'destroy'])->name('expensesM.destroy');
 
-    // Employee routes
-    Route::resource('employees', EmployeeController::class);
-    Route::delete('/employees/{employees}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+Route::get('/inventoryM/pdf', [InventoryMasterController::class, 'exportPDF'])->name('inventoryM.pdf');
+Route::resource('inventoryM', InventoryMasterController::class);
+Route::delete('/inventoryM/{inventoryM}', [InventoryMasterController::class, 'destroy'])->name('inventoryM.destroy');
 
-    // Expenses routes
-    Route::resource('expenses', ExpensesController::class);
-    Route::delete('/expenses/{expenses}', [ExpensesController::class, 'destroy'])->name('expenses.destroy');
+// Debtor routes
+Route::resource('debtor', DebtorController::class);
+Route::delete('/debtor/{debtors}', [DebtorController::class, 'destroy'])->name('debtor.destroy');
 
-    // Payment methods routes
-    Route::resource('payments', PaymentMethodController::class);
-    Route::delete('/payments/{payments}', [PaymentMethodController::class, 'destroy'])->name('payments.destroy');
+// Employee routes
+Route::resource('employees', EmployeeController::class);
+Route::delete('/employees/{employees}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
 
-    // Supplier routes
-    Route::resource('suppliers', SupplierController::class);
-    Route::delete('/suppliers/{suppliers}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
+// Expenses routes
+Route::resource('expenses', ExpensesController::class);
+Route::delete('/expenses/{expenses}', [ExpensesController::class, 'destroy'])->name('expenses.destroy');
 
-    //Invetory routes
-    Route::resource('inventory', InventoryController::class);
-    Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
+// Payment methods routes
+Route::resource('payments', PaymentMethodController::class);
+Route::delete('/payments/{payments}', [PaymentMethodController::class, 'destroy'])->name('payments.destroy');
 
-    //Product
-    Route::resource('product', ProductController::class);
-    Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
+// Supplier routes
+Route::resource('suppliers', SupplierController::class);
+Route::delete('/suppliers/{suppliers}', [SupplierController::class, 'destroy'])->name('suppliers.destroy');
 
-  
+//Invetory routes
+Route::resource('inventory', InventoryController::class);
+Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])->name('inventory.destroy');
+
+//Product
+Route::resource('product', ProductController::class);
+Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
+
+
 

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class Employee extends Model
 {
     use HasFactory;
-   
+
     protected $table = 'employees';
     protected $primaryKey = 'iEmpmasPk';
 
@@ -21,7 +21,7 @@ class Employee extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class, 'company_id');
+        return $this->belongsTo(Company::class, 'company_id', 'id');
     }
 
     public function sales()
@@ -29,5 +29,5 @@ class Employee extends Model
         return $this->hasMany(Sales::class, 'ismasusersfk');
     }
 
-    
+
 }

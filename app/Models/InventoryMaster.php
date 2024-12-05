@@ -16,8 +16,8 @@ class InventoryMaster extends Model
 
     protected $fillable = [
 
+        'cInvmasType',
         'cInvmasInvCodefk',
-        'cInvmasInvNamefk',
         'dInvmasDate',
         'cInvmasSuppfk',
         'iInvmasQuanIn',
@@ -27,7 +27,9 @@ class InventoryMaster extends Model
         'cInvmasPymtdfk',
         'cInvmasInvoice',
         'cInvmasEmpfk',
+        'iInvmasInvPricefk',
         'cInvmasCreditorfk',
+        'yInvmasPayment',
         'cInvmasCompfk',
     ];
 
@@ -36,11 +38,11 @@ class InventoryMaster extends Model
         return $this->belongsTo(Company::class, 'cInvmasCompfk');
     }
 
-    public function paymentmethods()
+    public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class, 'cInvmasPymtdfk');
     }
-    public function inventory()
+    public function inventories()
     {
         return $this->belongsTo(Inventory::class);
     }
@@ -48,8 +50,8 @@ class InventoryMaster extends Model
     {
         return $this->belongsTo(Supplier::class, 'cInvmasSuppfk');
     }
-    public function employee()
+    public function employees()
     {
-        return $this->belongsTo(Employee::class, 'cInvmasEmpfk');
+        return $this->belongsTo(Employee::class, 'cInvmasEmpfk', 'iEmpmasPk');
     }
 }

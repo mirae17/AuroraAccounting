@@ -5,9 +5,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | DataTables</title>
+
 
     <style>
+        /* Center align text in the table header */
+        <style>
+
         /* Center align text in the table header */
         .table thead th {
             text-align: center;
@@ -34,8 +37,6 @@
             margin-top: 20px;
         }
 
-
-
         .card-custom p {
             margin: 0;
             font-size: 16px;
@@ -46,24 +47,18 @@
 <body>
     <div class="row mb-3 align-items-center">
         <div class="col-lg-6">
-            <h2>Sales Records </h2>
+            <h2>Inventory Records </h2>
         </div>
 
         <!-- Total Sales Display -->
         <div class="col-lg-6 d-flex justify-content-end">
             <!-- Total Expenses Card -->
             <div class="card-custom">
-                <p>Total Sales: <strong>RM{{ number_format($totalSales, 2) }}</strong></p>
+                <p>Total Inventory: <strong>RM{{ number_format($totalinventory, 2) }}</strong></p>
                 <p>Year: <strong>{{ $selectedYear }}</strong></p>
             </div>
-
         </div>
-
-
     </div>
-
-
-
 
     <!-- Display Success Message -->
     @if ($message = Session::get('success'))
@@ -71,11 +66,13 @@
             <p>{{ $message }}</p>
         </div>
     @endif
-    <div class="col-lg-6 d-flex ">
-        <a href="{{ route('sales.create') }}" class="btn btn-success rounded-pill shadow-sm px-4 mr-2">
-            <i class="fas fa-plus-circle"></i> Add Sales
+
+    <div class="col-lg-6 d-flex">
+
+        <a href="{{ route('inventoryM.create') }}" class="btn btn-success rounded-pill shadow-sm px-4 mr-2">
+            <i class="fas fa-plus-circle"></i> Add Inventory
         </a>
-        <a href="{{ route('sales.pdf') }}" class="btn btn-info rounded-pill shadow-sm px-4 ">
+        <a href="{{ route('inventoryM.pdf') }}" class="btn btn-info rounded-pill shadow-sm px-4 ">
             <i class="fas fa-file-pdf"></i> Save as PDF
         </a>
     </div>
@@ -88,40 +85,49 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Description</th>
-                    <th>Deposit/Full Payment (RM)</th>
+                    <th>Product/Service Code & Name</th>
+                    <th>Product/Service Type</th>
+                    <th>Supplier</th>
+                    <th>Quantity(IN)</th>
+                    <th>Quantity(OUT)</th>
+                    <th>Deposit Purchase(RM)</th>
+                    <th>Total Purchase (RM)</th>
                     <th>Payment Method</th>
-                    <th>Debtor Code</th>
                     <th>No Ref. Invoice/Receipt</th>
-                    <th>Sale Method</th>
-                    <th>Total Sale (RM)</th>
-                    <th>Salesperson</th>
+                    <th>Staff In Charge</th>
+                    <th>Debtor</th>
                     @if(Auth::user()->role === 'system admin')
                         <th>Company Name</th>
                     @endif
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody id="salesTableBody">
-                @foreach($sales as $sale)
+            <tbody>
+                @foreach($inventoryM as $inventories)
+
                     <tr>
-                        <td>{{ $sale->dsmasdate }}</td>
-                        <td>{{ $sale->csmasdesc }}</td>
-                        <td class="text-right">{{ number_format($sale->ysmasdeposit, 2) }}</td>
-                        <td>{{ $sale->paymentMethod->cPymtdDesc ?? 'N/A' }}</td>
-                        <td>{{ $sale->debtor->cDebtorCode ?? 'N/A' }}-{{ $sale->debtor->cDebtorDesc ?? 'N/A' }}</td>
-                        <td>{{ $sale->ismasinvoiceref ?? 'N/A' }}</td>
-                        <td>{{ $sale->ysmasdeposit == $sale->ysmaspayment ? 'CASH' : 'CREDIT' }}</td>
-                        <td class="text-right">{{ number_format($sale->ysmaspayment, 2) }}</td>
-                        <td>{{ $sale->employee->cEmpName ?? 'N/A'  }}</td>
+                        <td>{{$inventories->dInvmasDate}}</td>
+                        <td>{{$inventories->inventories->cInvCode ?? 'N/A'}}-{{$inventories->inventories->cInvName ?? 'N/A'}}
+                        </td>
+                        <td>{{$inventories->cInvmasType}}</td>
+                        <td>{{$inventories->supplier->iSuppDesc ?? 'N/A'}}</td>
+                        <td>{{$inventories->iInvmasQuanIn}}</td>
+                        <td>{{$inventories->iInvmasQuanOut}}</td>
+                        <td class="text-right">{{number_format($inventories->yInvmasDeposit, 2)}}</td>
+                        <td class="text-right">{{number_format($inventories->yInvmasPayment, 2)}}</td>
+                        <td>{{$inventories->paymentMethod->cPymtdDesc ?? 'N/A' }}</td>
+                        <td>{{$inventories->cInvmasInvoice}}</td>
+                        <td>{{$inventories->employees->cEmpName ?? 'N/A'}}</td>
+                        <td>{{$inventories->cInvmasCreditorfk}}</td>
                         @if(Auth::user()->role === 'system admin')
-                            <td>{{ $sale->company->description ?? 'N/A' }}</td>
+                            <td>{{ $inventories->company->description ?? 'N/A' }}</td>
                         @endif
                         <td> <!-- Edit and Delete Icons -->
-                            <a href="{{ route('sales.edit', $sale->ismaspk) }}" class="btn btn-custom-edit btn-sm">
+                            <a href="{{ route('inventoryM.edit', $inventories->iInvmasPk) }}"
+                                class="btn btn-custom-edit btn-sm">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <form action="{{ route('sales.destroy', $sale->ismaspk) }}" method="POST"
+                            <form action="{{ route('inventoryM.destroy', $inventories->iInvmasPk) }}" method="POST"
                                 style="display: inline-block;">
                                 @csrf
                                 @method('DELETE')

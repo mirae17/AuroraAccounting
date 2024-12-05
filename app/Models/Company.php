@@ -16,10 +16,10 @@ class Company extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'code', 
+        'code',
         'description'
     ];
-    
+
 
     public function users()
     {
@@ -58,6 +58,14 @@ class Company extends Model
     {
         return $this->hasMany(Debtor::class, 'company_id', 'id');
     }
+    public function employees()
+    {
+        return $this->hasMany(Employee::class, 'company_id');
+    }
 
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class, 'iInvComfk');
+    }
 
 }

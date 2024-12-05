@@ -132,6 +132,7 @@ class PurchaseMController extends Controller
 
     public function update(Request $request, $purchaseM)
     {
+        $user = Auth::user();
         $request->validate([
             'dpmasdate' => 'required|date',
             'ipmasSuppfk' => 'required|exists:suppliers,iSuppPk',
@@ -189,7 +190,7 @@ class PurchaseMController extends Controller
     
         $pdf = PDF::loadView('purchaseM.pdf', compact('purchaseM', 'totalPurchase', 'selectedYear'))
         ->setPaper('a4', 'landscape');
-        return $pdf->download('pruchase.pdf');
+        return $pdf->download('purchase.pdf');
     }
     
 

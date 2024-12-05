@@ -15,17 +15,15 @@
                     <select class="form-control" id="company_id" name="company_id" required>
                         <option value="">Select Company</option>
                         @foreach($companies as $company)
-                            <option 
-                                value="{{ $company->id }}" 
-                                data-payment-methods='@json($company->payments)' 
+                            <option value="{{ $company->id }}" data-payment-methods='@json($company->payments)'
                                 data-suppliers='@json($company->suppliers)'>
                                 {{ $company->description }}
                             </option>
                         @endforeach
                     </select>
                 </div>
-                @else
-            <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+            @else
+                <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
             @endif
 
             <!-- Date -->
@@ -34,17 +32,18 @@
                 <input type="date" class="form-control" id="dpmasdate" name="dpmasdate" required>
             </div>
 
-             <!-- Invoice Reference -->
-             <div class="form-group mb-3">
+            <!-- Invoice Reference -->
+            <div class="form-group mb-3">
                 <label for="ipmasinvoiceref" class="form-label">Invoice Reference</label>
-                <input type="text" class="form-control" id="ipmasinvoiceref" maxlength="50" name="ipmasinvoiceref" required>
+                <input type="text" class="form-control" id="ipmasinvoiceref" maxlength="50" name="ipmasinvoiceref"
+                    required>
             </div>
 
-               <!-- Supplier -->
-               <div class="form-group mb-3">
+            <!-- Supplier -->
+            <div class="form-group mb-3">
                 <label for="ipmasSuppfk" class="form-label">Supplier</label>
                 <select id="ipmasSuppfk" name="ipmasSuppfk" class="form-select" required>
-                <option value="">Select Supplier</option>
+                    <option value="">Select Supplier</option>
                     @foreach($suppliers as $supp)
                         <option value="{{ $supp->iSuppPk }}">{{ $supp->iSuppCode }} - {{ $supp->iSuppDesc }} </option>
                     @endforeach
@@ -60,11 +59,12 @@
             <!-- Total Payment -->
             <div class="form-group mb-3">
                 <label for="ypmaspayment" class="form-label">Total Payment</label>
-                <input type="number" step="0.01" class="form-control" id="ypmaspayment" step="0.01" name="ypmaspayment" required>
+                <input type="number" step="0.01" class="form-control" id="ypmaspayment" step="0.01" name="ypmaspayment"
+                    required>
             </div>
 
-              <!-- Cara Jualan (Auto-detected) -->
-              <div class="form-group mb-3">
+            <!-- Cara Jualan (Auto-detected) -->
+            <div class="form-group mb-3">
                 <label for="cara_jualan" class="form-label">Sale Method</label>
                 <input type="text" class="form-control" id="cara_jualan" name="cara_jualan" readonly>
             </div>
@@ -72,28 +72,27 @@
             <!-- Deposit -->
             <div class="form-group mb-3">
                 <label for="ypmasdeposit" class="form-label">Deposit/Full Payment</label>
-                <input type="number" step="0.01" class="form-control" id="ypmasdeposit" step="0.01" name="ypmasdeposit" required>
+                <input type="number" step="0.01" class="form-control" id="ypmasdeposit" step="0.01" name="ypmasdeposit"
+                    required>
             </div>
 
             <!-- Payment Method -->
             <div class="form-group mb-3">
                 <label for="ipmasPymtdfk" class="form-label">Payment Method</label>
                 <select id="ipmasPymtdfk" name="ipmasPymtdfk" class="form-select" required>
-                <option value="">Select Payment Method</option>
+                    <option value="">Select Payment Method</option>
                     @foreach($paymentMethods as $method)
                         <option value="{{ $method->iPymtdPk}}">{{ $method->cPymtdDesc }}</option>
                     @endforeach
                 </select>
             </div>
 
-           
-
             <!-- Notes -->
             <div class="form-group mb-3">
                 <label for="cpmasnotes" class="form-label">Notes</label>
                 <input type="text" class="form-control" id="cpmasnotes" maxlength="150" name="cpmasnotes" required>
             </div>
-            
+
             <!-- Submit Button -->
             <div class="text-center">
                 <button type="submit" class="btn btn-primary me-2">Save Purchase</button>
@@ -120,10 +119,10 @@
             caraJualan.value = 'Credit';
         }
     }
-    
+
     document.getElementById('company_id')?.addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];
-        
+
         const paymentMethods = JSON.parse(selectedOption.getAttribute('data-payment-methods')) || [];
         const suppliers = JSON.parse(selectedOption.getAttribute('data-suppliers')) || [];
 
@@ -165,14 +164,18 @@
     }
 
     /* Uniform height, width, and styling for input and select */
-    .form-control, .form-select {
+    .form-control,
+    .form-select {
         width: 100%;
-        height: 38px; /* Match input field height */
+        height: 38px;
+        /* Match input field height */
         padding: 0.5rem;
         border-radius: 8px;
         border: 1px solid #ced4da;
-        box-sizing: border-box; /* Ensures padding doesn’t affect width */
-        appearance: none; /* Removes default styling on some browsers */
+        box-sizing: border-box;
+        /* Ensures padding doesn’t affect width */
+        appearance: none;
+        /* Removes default styling on some browsers */
     }
 
     /* Button styling */
