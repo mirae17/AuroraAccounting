@@ -81,30 +81,23 @@
 
             <!-- Customer Database-->
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="{{ route('customerDetail.index') }}"
+                class="nav-link {{ request()->routeIs('customerDetail.index') ? 'active' : '' }}">
                 <i class="fas fa-address-book"></i>
                 <p> Customer Database</p>
               </a>
             </li>
+
             <!-- Manage Users (System Admin Only) -->
-            @if(Auth::user()->role !== 'system admin')
-        <li class="nav-header text-uppercase font-weight-bold"
-          style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
-
-        </li>
-        <li class="nav-item">
-          <a href="" class="nav-link ">
-          <i class="fas fa-briefcase"></i>
-          <p> Company Maintenance</p>
-          </a>
-        </li>
-
-
-      @endif
+            <li class="nav-item">
+              <a href="" class="nav-link ">
+                <i class="fas fa-briefcase"></i>
+                <p> Company Maintenance</p>
+              </a>
+            </li>
 
             <li class="nav-header text-uppercase font-weight-bold"
               style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
-
             </li>
 
             <!-- Payment Method -->

@@ -8,4 +8,29 @@ use Illuminate\Database\Eloquent\Model;
 class CustomerDetail extends Model
 {
     use HasFactory;
+
+    protected $primaryKey = 'iCustDPk';
+    protected $table = 'customer_details';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = true;
+    protected $fillable = [
+        'cCustDName',
+        'cCustDPhoneNo',
+        'cCustDAddress',
+        'cCustDCity',
+        'cCustDState',
+        'cCustDPostcode',
+        'iCustDCompfk',
+        'cCustDCompNo',
+        'cCustDCompOfficeNo',
+        'cCustDCompEmail',
+        'cCustDCompWebsite',
+    ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class, 'iCustDCompfk');
+    }
+
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InventoryMasterController;
+use App\Http\Controllers\CustomerDetailController;
 
 
 /*
@@ -67,6 +68,11 @@ Route::delete('/expensesM/{expensesM}', [ExpensesMController::class, 'destroy'])
 Route::get('/inventoryM/pdf', [InventoryMasterController::class, 'exportPDF'])->name('inventoryM.pdf');
 Route::resource('inventoryM', InventoryMasterController::class);
 Route::delete('/inventoryM/{inventoryM}', [InventoryMasterController::class, 'destroy'])->name('inventoryM.destroy');
+
+
+Route::get('/customerDetail/pdf', [CustomerDetailController::class, 'exportPDF'])->name('customerDetail.pdf');
+Route::resource('customerDetail', CustomerDetailController::class);
+Route::delete('/customerDetail/{customerDetail}', [CustomerDetailController::class, 'destroy'])->name('customerDetail.destroy');
 
 // Debtor routes
 Route::resource('debtor', DebtorController::class);

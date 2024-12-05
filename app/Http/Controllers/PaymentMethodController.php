@@ -14,7 +14,7 @@ class PaymentMethodController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -45,7 +45,7 @@ class PaymentMethodController extends Controller
             $companies = []; // Regular users don't need to select a company
         }
 
-        return view('payments.index', compact('paymentMethods', 'companies', 'selectedCompany','selectedCompanyDescription'));
+        return view('payments.index', compact('paymentMethods', 'companies', 'selectedCompany', 'selectedCompanyDescription'));
     }
 
 
@@ -72,7 +72,7 @@ class PaymentMethodController extends Controller
         $paymentMethod->save();
 
         return redirect()->route('payments.index')
-                         ->with('success', 'Payment method added successfully.');
+            ->with('success', 'Payment method added successfully.');
     }
 
     public function update(Request $request, $id)
@@ -96,37 +96,37 @@ class PaymentMethodController extends Controller
         $paymentMethod->save();
 
         return redirect()->route('payments.index')
-                         ->with('success', 'Payment method updated successfully.');
+            ->with('success', 'Payment method updated successfully.');
     }
 
     public function destroy($iPymtdPk)
-{
-    try {
-        $paymentMethod = PaymentMethod::findOrFail($iPymtdPk);
-        $paymentMethod->delete();
+    {
+        try {
+            $paymentMethod = PaymentMethod::findOrFail($iPymtdPk);
+            $paymentMethod->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment method deleted successfully.'
-        ]);
-    } catch (QueryException $e) {
-        if ($e->getCode() === '23000') {
-            // Foreign key constraint violation
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment method deleted successfully.'
+            ]);
+        } catch (QueryException $e) {
+            if ($e->getCode() === '23000') {
+                // Foreign key constraint violation
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This payment method is in use in Sales, Purchases, or Expenses and cannot be deleted.'
+                ]);
+            }
+
+            // Other types of exceptions
             return response()->json([
                 'success' => false,
-                'message' => 'This payment method is in use in Sales, Purchases, or Expenses and cannot be deleted.'
+                'message' => 'An unexpected error occurred. Please try again later.'
             ]);
         }
-
-        // Other types of exceptions
-        return response()->json([
-            'success' => false,
-            'message' => 'An unexpected error occurred. Please try again later.'
-        ]);
     }
+
+
+
+
 }
-
-
-
-                         
-    }
