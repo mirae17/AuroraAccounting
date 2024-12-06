@@ -90,7 +90,8 @@
 
             <!-- Manage Users (System Admin Only) -->
             <li class="nav-item">
-              <a href="" class="nav-link ">
+              <a href="{{ route('companyMaintenance.index') }}"
+                class="nav-link {{ request()->routeIs('companyMaintenance.index') ? 'active' : '' }}">
                 <i class="fas fa-briefcase"></i>
                 <p> Company Maintenance</p>
               </a>
@@ -190,7 +191,7 @@
             <li class="nav-item">
               <a href="{{ route('inventoryM.index') }}"
                 class="nav-link {{ request()->routeIs('inventoryM.index') ? 'active' : '' }}">
-                <i class="fas fa-receipt"></i>
+                <i class="fas fa-box"></i>
                 <p> Inventory</p>
               </a>
             </li>

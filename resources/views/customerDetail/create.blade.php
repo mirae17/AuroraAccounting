@@ -99,7 +99,7 @@
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary ">Save Customer Details</button>
-                <a href="{{ url()->previous() }}" class="btn btn-secondary">
+                <a href="{{ route('customerDetail.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
             </div>
