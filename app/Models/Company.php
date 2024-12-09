@@ -72,7 +72,7 @@ class Company extends Model
         return $this->hasMany(Inventory::class, 'iInvComfk');
     }
 
-    public function companyMaintenances()
+    public function companyMaintenance()
     {
         return $this->hasMany(CompanyMaintenance::class, 'iCompMainFk');
     }

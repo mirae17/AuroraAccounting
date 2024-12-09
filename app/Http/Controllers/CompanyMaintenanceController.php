@@ -15,11 +15,15 @@ class CompanyMaintenanceController extends Controller
         $user = Auth::user();
         if ($user->role === 'system admin') {
 
-            $companies = CompanyMaintenance::all();
+            $companyMaintenance = CompanyMaintenance::with('company')->get();
+            $companies = Company::all(); // Get all companies
         } else {
-            $companies = CompanyMaintenance::where('iCompMainPk', $user->company_id)->get();
+            $companyMaintenance = CompanyMaintenance::where('iCompMainName', $user->company_id)->get();
+            $companies = [];
+
+
         }
-        return view('companyMaintenance.index', compact('companies'));
+        return view('companyMaintenance.index', compact('companyMaintenance', 'companies'));
     }
 
     // Show the form to create a new company
@@ -74,16 +78,29 @@ class CompanyMaintenanceController extends Controller
     }
 
 
-    // Show the form to edit the company
-    public function edit($id)
+    public function edit($companyMaintenance)
     {
-        $companyMaintenance = CompanyMaintenance::findOrFail($id);
-        return view('companyMaintenance.edit', compact('companyMaintenance'));
+        $user = Auth::user();
+        $companyMaintenance = CompanyMaintenance::findOrFail($companyMaintenance);
+
+        if ($user->role === 'system admin') {
+            $companies = Company::all(['id', 'code', 'description']); // Fetch all companies
+        } else {
+
+            $companies = [];
+
+        }
+
+        return view('companyMaintenance.edit', compact('companyMaintenance', 'companies'));
     }
 
     // Update the specified resource in storage
-    public function update(Request $request, $id)
+    public function update(Request $request, $companyMaintenanceId)
     {
+        $user = Auth::user();
+        $companyMaintenance = CompanyMaintenance::findOrFail($companyMaintenanceId);
+
+        // Validation
         $request->validate([
             'iCompMainName' => 'required|string|exists:companies,id',
             'iCompMainRegNo' => 'required|string|max:255',
@@ -94,32 +111,34 @@ class CompanyMaintenanceController extends Controller
         ]);
 
 
-        $companyMaintenance = CompanyMaintenance::findOrFail($id);
 
+        if ($user->role === 'system admin') {
+            $request->merge(['iCompMainName' => auth()->user()->company_id]);
+        }
+        // Handle file upload
         if ($request->hasFile('iCompMainLogo')) {
             // Delete the old logo if it exists
             if ($companyMaintenance->iCompMainLogo) {
-                Storage::delete('public/' . $companyMaintenance->iCompMainLogo);
+                Storage::disk('public')->delete($companyMaintenance->iCompMainLogo);
             }
             // Store the new logo
-            $companyMaintenance->iCompMainLogo = $request->file('iCompMainLogo')->store('logos', 'public');
+            $logoPath = $request->file('iCompMainLogo')->store('logos', 'public');
+            $companyMaintenance->iCompMainLogo = $logoPath;
         }
 
-
+        // Update other fields
         $companyMaintenance->update([
             'iCompMainName' => $request->iCompMainName,
             'iCompMainRegNo' => $request->iCompMainRegNo,
             'iCompMainPhoneNo' => $request->iCompMainPhoneNo,
             'iCompMainEmail' => $request->iCompMainEmail,
             'iCompMainAddress' => $request->iCompMainAddress,
-            'iCompMainLogo' => $companyMaintenance->iCompMainLogo, // Ensure logo remains if not updated
         ]);
 
-
-        return redirect()
-            ->route('companyMaintenance.index')
-            ->with('success', 'Company Maintenance updated successfully.');
+        return redirect()->route('companyMaintenance.index')->with('success', 'Company updated successfully.');
     }
+
+
 
 
     // Delete a company

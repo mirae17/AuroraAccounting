@@ -14,25 +14,25 @@ class ProductController extends Controller
     {
         $this->middleware('auth');
     }
-    
-    
+
+
     public function index()
     {
         $user = Auth::user();
 
         if ($user->role === 'system admin') {
-           
+
             $product = Product::with('company')->get();
             $companies = Company::all(); // Get all companies
         } else {
-           
-            $product = Product::with('company')->where('company_id', $user->company_id)->get();
-            $companies = []; 
+
+            $product = Product::with('company')->where('iProComfk', $user->iProComfk)->get();
+            $companies = [];
         }
 
-       
 
-        return view('product.index', compact('product','companies'));
+
+        return view('product.index', compact('product', 'companies'));
     }
 
     public function store(Request $request)
@@ -48,12 +48,12 @@ class ProductController extends Controller
             'iProComfk' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
 
-        $product= new Product();
+        $product = new Product();
         $product->cProCode = $request->cProCode;
         $product->cProName = $request->cProName;
         $product->cProType = $request->cProType;
         $product->iProUom = $request->iProUom;
-        $product->yProPrice=$request-> yProPrice;
+        $product->yProPrice = $request->yProPrice;
         if ($user->role === 'system admin') {
             $product->iProComfk = $request->iProComfk;
         } else {
@@ -62,12 +62,12 @@ class ProductController extends Controller
         $product->save();
 
         return redirect()->route('product.index')
-                         ->with('success', 'Product added successfully.');
+            ->with('success', 'Product added successfully.');
     }
-    
+
 
     public function update(Request $request, $id)
-    { 
+    {
         $user = Auth::user();
         // Validate incoming data
         $request->validate([
@@ -90,7 +90,7 @@ class ProductController extends Controller
             'iProUom' => $request->iProUom,
             'yProPrice' => $request->yProPrice,
             'iProComfk' => $request->iProComfk,
-            
+
         ]);
 
         // Redirect back with success message

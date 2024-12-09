@@ -151,78 +151,80 @@
 </div>
 </div>
 
-<!-- Edit Modal -->
-<div class="modal fade" id="ModalEdit{{ $item->iInvPK}}" tabindex="-1" role="dialog"
-    aria-labelledby="editModalLabel{{ $item->iInvPK}}" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel{{ $item->iInvPK}}">Edit Inventory</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form action="{{ route('inventory.update', $item->iInvPK) }}" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
+@foreach($inventory as $item)
+    <!-- Edit Modal -->
+    <div class="modal fade" id="ModalEdit{{ $item->iInvPK}}" tabindex="-1" role="dialog"
+        aria-labelledby="editModalLabel{{ $item->iInvPK}}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel{{ $item->iInvPK}}">Edit Inventory</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{{ route('inventory.update', $item->iInvPK) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
 
-                    <!-- Inventory Code -->
-                    <div class="form-group mb-3">
-                        <label for="cInvCode{{ $item->iInvPK}}" class="form-label">INVENTORY CODE</label>
-                        <input type="text" class="form-control" id="cInvCode{{ $item->iInvPK}}" name="cInvCode"
-                            value="{{ $item->cInvCode }}" maxlength="6" required>
-                    </div>
-
-                    <!-- Inventory Name -->
-                    <div class="form-group mb-3">
-                        <label for="cInvName{{ $item->iInvPK}}" class="form-label">INVENTORY NAME</label>
-                        <input type="text" class="form-control" id="cInvName{{ $item->iInvPK}}" name="cInvName"
-                            value="{{ $item->cInvName }}" maxlength="100" required>
-                    </div>
-
-                    <!-- Inventory Type -->
-                    <div class="form-group mb-3">
-                        <label for="cInvType{{ $item->iInvPK}}" class="form-label">INVENTORY TYPE</label>
-                        <input type="text" class="form-control" id="cInvType{{ $item->iInvPK}}" name="cInvType"
-                            value="{{ $item->cInvType }}" maxlength="50" required>
-                    </div>
-
-                    <!-- Unit of Measure -->
-                    <div class="form-group mb-3">
-                        <label for="iInvUom{{ $item->iInvPK}}" class="form-label">UNIT OF MEASURE</label>
-                        <input type="text" class="form-control" id="iInvUom{{ $item->iInvPK}}" name="iInvUom"
-                            value="{{ $item->iInvUom }}" maxlength="10" required>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="yInvPrice{{ $item->iInvPK }}" class="form-label">PRICE PER UNIT</label>
-                        <input type="number" class="form-control" id="yProPrice{{ $item->iInvPK }}" name="yInvPrice"
-                            value="{{ $item->yInvPrice }}" step="0.01" required>
-                    </div>
-                    <!-- Company -->
-                    @if(Auth::user()->role === 'system admin')
+                        <!-- Inventory Code -->
                         <div class="form-group mb-3">
-                            <label for="iInvComfk{{ $item->iInvPK}}" class="form-label">Company</label>
-                            <select class="form-control" id="iInvComfk{{ $item->iInvPK}}" name="iInvComfk" required>
-                                <option value="">Select a Company</option>
-                                @foreach($companies as $company)
-                                    <option value="{{ $company->id }}" {{ $item->iInvComfk == $company->id ? 'selected' : '' }}>
-                                        {{ $company->description }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="cInvCode{{ $item->iInvPK}}" class="form-label">INVENTORY CODE</label>
+                            <input type="text" class="form-control" id="cInvCode{{ $item->iInvPK}}" name="cInvCode"
+                                value="{{ $item->cInvCode }}" maxlength="6" required>
                         </div>
-                    @else
-                        <input type="hidden" name="iInvComfk" value="{{ Auth::user()->iInvComfk }}">
-                    @endif
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
+                        <!-- Inventory Name -->
+                        <div class="form-group mb-3">
+                            <label for="cInvName{{ $item->iInvPK}}" class="form-label">INVENTORY NAME</label>
+                            <input type="text" class="form-control" id="cInvName{{ $item->iInvPK}}" name="cInvName"
+                                value="{{ $item->cInvName }}" maxlength="100" required>
+                        </div>
+
+                        <!-- Inventory Type -->
+                        <div class="form-group mb-3">
+                            <label for="cInvType{{ $item->iInvPK}}" class="form-label">INVENTORY TYPE</label>
+                            <input type="text" class="form-control" id="cInvType{{ $item->iInvPK}}" name="cInvType"
+                                value="{{ $item->cInvType }}" maxlength="50" required>
+                        </div>
+
+                        <!-- Unit of Measure -->
+                        <div class="form-group mb-3">
+                            <label for="iInvUom{{ $item->iInvPK}}" class="form-label">UNIT OF MEASURE</label>
+                            <input type="text" class="form-control" id="iInvUom{{ $item->iInvPK}}" name="iInvUom"
+                                value="{{ $item->iInvUom }}" maxlength="10" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="yInvPrice{{ $item->iInvPK }}" class="form-label">PRICE PER UNIT</label>
+                            <input type="number" class="form-control" id="yProPrice{{ $item->iInvPK }}" name="yInvPrice"
+                                value="{{ $item->yInvPrice }}" step="0.01" required>
+                        </div>
+                        <!-- Company -->
+                        @if(Auth::user()->role === 'system admin')
+                            <div class="form-group mb-3">
+                                <label for="iInvComfk{{ $item->iInvPK}}" class="form-label">Company</label>
+                                <select class="form-control" id="iInvComfk{{ $item->iInvPK}}" name="iInvComfk" required>
+                                    <option value="">Select a Company</option>
+                                    @foreach($companies as $company)
+                                        <option value="{{ $company->id }}" {{ $item->iInvComfk == $company->id ? 'selected' : '' }}>
+                                            {{ $company->description }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @else
+                            <input type="hidden" name="iInvComfk" value="{{ Auth::user()->iInvComfk }}">
+                        @endif
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
+@endforeach
 @endsection

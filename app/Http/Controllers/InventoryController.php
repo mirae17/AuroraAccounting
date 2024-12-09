@@ -25,7 +25,7 @@ class InventoryController extends Controller
             $companies = Company::all(); // Get all companies
         } else {
 
-            $inventory = Inventory::with('company')->where('company_id', $user->company_id)->get();
+            $inventory = Inventory::with('company')->where('iInvComfk', $user->company_id)->get();
             $companies = [];
         }
 

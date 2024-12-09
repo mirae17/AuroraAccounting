@@ -41,7 +41,7 @@ class InventoryMasterController extends Controller
 
 
         if ($user->role !== 'system admin') {
-            $query->where('company_id', $user->company_id); // Filter by company for regular users
+            $query->where('cInvmasCompfk', $user->company_id); // Filter by company for regular users
         }
 
 
@@ -63,10 +63,10 @@ class InventoryMasterController extends Controller
             $suppliers = Supplier::all(['iSuppPk', 'iSuppDesc']);
             $companies = Company::with(['payments', 'suppliers', 'employees', 'inventories'])->get(['id', 'description']);
         } else {
-            $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
-            $suppliers = Supplier::where('company_id', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
-            $inventories = Inventory::where('company_id', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
-            $employees = Employee::where('company_id', $user->company_id)->get(['iEmpmasPk', 'cEmpName']);
+            $paymentMethods = PaymentMethod::where('cInvmasCompfk', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
+            $suppliers = Supplier::where('cInvmasCompfk', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
+            $inventories = Inventory::where('cInvmasCompfk', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
+            $employees = Employee::where('cInvmasCompfk', $user->company_id)->get(['iEmpmasPk', 'cEmpName']);
             $companies = [];
         }
         return view('inventoryM.create', compact('paymentMethods', 'suppliers', 'companies', 'inventories', 'employees'));
@@ -143,10 +143,10 @@ class InventoryMasterController extends Controller
             $suppliers = Supplier::all(['iSuppPk', 'iSuppDesc']);
             $companies = Company::with(['payments', 'suppliers', 'employees', 'inventories'])->get(['id', 'description']);
         } else {
-            $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
-            $suppliers = Supplier::where('company_id', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
-            $inventories = Inventory::where('company_id', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
-            $employees = Employee::where('company_id', $user->company_id)->get(['iEmpmasPk', 'cInvName']);
+            $paymentMethods = PaymentMethod::where('cInvmasCompfk', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
+            $suppliers = Supplier::where('cInvmasCompfk', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
+            $inventories = Inventory::where('cInvmasCompfk', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
+            $employees = Employee::where('cInvmasCompfk', $user->company_id)->get(['iEmpmasPk', 'cInvName']);
             $companies = [];
         }
 
@@ -216,7 +216,7 @@ class InventoryMasterController extends Controller
         $query = InventoryMaster::with(['paymentMethod', 'supplier', 'employees', 'inventories'])
             ->whereYear('dInvmasDate', $selectedYear);
         if ($user->role !== 'system admin') {
-            $query->where('company_id', $user->company_id);
+            $query->where('cInvmasCompfk', $user->company_id);
         }
 
         $inventoryM = $query->get(); // Execute the query

@@ -59,10 +59,12 @@
     @endif
 
     <div class="col-lg-6 d-flex">
+        @if(Auth::user()->role === 'system admin')
+            <a href="{{ route('companyMaintenance.create') }}" class="btn btn-success rounded-pill shadow-sm px-4 mr-2">
+                <i class="fas fa-plus-circle"></i> Add Company Details
+            </a>
+        @endif
 
-        <a href="{{ route('companyMaintenance.create') }}" class="btn btn-success rounded-pill shadow-sm px-4 mr-2">
-            <i class="fas fa-plus-circle"></i> Add Company Details
-        </a>
         <a href="{{ route('companyMaintenance.pdf') }}" class="btn btn-info rounded-pill shadow-sm px-4 ">
             <i class="fas fa-file-pdf"></i> Save as PDF
         </a>
@@ -84,7 +86,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($companies as $company)
+                @foreach($companyMaintenance as $company)
                     <tr>
                         <td>{{ $company->company->description ?? 'N/A' }}</td>
                         <td>{{ $company->iCompMainRegNo }}</td>

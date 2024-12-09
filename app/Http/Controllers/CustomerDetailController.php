@@ -21,7 +21,7 @@ class CustomerDetailController extends Controller
             $companies = Company::all(); // Get all companies
         } else {
 
-            $customerDetail = CustomerDetail::with('company')->where('company_id', $user->company_id)->get();
+            $customerDetail = CustomerDetail::with('company')->where('iCustDCompfk', $user->company_id)->get();
             $companies = [];
         }
 
