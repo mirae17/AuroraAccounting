@@ -59,16 +59,11 @@
             </div>
 
             <div class="form-group">
-                <label for="iCustDCompfk">Company</label>
-                <select class="form-control" id="iCustDCompfk" name="iCustDCompfk" {{ Auth::user()->role !== 'system admin' ? 'disabled' : '' }}>
-                    <option value="" disabled selected>Select a company</option>
-                    @foreach($companies as $company)
-                        <option value="{{ $company->id }}">{{ $company->code }} - {{ $company->description }}</option>
-                    @endforeach
-                </select>
-                @if ($errors->has('iCustDCompfk'))
-                    <span class="text-danger">{{ $errors->first('iCustDCompfk') }}</span>
-                @endif
+
+                <label for="cCustDCompName">Company Name</label>
+                <input type="text" class="form-control" id="cCustDCompName" name="cCustDCompName"
+                    placeholder="Enter company name" required>
+
             </div>
 
             <div class="form-row">
@@ -94,6 +89,20 @@
                 <label for="cCustDCompWebsite">Company Website</label>
                 <input type="url" class="form-control" id="cCustDCompWebsite" name="cCustDCompWebsite"
                     placeholder="Enter company website" required>
+            </div>
+
+            <div class="form-group">
+                @if(Auth::user()->role === 'system admin')
+                    <label for="iCustDCompfk" class="form-label">Company</label>
+                    <select class="form-control" id="iCustDCompfk" name="iCustDCompfk" required>
+                        <option value="">Select a Company</option>
+                        @foreach($companies as $company)
+                            <option value="{{ $company->id }}">{{ $company->description }}</option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="hidden" name="iCustDCompfk" value="{{ Auth::user()->company_id }}">
+                @endif
             </div>
             <br>
 

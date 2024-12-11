@@ -22,6 +22,7 @@ class CustomerDetail extends Model
         'cCustDState',
         'cCustDPostcode',
         'iCustDCompfk',
+        'cCustDCompName',
         'cCustDCompNo',
         'cCustDCompOfficeNo',
         'cCustDCompEmail',
@@ -30,7 +31,7 @@ class CustomerDetail extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class, 'iCustDCompfk');
+        return $this->belongsTo(Company::class, 'iCustDCompfk', 'id');
     }
 
 }

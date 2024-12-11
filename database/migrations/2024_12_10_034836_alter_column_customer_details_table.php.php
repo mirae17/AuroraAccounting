@@ -10,9 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::table('company_maintenances', function (Blueprint $table) {
-            $table->unsignedBigInteger('iCompMainName')->nullable()->after('iCompMainPk');
-            $table->foreign('iCompMainName')->references('id')->on('companies')->onDelete('cascade');
+        Schema::table('customer_details', function (Blueprint $table) {
+            $table->string('cCustDCompName')->after('iCompMainName');
         });
     }
 
@@ -21,7 +20,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('company_maintenances', function (Blueprint $table) {
+        Schema::table('customer_details', function (Blueprint $table) {
             //
         });
     }

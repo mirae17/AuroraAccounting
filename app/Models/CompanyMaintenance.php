@@ -23,7 +23,7 @@ class CompanyMaintenance extends Model
         'iCompMainAddress',
         'iCompMainPhoneNo',
         'iCompMainEmail',
-        'iCompMainLogo'
+        'iCompMainLogo',
     ];
     protected $hidden = [
         // If you want to hide any specific attribute like password or sensitive data
@@ -36,7 +36,7 @@ class CompanyMaintenance extends Model
 
     public function company()
     {
-        return $this->belongsTo(Company::class, 'iCompMainName');
+        return $this->belongsTo(Company::class, 'iCompMainName', 'id');
     }
 
 }

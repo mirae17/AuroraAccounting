@@ -57,6 +57,7 @@ class CustomerDetailController extends Controller
             'cCustDPostcode' => 'required|string',
             'cCustDState' => 'required|string',
             'iCustDCompfk' => Rule::requiredIf($user->role === 'system admin'),
+            'cCustDCompName' => 'required|string',
             'cCustDCompNo' => 'required|string',
             'cCustDCompOfficeNo' => 'required|string',
             'cCustDCompEmail' => 'required|string|email|max:255|unique:customer_details',
@@ -71,13 +72,14 @@ class CustomerDetailController extends Controller
         $customerDetail->cCustDPostcode = $request->cCustDPostcode;
         $customerDetail->cCustDState = $request->cCustDState;
         $customerDetail->cCustDCompNo = $request->cCustDCompNo;
+        $customerDetail->cCustDCompName = $request->cCustDCompName;
         $customerDetail->cCustDCompOfficeNo = $request->cCustDCompOfficeNo;
         $customerDetail->cCustDCompEmail = $request->cCustDCompEmail;
         $customerDetail->cCustDCompWebsite = $request->cCustDCompWebsite;
-        if ($user->role === 'system admin') {
-            $customerDetail->iCustDCompfk = $request->iCustDCompfk;
+        if (Auth::user()->role === 'system admin') {
+            $customerDetail->iCustDCompfk = $request->iCustDCompfk; // Admin selects company
         } else {
-            $customerDetail->iCustDCompfk = $user->iCustDCompfk;
+            $customerDetail->iCustDCompfk = Auth::user()->company_id; // Regular user uses their company ID
         }
         $customerDetail->save();
 

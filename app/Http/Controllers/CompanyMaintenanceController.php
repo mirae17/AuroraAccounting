@@ -115,6 +115,7 @@ class CompanyMaintenanceController extends Controller
         if ($user->role === 'system admin') {
             $request->merge(['iCompMainName' => auth()->user()->company_id]);
         }
+
         // Handle file upload
         if ($request->hasFile('iCompMainLogo')) {
             // Delete the old logo if it exists

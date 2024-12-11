@@ -56,18 +56,20 @@
                             </div>
                         @enderror
                     </div>
-                    @if(Auth::user()->role === 'system admin')
-                        @if($selectedCompany)
-                            <input type="hidden" name="company_id" value="{{ $selectedCompany->id }}">
-                            <div class="form-group mb-3">
-                                <label for="company_id" class="form-label">Company</label>
-                                <input type="text" class="form-control" value="{{ $selectedCompany->description }}" readonly>
-                            </div>
-                        @endif
-                    @else
-                        <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
-                    @endif
 
+                    <div class="form-group mb-3">
+                        @if(Auth::user()->role === 'system admin')
+                            <label for="company_id" class="form-label">COMPANY</label>
+                            <select class="form-control" id="company_id" name="company_id" required>
+                                <option value="">Select a Company</option>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->id }}">{{ $company->description }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input type="hidden" name="company_id" value="{{ Auth::user()->company_id }}">
+                        @endif
+                    </div>
 
                 </div>
                 <div class="modal-footer">

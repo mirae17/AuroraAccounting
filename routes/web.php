@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Quotation;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\ExpensesController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\InventoryMasterController;
 use App\Http\Controllers\CustomerDetailController;
 use App\Http\Controllers\CompanyMaintenanceController;
+use App\Http\Controllers\QuotationController;
 
 
 /*
@@ -105,6 +107,10 @@ Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])
 //Product
 Route::resource('product', ProductController::class);
 Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
+
+Route::resource('quotations', QuotationController::class);
+Route::get('/quotations/{id}/print', [QuotationController::class, 'print'])->name('quotations.print');
+
 
 
 

@@ -203,7 +203,8 @@
 
             <!-- Quotation -->
             <li class="nav-item">
-              <a href="#" class="nav-link ">
+              <a href="{{ route('quotations.index') }}"
+                class="nav-link {{ request()->routeIs('quotations.index') ? 'active' : '' }} ">
                 <i class="fas fa-sticky-note"></i>
                 <p> Quotation</p>
               </a>
@@ -307,6 +308,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-oBqDVmMz4fnFO9gybOFTDz2fQAT++tM4G13ah7tRYS05v9AiFoZl3GOGxr5K5oG1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+    integrity="sha384-qQBdPj1d/tQvMhTxv7bAtZkk+odB29DYOn2gx3Lp1YMWWVl7UNxAF1xl0iRBATqD"
+    crossorigin="anonymous"></script>
 
 
   <!-- jQuery and Bootstrap JavaScript for modal functionality -->

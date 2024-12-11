@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Company;
@@ -26,7 +27,7 @@ class ProductController extends Controller
             $companies = Company::all(); // Get all companies
         } else {
 
-            $product = Product::with('company')->where('iProComfk', $user->iProComfk)->get();
+            $product = Product::with('company')->where('iProComfk', $user->company_id)->get();
             $companies = [];
         }
 
@@ -45,7 +46,8 @@ class ProductController extends Controller
             'cProType' => 'required|string|max:50',
             'iProUom' => 'required|string|max:50',
             'yProPrice' => 'required|numeric',
-            'iProComfk' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
+            'iProComfk' => Rule::requiredIf($user->role === 'system admin'),
+
         ]);
 
         $product = new Product();
@@ -57,7 +59,7 @@ class ProductController extends Controller
         if ($user->role === 'system admin') {
             $product->iProComfk = $request->iProComfk;
         } else {
-            $product->iProComfk = $user->iProComfk;
+            $product->iProComfk = $user->company_id;
         }
         $product->save();
 
@@ -89,7 +91,7 @@ class ProductController extends Controller
             'cProType' => $request->cProType,
             'iProUom' => $request->iProUom,
             'yProPrice' => $request->yProPrice,
-            'iProComfk' => $request->iProComfk,
+            'iProComfk' => Auth::user()->role === 'system admin' ? $request->iProComfk : Auth::user()->company_id,
 
         ]);
 

@@ -86,6 +86,9 @@
                     <th>Company Office No</th>
                     <th>Company Email</th>
                     <th>Website</th>
+                    @if(Auth::user()->role === 'system admin')
+                        <th>Company Name</th>
+                    @endif
                     <th>Action</th>
                 </tr>
             </thead>
@@ -99,11 +102,14 @@
                         <td>{{$customer->cCustDCity}}</td>
                         <td>{{$customer->cCustDState}}</td>
                         <td>{{$customer->cCustDPostcode}}</td>
-                        <td>{{$customer->company->code ?? 'N/A'}}-{{$customer->company->description ?? 'N/A'}} </td>
+                        <td>{{$customer->cCustDCompName}} </td>
                         <td>{{$customer->cCustDCompNo }}</td>
                         <td>{{$customer->cCustDCompOfficeNo }}</td>
                         <td>{{$customer->cCustDCompEmail}}</td>
                         <td>{{$customer->cCustDCompWebsite}}</td>
+                        @if(Auth::user()->role === 'system admin')
+                            <td>{{ $customer->company->description ?? 'N/A' }}</td>
+                        @endif
                         <td> <!-- Edit and Delete Icons -->
                             <a href="{{ route('customerDetail.edit', $customer->iCustDPk) }}"
                                 class="btn btn-custom-edit btn-sm">
