@@ -18,6 +18,9 @@ use App\Http\Controllers\InventoryMasterController;
 use App\Http\Controllers\CustomerDetailController;
 use App\Http\Controllers\CompanyMaintenanceController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\ReceiptController;
 
 
 /*
@@ -109,7 +112,14 @@ Route::resource('product', ProductController::class);
 Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
 
 Route::resource('quotations', QuotationController::class);
-Route::get('/quotations/{id}/print', [QuotationController::class, 'print'])->name('quotations.print');
+// Invoice Routes
+Route::resource('invoice', InvoiceController::class);
+
+// Purchase Order Routes
+Route::resource('purchaseOrder', PurchaseOrderController::class);
+
+// Receipt Routes
+Route::resource('receipt', ReceiptController::class);
 
 
 

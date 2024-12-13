@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Models\CustomerDetail;
+use App\Models\QuotationItem;
 use App\Models\Quotation;
 use App\Models\Company;
 use App\Models\CompanyMaintenance;
 use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\QuotationItem;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class QuotationController extends Controller
@@ -57,9 +57,10 @@ class QuotationController extends Controller
         }
 
         // Generate a new quotation number
-        $latestQuotation = Quotation::latest()->first();
-        $newQuotationNumber = $latestQuotation ? 'QT' . str_pad($latestQuotation->id + 1, 5, '0', STR_PAD_LEFT) : 'QT00001';
-        // Debugging
+        $latestQuotation = Quotation::latest('iQuoPk')->first();
+        $newQuotationNumber = $latestQuotation
+            ? 'QT' . str_pad((int) substr($latestQuotation->iQuoNo, 3) + 1, 5, '0', STR_PAD_LEFT)
+            : 'QT00001';
 
         return view('quotations.create', compact('companies', 'customers', 'companyMaintenance', 'newQuotationNumber', 'products', 'inventory'));
     }
@@ -69,11 +70,11 @@ class QuotationController extends Controller
     {
         $user = auth()->user();
 
-        dd($request->items); // Check the structure of the items data
+        dd(request()->all());
 
-
+        // Validate request data
         $request->validate([
-            'iQuoComfk' => 'required|exists:companies,id',
+            'iQuoComfk' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'sometimes|exists:companies,id',
             'iQuoCustDfk' => 'required|exists:customer_details,iCustDPk',
             'iQuoNo' => 'required|unique:quotations',
             'dQuodate' => 'required|date',
@@ -82,14 +83,14 @@ class QuotationController extends Controller
             'iQuoDiscount' => 'required|numeric',
             'iQuoShipping' => 'required|numeric',
             'iQuoTax' => 'required|numeric',
-            'items' => 'required|array',
-            'items.*.iQuoItemQuofk' => 'required|exists:quotation,iQuoPk',
-            'items.*.cQuoItemProductCode' => 'required|string|max:255',
-            'items.*.cQuoItemDescription' => 'required|string|max:255',
-            'items.*.yQuoItemPriceUnit' => 'required|numeric',
-            'items.*.iQuoItemQuantity' => 'required|integer',
-            'items.*.yQuoItemTotal' => 'required|numeric',
+            'quotation_items' => 'required|array|min:1',
+            'quotation_items.*.cQuoItemProductCode' => 'required|string|max:255',
+            'quotation_items.*.cQuoItemDescription' => 'required|string|max:255',
+            'quotation_items.*.yQuoItemPriceUnit' => 'required|numeric',
+            'quotation_items.*.iQuoItemQuantity' => 'required|integer|min:1',
+            'quotation_items.*.yQuoItemTotal' => 'required|numeric|min:0',
         ]);
+
 
         $quotation = new Quotation();
         if ($user->role === 'system admin') {
@@ -97,6 +98,7 @@ class QuotationController extends Controller
         } else {
             $quotation->iQuoComfk = $user->company_id;
         }
+
         $quotation->iQuoCustDfk = $request->iQuoCustDfk;
         $quotation->iQuoNo = $request->iQuoNo;
         $quotation->dQuodate = $request->dQuodate;
@@ -107,17 +109,15 @@ class QuotationController extends Controller
         $quotation->yQuoTotalPayment = $request->yQuoTotalPayment;
         $quotation->save();
 
-
-        foreach ($request->items as $item) {
+        foreach ($request->input('quotation_items') as $item) {
             $quotationItem = new QuotationItem();
-            $quotationItem->iQuoItemQuofk = $quotation->iQuoComfk; // Assuming you have a foreign key
-            $quotationItem->cQuoItemProductCode = $item['cQuoItemProductCode'];
-            $quotationItem->cQuoItemDescription = $item['cQuoItemDescription'];
-            $quotationItem->iQuoItemQuantity = $item['iQuoItemQuantity'];
-            $quotationItem->yQuoItemPriceUnit = $item['yQuoItemPriceUnit'];
-            $quotationItem->yQuoItemTotal = $item['yQuoItemTotal'];
+            $quotationItem->quotation_id = $quotation->id;
+            $quotationItem->product_code = $item['cQuoItemProductCode'];
+            $quotationItem->description = $item['cQuoItemDescription'];
+            $quotationItem->quantity = $item['iQuoItemQuantity'];
+            $quotationItem->price_per_unit = $item['yQuoItemPriceUnit'];
+            $quotationItem->total = $item['yQuoItemTotal'];
             $quotationItem->save();
-
         }
 
         return redirect()->route('quotations.index')->with('success', 'Quotation created successfully.');

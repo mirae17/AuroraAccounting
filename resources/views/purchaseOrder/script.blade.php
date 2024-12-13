@@ -212,21 +212,5 @@
         }
     });
 
-    document.querySelector("form").addEventListener("submit", function (event) {
-        const rows = document.querySelectorAll("#items-table tr");
-        let hasItems = false;
-
-        rows.forEach(row => {
-            const productCode = row.querySelector(".item-code").value.trim();
-            if (productCode) {
-                hasItems = true;
-            }
-        });
-
-        if (!hasItems) {
-            event.preventDefault();
-            alert("Please add at least one quotation item.");
-        }
-    });
 
 </script>

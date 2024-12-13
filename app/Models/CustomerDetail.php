@@ -33,5 +33,12 @@ class CustomerDetail extends Model
     {
         return $this->belongsTo(Company::class, 'iCustDCompfk', 'id');
     }
-
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'iInvcCustDfk', 'iCustDPk');
+    }
+    public function receipt()
+    {
+        return $this->hasMany(Receipt::class, 'iRecptCustDfk', 'iCustDPk');
+    }
 }

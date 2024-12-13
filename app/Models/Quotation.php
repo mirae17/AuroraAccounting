@@ -21,8 +21,11 @@ class Quotation extends Model
         'iQuoTax',
         'iQuoShipping',
         'yQuoTotalPayment',
+        'quotation_items',
     ];
-
+    protected $casts = [
+        'quotation_items' => 'array', // Automatically cast JSON to an array
+    ];
 
     public function company()
     {
@@ -33,10 +36,10 @@ class Quotation extends Model
     {
         return $this->belongsTo(CustomerDetail::class);
     }
+
     public function items()
     {
         return $this->hasMany(QuotationItem::class, 'iQuoItemQuofk', 'iQuoPk');
     }
-
 
 }

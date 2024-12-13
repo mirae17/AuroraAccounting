@@ -5,7 +5,7 @@
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="card shadow-lg p-4" style="max-width: 2500px; width: 100%; border-radius: 15px;">
         <div class="text-center mb-4">
-            <form action="{{ route('quotations.store') }}" method="POST">
+            <form action="{{ route('purchaseOrder.store') }}" method="POST">
                 @csrf
                 @if(isset($companyMaintenance))
                     <!-- Display Company Information -->
@@ -18,13 +18,13 @@
                     </p>
 
                     <!-- Pass the Company ID -->
-                    <input type="hidden" name="iQuoComfk" value="{{ $companyMaintenance->company->id }}">
+                    <input type="hidden" name="iPurchOrderComfk" value="{{ $companyMaintenance->company->id }}">
                 @else
                     @if(Auth::user()->role === 'system admin')
                         <!-- System Admin: Allow company selection -->
                         <div class="form-group">
-                            <label for="iQuoComfk">Select Company:</label>
-                            <select name="iQuoComfk" id="iQuoComfk" class="form-control">
+                            <label for="iPurchOrderComfk">Select Company:</label>
+                            <select name="iPurchOrderComfk" id="iPurchOrderComfk" class="form-control">
                                 <option value="">-- Select a Company --</option>
                                 @foreach($companies as $company)
                                     <option value="{{ $company->id }}">{{ $company->description }}</option>
@@ -33,7 +33,7 @@
                         </div>
                     @else
                         <!-- Regular User: Auto-detect company -->
-                        <input type="hidden" name="iQuoComfk" value="{{ Auth::user()->company_id }}">
+                        <input type="hidden" name="iPurchOrderComfk" value="{{ Auth::user()->company_id }}">
                     @endif
                 @endif
 
@@ -46,7 +46,7 @@
                 <h5>Bill To:</h5>
                 <div class="form-group">
                     <label for="customer-select">Select Customer:</label>
-                    <select name="iQuoCustDfk" id="customer-select" class="form-control"
+                    <select name="iPurchOrderCustDfk" id="customer-select" class="form-control"
                         onchange="displayCustomerDetails(this)">
                         <option value="">-- Select Customer --</option>
                         @foreach($customers as $customer)
@@ -68,17 +68,17 @@
                 </div>
             </div>
 
-            <!-- Right: Quotation Details -->
+            <!-- Right: PurchOrdertation Details -->
             <div class="col-md-6 text-end">
-                <h5>Quotation Details</h5>
+                <h5>Purchase Order Details</h5>
                 <div class="form-group">
-                    <label for="quotation-number">Quotation No:</label>
-                    <input type="text" name="iQuoNo" id="quotation-number" class="form-control"
-                        value="{{ $newQuotationNumber }}" readonly>
+                    <label for="quotation-number">Purchase Order No:</label>
+                    <input type="text" name="iPurchOrderNo" id="quotation-number" class="form-control"
+                        value="{{ $newpurchaseOrderNumber }}" readonly>
                 </div>
                 <div class="form-group">
                     <label for="quotation-date">Date:</label>
-                    <input type="date" name="dQuodate" id="quotation-date" class="form-control"
+                    <input type="date" name="dPurchOrderdate" id="quotation-date" class="form-control"
                         value="{{ date('Y-m-d') }}" required>
                 </div>
             </div>
@@ -116,7 +116,7 @@
                     <tr>
                         <td colspan="6"></td>
                         <td><strong>Subtotal: <span id="subtotal">0.00</span></strong></td>
-                        <input type="hidden" name="yQuoSubtotal" id="hidden-subtotal" value="0">
+                        <input type="hidden" name="yPurchOrderSubtotal" id="hidden-subtotal" value="0">
                     </tr>
                 </tfoot>
             </table>
@@ -130,24 +130,24 @@
             <div class="col-md-6">
                 <div class="form-group mb-3">
                     <label for="discount" class="form-label">Discount (%):</label>
-                    <input type="number" id="discount" name="iQuoDiscount" class="form-control"
+                    <input type="number" id="discount" name="iPurchOrderDiscount" class="form-control"
                         oninput="calculateTotal()" placeholder="Enter Discount">
                 </div>
                 <div class="form-group mb-3">
                     <label for="tax" class="form-label">Tax (%):</label>
-                    <input type="number" id="additional-tax" name="iQuoTax" class="form-control"
+                    <input type="number" id="additional-tax" name="iPurchOrderTax" class="form-control"
                         oninput="calculateTotal()" placeholder="Enter Tax">
                 </div>
                 <div class="form-group mb-3">
                     <label for="shipping" class="form-label">Shipping:</label>
-                    <input type="number" id="shipping" name="iQuoShipping" class="form-control"
+                    <input type="number" id="shipping" name="iPurchOrderShipping" class="form-control"
                         oninput="calculateTotal()" placeholder="Enter Shipping Cost">
                 </div>
                 <!-- Total -->
                 <div class="row mt-3">
                     <div class="col-md-12 text-end">
                         <h4>Total Amount: <span id="total-amount">0.00</span></h4>
-                        <input type="hidden" name="yQuoTotalPayment" id="hidden-total-amount" value="0.00">
+                        <input type="hidden" name="yPurchOrderTotalPayment" id="hidden-total-amount" value="0.00">
                     </div>
                 </div>
             </div>
@@ -251,44 +251,13 @@
 
         <!-- Submit Button -->
         <div class="mt-4 text-end">
-            <button type="submit" class="btn btn-success">Save Quotation</button>
+            <button type="submit" class="btn btn-success">Save Purchase Order</button>
         </div>
 
         </form>
     </div>
 </div>
 <br>
-<script> document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.select-product').forEach(button => {
-            button.addEventListener('click', function () {
-                const productCode = this.dataset.code;
-                const description = this.dataset.description;
-                const price = parseFloat(this.dataset.price).toFixed(2);
-
-                const newRow = `
-                    <tr>
-                        <td><input type="hidden" name="items[][product_code]" value="${productCode}">${productCode}</td>
-                        <td><input type="hidden" name="items[][description]" value="${description}">${description}</td>
-                        <td><input type="hidden" name="items[][price_unit]" value="${price}">${price}</td>
-                        <td><input type="number" name="items[][quantity]" class="form-control item-quantity" min="1" value="1"></td>
-                        <td class="item-total">${price}</td>
-                    </tr>
-                `;
-
-                document.querySelector('#items-table').insertAdjacentHTML('beforeend', newRow);
-                new bootstrap.Modal(document.getElementById('productModal')).hide();
-            });
-        });
-
-        document.querySelector('#items-table').addEventListener('input', function (e) {
-            if (e.target.classList.contains('item-quantity')) {
-                const row = e.target.closest('tr');
-                const price = parseFloat(row.querySelector('[name="items[][price_unit]"]').value);
-                const quantity = parseInt(e.target.value);
-                row.querySelector('.item-total').textContent = (price * quantity).toFixed(2);
-            }
-        });
-    });</script>
 @include('quotations.script')
 
 <style>

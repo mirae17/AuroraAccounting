@@ -49,6 +49,11 @@
         <li class="nav-item">
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+            <i class="fas fa-expand-arrows-alt"></i>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -212,7 +217,8 @@
 
             <!-- Invoice -->
             <li class="nav-item">
-              <a href="#" class="nav-link ">
+              <a href="{{ route('invoice.index') }}"
+                class="nav-link {{ request()->routeIs('invoice.index') ? 'active' : '' }}">
                 <i class="fas fa-file-invoice"></i>
                 <p> Invoice</p>
               </a>
@@ -220,16 +226,18 @@
 
             <!-- Receipt -->
             <li class="nav-item">
-              <a href="#" class="nav-link ">
-                <i class="fas fa-file-invoice-dollar"></i>
+              <a href="{{ route('receipt.index') }}"
+                class="nav-link {{ request()->routeIs('receipt.index') ? 'active' : '' }}">
+                <i class="fas fa-file-invoice-dollar "></i>
                 <p> Receipt</p>
               </a>
             </li>
 
             <!-- Purchase Order -->
             <li class="nav-item">
-              <a href="#" class="nav-link ">
-                <i class="fas fa-clipboard-check"></i>
+              <a href="{{ route('purchaseOrder.index') }}"
+                class="nav-link {{ request()->routeIs('purchaseOrder.index') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-check "></i>
                 <p> Purchase Order</p>
               </a>
             </li>
