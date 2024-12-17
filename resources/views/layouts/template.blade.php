@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
   <link rel="stylesheet" href="{{ asset('admin/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
-
+  @vite(['resources/js/app.js', 'resources/sass/app.scss'])
   <style>
     div.dataTables_wrapper div.dataTables_filter input {
       width: 400px !important;
@@ -39,7 +39,7 @@
 
     <!-- Preloader -->
     <div class="preloader flex-column justify-content-center align-items-center">
-      <img class="animation__shake" src="{{ asset('admin/dist/img/AdminLTELogo.png') }}" alt="AdminLTE Logo" height="60"
+      <img class="animation__shake" src="{{ asset('admin/dist/img/logo-aurora.png') }}" alt="AdminLTE Logo" height="60"
         width="60">
     </div>
 
@@ -316,12 +316,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    integrity="sha384-oBqDVmMz4fnFO9gybOFTDz2fQAT++tM4G13ah7tRYS05v9AiFoZl3GOGxr5K5oG1"
-    crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-    integrity="sha384-qQBdPj1d/tQvMhTxv7bAtZkk+odB29DYOn2gx3Lp1YMWWVl7UNxAF1xl0iRBATqD"
-    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 
 
   <!-- jQuery and Bootstrap JavaScript for modal functionality -->

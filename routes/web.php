@@ -18,6 +18,7 @@ use App\Http\Controllers\InventoryMasterController;
 use App\Http\Controllers\CustomerDetailController;
 use App\Http\Controllers\CompanyMaintenanceController;
 use App\Http\Controllers\QuotationController;
+use App\Http\Controllers\QuotationItemController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReceiptController;

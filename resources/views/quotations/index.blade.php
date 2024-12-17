@@ -28,14 +28,16 @@
                     <tr>
                         <td>{{ $quotation->id }}</td>
                         <td>{{ $quotation->iQuoNo }}</td>
-                        <td>{{ $quotation->company->name }}</td>
-                        <td>{{ $quotation->customer->name }}</td>
+                        <td>{{ $quotation->customer->cCustDCompName ?? 'N/A' }}</td>
+                        <td>{{ $quotation->customer->cCustDName ?? 'N/A'}}</td>
                         <td>{{ $quotation->dQuodate }}</td>
                         <td>{{ $quotation->yQuoTotalPayment }}</td>
                         <td>
-                            <a href="{{ route('quotations.show', $quotation->id) }}" class="btn btn-info btn-sm">View</a>
-                            <a href="{{ route('quotations.edit', $quotation->id) }}" class="btn btn-primary btn-sm">Edit</a>
-                            <form action="{{ route('quotations.destroy', $quotation->id) }}" method="POST"
+                            <a href="{{ route('quotations.show', $quotation->iQuoPk) }}"
+                                class="btn btn-info btn-sm">View</a>
+                            <a href="{{ route('quotations.edit', $quotation->iQuoPk) }}"
+                                class="btn btn-primary btn-sm">Edit</a>
+                            <form action="{{ route('quotations.destroy', $quotation->iQuoPk) }}" method="POST"
                                 style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')

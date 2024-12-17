@@ -67,7 +67,7 @@
                     <label for="iCompMainLogo" class="form-label">Company Logo</label>
                     <input type="file" class="form-control" id="iCompMainLogo" name="iCompMainLogo">
                     @if($companyMaintenance->iCompMainLogo)
-                        <img src="{{ asset('storage/' . $companyMaintenance->iCompMainLogo) }}" alt="Company Logo"
+                        <img src="{{ asset('/storage' . $companyMaintenance->iCompMainLogo) }}" alt="Company Logo"
                             width="50" class="mt-2">
                     @endif
                 </div>

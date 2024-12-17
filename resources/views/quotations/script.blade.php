@@ -16,8 +16,8 @@
         if (!selectedRow) return;
 
         // Populate the selected row with item details
-        selectedRow.querySelector(".item-code").value = code;
-        selectedRow.querySelector(".item-description").value = description;
+        selectedRow.querySelector(".items-code").value = code;
+        selectedRow.querySelector(".items-description").value = description;
         selectedRow.querySelector(".price").value = price;
         selectedRow.querySelector(".quantity").value = 1; // Default quantity
         selectedRow.querySelector(".item-total").innerText = (price * 1).toFixed(2);
@@ -41,24 +41,24 @@
         </td>
         <td>
        
-            <input type="text" name="quotation_items[${itemIndex}][cQuoItemProductCode]" class="form-control item-code" readonly>
+            <input type="text" name="items[${itemIndex}][cQuoItemProductCode]" class="form-control items-code" readonly>
         </td>
         <td>
         
-            <input type="text" name="quotation_items[${itemIndex}][cQuoItemDescription]" class="form-control item-description" readonly>
+            <input type="text" name="items[${itemIndex}][cQuoItemDescription]" class="form-control items-description" readonly>
         </td>
         <td>
         
-            <input type="number" name="quotation_items[${itemIndex}][iQuoItemQuantity]" class="form-control quantity" value="1" min="1" oninput="calculateItemTotal(this)">
+            <input type="number" name="items[${itemIndex}][iQuoItemQuantity]" class="form-control quantity" value="1" min="1" oninput="calculateItemTotal(this)">
         </td>
         <td>
         
-            <input type="number" name="quotation_items[${itemIndex}][yQuoItemPriceUnit]" class="form-control price" value="0" min="0" step="0.01" oninput="calculateItemTotal(this)">
+            <input type="number" name="items[${itemIndex}][yQuoItemPriceUnit]" class="form-control price" value="0" min="0" step="0.01" oninput="calculateItemTotal(this)">
         </td>
         <td>
             <span class="item-total">0.00</span>
             
-            <input type="hidden" name="quotation_items[${itemIndex}][yQuoItemTotal]" class="item-total-input" value="0">
+            <input type="hidden" name="items[${itemIndex}][yQuoItemTotal]" class="item-total-input" value="0">
         </td>
         <td>
             <button type="button" class="btn btn-danger" onclick="removeItem(this)">Remove</button>

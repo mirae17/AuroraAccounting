@@ -8,20 +8,26 @@
         align-items: center;
         min-height: 100vh;
     }
+
     .card {
         border: none;
         border-radius: 15px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 2rem;
     }
-    .btn-primary, .btn-secondary {
+
+    .btn-primary,
+    .btn-secondary {
         padding: 0.5rem 1.5rem;
     }
+
     .form-group label {
         font-weight: 500;
         color: #555;
     }
-    .form-control, .form-select {
+
+    .form-control,
+    .form-select {
         width: 100%;
         height: 38px;
         padding: 0.5rem;
@@ -48,7 +54,7 @@
                     @endforeach
                 </select>
             </div>
-            
+
             <div id="addCompanyFields">
                 <div class="form-group mb-3">
                     <label for="code" class="form-label">Company Code:</label>
@@ -75,9 +81,10 @@
             </div>
         </div>
 
-         <!-- Success message and user form - initially hidden -->
-         <div id="successMessage" class="alert alert-success mt-4" style="display: none;">Company added successfully!</div>
-        
+        <!-- Success message and user form - initially hidden -->
+        <div id="successMessage" class="alert alert-success mt-4" style="display: none;">Company added successfully!
+        </div>
+
         <!-- User Form -->
         <form id="userForm" action="{{ route('users.store') }}" method="POST" style="display: none;">
             @csrf
@@ -101,7 +108,8 @@
             </div>
             <div class="form-group mb-3">
                 <label for="password_confirmation" class="form-label">Confirm Password:</label>
-                <input type="password" class="form-control" id="confirm-password" minlength="8" name="password_confirmation" required>
+                <input type="password" class="form-control" id="confirm-password" minlength="8"
+                    name="password_confirmation" required>
                 <small id="passwordError" class="text-danger" style="display: none;">Passwords do not match.</small>
             </div>
             <button type="button" class="btn btn-success" id="submitUserForm">Add User</button>
@@ -140,31 +148,31 @@
             },
             body: JSON.stringify({ code, description })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.company) {
-                // Show success message
-                document.getElementById('successMessage').style.display = 'block';
+            .then(response => response.json())
+            .then(data => {
+                if (data.company) {
+                    // Show success message
+                    document.getElementById('successMessage').style.display = 'block';
 
-                // Populate hidden company ID field in the user form
-                document.getElementById('company_id').value = data.company.id;
+                    // Populate hidden company ID field in the user form
+                    document.getElementById('company_id').value = data.company.id;
 
-                // Hide company selection dropdown and add company fields
-                document.getElementById('company_select').style.display = 'none';
-                document.getElementById('addCompanyFields').style.display = 'none';
+                    // Hide company selection dropdown and add company fields
+                    document.getElementById('company_select').style.display = 'none';
+                    document.getElementById('addCompanyFields').style.display = 'none';
 
-                // Populate read-only fields with added company information
-                document.getElementById('readonly_code').value = data.company.code;
-                document.getElementById('readonly_description').value = data.company.description;
+                    // Populate read-only fields with added company information
+                    document.getElementById('readonly_code').value = data.company.code;
+                    document.getElementById('readonly_description').value = data.company.description;
 
-                // Display read-only company info and user form
-                document.getElementById('addedCompanyInfo').style.display = 'block';
-                document.getElementById('userForm').style.display = 'block';
-            } else {
-                alert('Error adding company');
-            }
-        })
-        .catch(error => console.error('Error:', error));
+                    // Display read-only company info and user form
+                    document.getElementById('addedCompanyInfo').style.display = 'block';
+                    document.getElementById('userForm').style.display = 'block';
+                } else {
+                    alert('Error adding company');
+                }
+            })
+            .catch(error => console.error('Error:', error));
     });
 
     // Handle User Form Submission with Password Match Validation

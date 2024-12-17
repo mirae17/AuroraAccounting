@@ -12,15 +12,15 @@ return new class extends Migration {
     {
         Schema::create('quotations', function (Blueprint $table) {
             $table->id('iQuoPk');
-            $table->unsignedBigInteger('iQuoComfk');
-            $table->unsignedBigInteger('iQuoCustDfk');
-            $table->string('iQuoNo')->unique();
-            $table->date('dQuodate');
-            $table->decimal('yQuoSubtotal', 15, 2);
-            $table->decimal('iQuoDiscount', 15, 2)->nullable();
-            $table->decimal('iQuoTax', 5, 2)->nullable();
-            $table->decimal('iQuoShipping', 15, 2)->nullable();
-            $table->decimal('yQuoTotalPayment', 15, 2);
+            $table->unsignedBigInteger('iQuoComfk');//company user's details
+            $table->unsignedBigInteger('iQuoCustDfk');//customer details
+            $table->string('iQuoNo')->unique();//quoatation no 
+            $table->date('dQuodate');//quotation date
+            $table->decimal('yQuoSubtotal', 15, 2);//subtotal
+            $table->decimal('iQuoDiscount', 15, 2)->nullable();//discount
+            $table->decimal('iQuoTax', 5, 2)->nullable();//tax
+            $table->decimal('iQuoShipping', 15, 2)->nullable();//shipping
+            $table->decimal('yQuoTotalPayment', 15, 2);//total payment
             $table->timestamps();
 
             $table->foreign('iQuoComfk')->references('id')->on('companies');

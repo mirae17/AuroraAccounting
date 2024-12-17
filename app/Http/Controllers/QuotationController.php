@@ -9,6 +9,7 @@ use App\Models\CustomerDetail;
 use App\Models\QuotationItem;
 use App\Models\Quotation;
 use App\Models\Company;
+use Illuminate\Support\Facades\DB;
 use App\Models\CompanyMaintenance;
 use App\Models\Inventory;
 use App\Models\Product;
@@ -18,45 +19,37 @@ class QuotationController extends Controller
 {
     public function index()
     {
-        $quotations = Quotation::with('company', 'customer', 'companyMaintenance')->get();
+
+        $user = Auth::user();
+        if ($user->role === 'system admin') {
+
+            $quotations = Quotation::with('company', 'customer')->get();
+            $companies = Company::all(); // Get all companies
+        } else {
+            $quotations = Quotation::with('company', 'customer')->where('iQuoComfk', $user->company_id)->get();
+            $companies = [];
+
+        }
+
         return view('quotations.index', compact('quotations'));
     }
-
-    /**
-     * Show the form for creating a new quotation.
-     */
     public function create()
     {
-        $user = auth()->user(); // Get the logged-in user
-
-        // Fetch customers
-        $customers = CustomerDetail::all();
+        $user = Auth::user();
 
         if ($user->role === 'system admin') {
-            // System admin: Fetch all companies, products, and inventory
             $companies = Company::select('id', 'description')->get();
             $products = Product::all();
             $inventory = Inventory::all();
-            $companyMaintenance = null; // System admins don't have specific company maintenance
+            $companyMaintenance = null;
+            $customers = CustomerDetail::all(); // Fetch all companies
         } else {
-            // Regular users: Fetch their associated company
-            $company = Company::select('id', 'description')->find($user->company_id);
-
-            if (!$company) {
-                return redirect()->route('quotations.index')->with('error', 'Your company details are not available.');
-            }
-
-            $companies = collect([$company]); // Wrap single company in a collection
-
-            // Fetch products and inventory based on the user's company ID
-            $products = Product::where('iProComfk', $company->id)->get();
-            $inventory = Inventory::where('iInvComfk', $company->id)->get();
-
-            // Fetch company maintenance details
-            $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
+            $products = Product::where('iProComfk', $user->company_id)->get(['iProPk', 'cProName', 'cProCode', 'yProPrice']);
+            $customers = CustomerDetail::where('iCustDCompfk', $user->company_id)->get(['iCustDPk', 'cCustDName', 'cCustDAddress', 'cCustDCompName', 'cCustDCompOfficeNo', 'cCustDCompEmail']);
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get(['iInvPK', 'cInvName', 'cInvCode', 'yInvPrice']);
+            $companyMaintenance = CompanyMaintenance::where('iCompMainName', $user->company_id)->get(['iCompMainPk', 'iCompMainAddress', 'iCompMainPhoneNo', 'iCompMainEmail', 'iCompMainLogo']);
+            $companies = [];
         }
-
-        // Generate a new quotation number
         $latestQuotation = Quotation::latest('iQuoPk')->first();
         $newQuotationNumber = $latestQuotation
             ? 'QT' . str_pad((int) substr($latestQuotation->iQuoNo, 3) + 1, 5, '0', STR_PAD_LEFT)
@@ -65,121 +58,183 @@ class QuotationController extends Controller
         return view('quotations.create', compact('companies', 'customers', 'companyMaintenance', 'newQuotationNumber', 'products', 'inventory'));
     }
 
-
     public function store(Request $request)
     {
         $user = auth()->user();
-
-        dd(request()->all());
-
-        // Validate request data
-        $request->validate([
+        // Validate input data
+        $validated = $request->validate([
             'iQuoComfk' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'sometimes|exists:companies,id',
-            'iQuoCustDfk' => 'required|exists:customer_details,iCustDPk',
-            'iQuoNo' => 'required|unique:quotations',
+            'iQuoCustDfk' => 'required|exists:customer_details,iCustDPk', // Ensure customer exists
+            'iQuoNo' => 'required|unique:quotations,iQuoNo', // Quotation number should be unique
             'dQuodate' => 'required|date',
-            'yQuoSubtotal' => 'required|numeric',
-            'yQuoTotalPayment' => 'required|numeric',
-            'iQuoDiscount' => 'required|numeric',
-            'iQuoShipping' => 'required|numeric',
-            'iQuoTax' => 'required|numeric',
-            'quotation_items' => 'required|array|min:1',
-            'quotation_items.*.cQuoItemProductCode' => 'required|string|max:255',
-            'quotation_items.*.cQuoItemDescription' => 'required|string|max:255',
-            'quotation_items.*.yQuoItemPriceUnit' => 'required|numeric',
-            'quotation_items.*.iQuoItemQuantity' => 'required|integer|min:1',
-            'quotation_items.*.yQuoItemTotal' => 'required|numeric|min:0',
+            'iQuoTax' => 'nullable|numeric|min:0',
+            'iQuoDiscount' => 'nullable|numeric|min:0',
+            'iQuoShipping' => 'nullable|numeric|min:0',
+            'yQuoSubtotal' => 'required|numeric|min:0',
+            'yQuoTotalPayment' => 'required|numeric|min:0',
+            'items' => 'required|array', // List of items to be added to the quotation
+            'items.*.code' => 'required|string|max:255',
+            'items.*.description' => 'required|string|max:255',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0',
+
         ]);
 
+        // Create the new quotation
+        $quotation = Quotation::create([
+            'iQuoComfk' => Auth::user()->role === 'system admin' ? $request->iQuoComfk : Auth::user()->company_id,
+            'iQuoNo' => $request->input('iQuoNo'),
+            'iQuoCustDfk' => $request->input('iQuoCustDfk'),
+            'dQuodate' => $request->input('dQuodate'),
+            'iQuoTax' => $request->input('iQuoTax', 0),
+            'iQuoDiscount' => $request->input('iQuoDiscount', 0),
+            'iQuoShipping' => $request->input('iQuoShipping', 0),
+            'yQuoSubtotal' => $request->input('yQuoSubtotal'),
+            'yQuoTotalPayment' => $request->input('yQuoTotalPayment'),
+        ]);
 
-        $quotation = new Quotation();
-        if ($user->role === 'system admin') {
-            $quotation->iQuoComfk = $request->iQuoComfk;
-        } else {
-            $quotation->iQuoComfk = $user->company_id;
+        // Loop through the items and store them in the QuotationItem table
+
+        foreach ($request->items as $item) {
+            QuotationItem::create([
+                'iQuoItemQuofk' => $quotation->iQuoPk, // Foreign key to the quotation table
+                'cQuoItemProductCode' => $item['code'], // Map 'code' to database column
+                'cQuoItemDescription' => $item['description'], // Map 'description' to database column
+                'iQuoItemQuantity' => $item['quantity'], // Map 'quantity' to database column
+                'yQuoItemPriceUnit' => $item['price'], // Map 'price' to database column
+                'yQuoItemTotal' => $item['quantity'] * $item['price'], // Calculate total
+            ]);
         }
 
-        $quotation->iQuoCustDfk = $request->iQuoCustDfk;
-        $quotation->iQuoNo = $request->iQuoNo;
-        $quotation->dQuodate = $request->dQuodate;
-        $quotation->yQuoSubtotal = $request->yQuoSubtotal;
-        $quotation->iQuoDiscount = $request->iQuoDiscount;
-        $quotation->iQuoTax = $request->iQuoTax;
-        $quotation->iQuoShipping = $request->iQuoShipping;
-        $quotation->yQuoTotalPayment = $request->yQuoTotalPayment;
-        $quotation->save();
-
-        foreach ($request->input('quotation_items') as $item) {
-            $quotationItem = new QuotationItem();
-            $quotationItem->quotation_id = $quotation->id;
-            $quotationItem->product_code = $item['cQuoItemProductCode'];
-            $quotationItem->description = $item['cQuoItemDescription'];
-            $quotationItem->quantity = $item['iQuoItemQuantity'];
-            $quotationItem->price_per_unit = $item['yQuoItemPriceUnit'];
-            $quotationItem->total = $item['yQuoItemTotal'];
-            $quotationItem->save();
-        }
-
-        return redirect()->route('quotations.index')->with('success', 'Quotation created successfully.');
+        return redirect()->route('quotations.index', $quotation->iQuoPk)->with('success', 'Quotation created successfully!');
     }
 
-    /**
-     * Display the specified quotation.
-     */
+    // Edit method to display the edit form for a specific quotation
+    public function edit($quotation)
+    {
+        $quotation = Quotation::with('items')->findOrFail($quotation); // Fetch the quotation and related items
+        $user = Auth::user();
+
+        if ($user->role === 'system admin') {
+            $companies = Company::select('id', 'description')->get();
+            $customers = CustomerDetail::all();
+            $products = Product::all();
+            $inventory = Inventory::all();
+        } else {
+            $companies = [];
+            $customers = CustomerDetail::where('iCustDCompfk', $user->company_id)->get();
+            $products = Product::where('iProComfk', $user->company_id)->get();
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get();
+        }
+
+        return view('quotations.edit', compact('quotation', 'companies', 'customers', 'products', 'inventory'));
+    }
+
+    // Update method to handle the form submission and update the quotation
+    public function update(Request $request, $quotation)
+    {
+        $user = Auth::user();
+        // dd(request()->all());
+        $validated = $request->validate([
+            'iQuoCustDfk' => 'required|exists:customer_details,iCustDPk',
+            'dQuodate' => 'required|date',
+            'iQuoTax' => 'nullable|numeric|min:0',
+            'iQuoDiscount' => 'nullable|numeric|min:0',
+            'iQuoShipping' => 'nullable|numeric|min:0',
+            'yQuoSubtotal' => 'required|numeric|min:0',
+            'yQuoTotalPayment' => 'required|numeric|min:0',
+            'items' => 'required|array',
+            'items.*.cQuoItemProductCode' => 'required|string|max:255',
+            'items.*.cQuoItemDescription' => 'required|string|max:255',
+            'items.*.iQuoItemQuantity' => 'required|numeric|min:1',
+            'items.*.yQuoItemPriceUnit' => 'required|numeric|min:0',
+            'items.*.yQuoItemTotal' => 'required|numeric|min:0',
+        ]);
+
+        $quotation = Quotation::findOrFail($quotation);
+
+        $quotation->update([
+            'iQuoCustDfk' => $request->input('iQuoCustDfk'),
+            'dQuodate' => $request->input('dQuodate'),
+            'iQuoTax' => $request->input('iQuoTax', 0),
+            'iQuoDiscount' => $request->input('iQuoDiscount', 0),
+            'iQuoShipping' => $request->input('iQuoShipping', 0),
+            'yQuoSubtotal' => $request->input('yQuoSubtotal'),
+            'yQuoTotalPayment' => $request->input('yQuoTotalPayment'),
+        ]);
+
+        // Delete existing items and replace with updated items
+        $quotation->items()->delete();
+        foreach ($request->items as $item) {
+            \Log::info('Creating Quotation Item', $item);
+            QuotationItem::create([
+                'iQuoItemQuofk' => $quotation->iQuoPk,
+                'cQuoItemProductCode' => $item['cQuoItemProductCode'],
+                'cQuoItemDescription' => $item['cQuoItemDescription'],
+                'iQuoItemQuantity' => $item['iQuoItemQuantity'],
+                'yQuoItemPriceUnit' => $item['yQuoItemPriceUnit'],
+                'yQuoItemTotal' => $item['yQuoItemTotal'],
+            ]);
+        }
+
+        return redirect()->route('quotations.index')->with('success', 'Quotation updated successfully!');
+    }
+
+    // Show method to display the details of a specific quotation
     public function show($id)
     {
-        $quotation = Quotation::with('company', 'customer')->findOrFail($id);
-        return view('quotations.show', compact('quotation'));
+        $user = auth()->user();
+        // Fetch the quotation by ID with its related data
+        $quotation = Quotation::with(['company', 'customer', 'items'])->findOrFail($id);
+        $company = Company::select('id', 'description')->find($user->company_id);
+
+        $companies = collect([$company]);
+
+        // Fetch products and inventory based on the user's company ID
+        $products = Product::where('iProComfk', $company->id)->get();
+        $inventory = Inventory::where('iInvComfk', $company->id)->get();
+        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
+
+        // Pass the data to the show view
+        return view('quotations.show', compact('quotation', 'products', 'inventory', 'companyMaintenance'));
+
     }
 
-    /**
-     * Show the form for editing the specified quotation.
-     */
-    public function edit($id)
+    // Delete method to remove a specific quotation
+    public function destroy($iQuoPk)
     {
-        $quotation = Quotation::findOrFail($id);
-        $companies = Company::all();
-        $customers = CustomerDetail::all();
-        return view('quotations.edit', compact('quotation', 'companies', 'customers'));
+        $quotation = Quotation::findOrFail($iQuoPk);
+
+        // Delete related items first to maintain integrity
+        $quotation->items()->delete();
+
+        // Delete the quotation
+        $quotation->delete();
+
+        return redirect()->route('quotations.index')->with('success', 'Quotation deleted successfully!');
     }
 
-    /**
-     * Update the specified quotation in storage.
-     */
-    public function update(Request $request, $id)
+
+    public function pdf($id, Request $request)
     {
-        $request->validate([
-            'iQuoComfk' => 'required|exists:companies,id',
-            'iQuoCustDfk' => 'required|exists:customer_details,iCustDPk',
-            'iQuoNo' => 'required|unique:quotations,iQuoNo,' . $id,
-            'dQuodate' => 'required|date',
-            'yQuoSubtotal' => 'required|numeric',
-            'yQuoTotalPayment' => 'required|numeric',
+        // Fetch the quotation with related data
+        $quotation = Quotation::with(['company', 'customer', 'items'])->findOrFail($id);
+
+        // Determine whether to include a signature (from request input)
+        $includeSignature = $request->has('include_signature') && $request->include_signature == 'yes';
+
+        // Load the view for the PDF (e.g., quotations/pdf.blade.php)
+        $pdf = Pdf::loadView('quotations.pdf', [
+            'quotation' => $quotation,
+            'includeSignature' => $includeSignature,
         ]);
 
-        $quotation = Quotation::findOrFail($id);
-        $quotation->update($request->all());
-        return redirect()->route('quotations.index')->with('success', 'Quotation updated successfully.');
-    }
+        // Set filename for download
+        $fileName = "Quotation-{$quotation->quotation_no}.pdf";
 
-    /**
-     * Remove the specified quotation from storage.
-     */
-    public function destroy($id)
-    {
-        $quotation = Quotation::findOrFail($id);
-        $quotation->delete();
-        return redirect()->route('quotations.index')->with('success', 'Quotation deleted successfully.');
-    }
-
-    public function print($id, Request $request)
-    {
-        $quotation = Quotation::with('company', 'customer')->findOrFail($id);
-        $withSignature = $request->query('signature', false);
-
-        // Logic to generate PDF with/without signature
-        $pdf = PDF::loadView('quotations.print', compact('quotation', 'withSignature'));
-        return $pdf->download('quotation-' . $quotation->iQuoNo . '.pdf');
+        // Return PDF as a download
+        return $pdf->download($fileName);
     }
 
 }
