@@ -105,7 +105,7 @@
 
             <!-- Basic Code -->
             <li
-              class="nav-item has-treeview {{ request()->is('payments*') || request()->is('expenses*') || request()->is('suppliers*') || request()->is('inventory*') || request()->is('product*') ? 'menu-open' : '' }}">
+              class="nav-item has-treeview {{ request()->is('payments*') || request()->is('expensesCode*') || request()->is('debtor*') || request()->is('suppliers*') || request()->is('inventory*') || request()->is('product*') ? 'menu-open' : '' }}">
               <a href="#" class="nav-link">
                 <i class="nav-icon fas fa-tools text-warning"></i>
                 <p>Basic Code<i class="right fas fa-angle-left"></i></p>
@@ -119,8 +119,8 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="{{ route('expenses.index') }}"
-                    class="nav-link {{ request()->routeIs('expenses.index') ? 'active' : '' }}">
+                  <a href="{{ route('expensesCode.index') }}"
+                    class="nav-link {{ request()->routeIs('expensesCode.index') ? 'active' : '' }}">
                     <i class="fas fa-receipt nav-icon"></i>
                     <p>Expenses Code</p>
                   </a>
@@ -198,6 +198,7 @@
                   </a>
                 </li>
 
+              </ul>
             </li>
 
             <!-- Documents -->

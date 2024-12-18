@@ -20,17 +20,17 @@ class ExpensesController extends Controller
         $user = Auth::user();
 
         if ($user->role === 'system admin') {
-           
+
             $expense = Expense::with('company')->get();
             $companies = Company::all(); // Get all companies
         } else {
-           
+
             $expense = Expense::with('company')->where('company_id', $user->company_id)->get();
-            $companies = []; 
+            $companies = [];
         }
 
-       
-        return view('expenses.index', compact('expense', 'companies'));
+
+        return view('expensesCode.index', compact('expense', 'companies'));
     }
 
     /**
@@ -39,14 +39,14 @@ class ExpensesController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'cExpCode' => 'required|max:6|unique:expenses,cExpCode',
             'cExpDesc' => 'required|max:50',
             'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
 
-       
+
 
         $expense = new Expense();
         $expense->cExpCode = $request->cExpCode;
@@ -59,7 +59,7 @@ class ExpensesController extends Controller
         }
         $expense->save();
 
-        return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
+        return redirect()->route('expensesCode.index')->with('success', 'Expense created successfully.');
     }
 
     /**
@@ -73,20 +73,20 @@ class ExpensesController extends Controller
             'cExpDesc' => 'required|string|max:50',
             'company_id' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'nullable',
         ]);
-    
+
         $expense = Expense::findOrFail($id);
         $expense->cExpCode = $request->cExpCode;
         $expense->cExpDesc = $request->cExpDesc;
-        
+
         if ($user->role === 'system admin') {
             $expense->company_id = $request->company_id;
         }
         $expense->save();
-    
-        return redirect()->route('expenses.index')
+
+        return redirect()->route('expensesCode.index')
             ->with('success', 'Expense updated successfully.');
     }
-    
+
 
     /**
      * Remove the specified expense from the database.
@@ -96,6 +96,6 @@ class ExpensesController extends Controller
         $expense = Expense::findOrFail($iExpPk);
         $expense->delete();
 
-        return redirect()->route('expenses.index')->with('success', 'Expenses record deleted successfully.');
+        return redirect()->route('expensesCode.index')->with('success', 'Expenses record deleted successfully.');
     }
 }

@@ -93,8 +93,8 @@ Route::resource('employees', EmployeeController::class);
 Route::delete('/employees/{employees}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
 
 // Expenses routes
-Route::resource('expenses', ExpensesController::class);
-Route::delete('/expenses/{expenses}', [ExpensesController::class, 'destroy'])->name('expenses.destroy');
+Route::resource('expensesCode', ExpensesController::class);
+Route::delete('/expensesCode/{expenses}', [ExpensesController::class, 'destroy'])->name('expensesCode.destroy');
 
 // Payment methods routes
 Route::resource('payments', PaymentMethodController::class);

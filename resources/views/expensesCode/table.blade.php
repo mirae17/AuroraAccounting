@@ -27,7 +27,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="{{ route('expenses.store') }}" method="POST">
+      <form action="{{ route('expensesCode.store') }}" method="POST">
         <div class="modal-body">
 
           @csrf
@@ -88,7 +88,7 @@
         <span aria-hidden="true">&times;</span>
       </button>
       </div>
-      <form action="{{ route('expenses.update', $expenses->iExpPk) }}" method="POST">
+      <form action="{{ route('expensesCode.update', $expenses->iExpPk) }}" method="POST">
       @csrf
       @method('PUT')
       <div class="modal-body">
@@ -173,7 +173,7 @@
         <a class="btn btn-custom-edit btn-sm" data-toggle="modal" data-target="#ModalEdit{{ $expenses->iExpPk }}">
         <i class="fa fa-edit"></i>
         </a>
-        <form action="{{ route('expenses.destroy', $expenses->iExpPk) }}" method="POST"
+        <form action="{{ route('expensesCode.destroy', $expenses->iExpPk) }}" method="POST"
         style="display: inline-block;">
         @csrf
         @method('DELETE')

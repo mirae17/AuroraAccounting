@@ -1,14 +1,62 @@
 @extends('layouts.template')
 
 @section('content')
-<div class="container">
-    <h2>Receipt List</h2>
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        /* Center align text in the table header */
+        <style>
+
+        /* Center align text in the table header */
+        .table thead th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        /* Left-align text columns */
+        .text-left {
+            text-align: left !important;
+        }
+
+        /* Right-align number columns */
+        .text-right {
+            text-align: right !important;
+        }
+
+        /* Custom styles for the card */
+        .card-custom {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .card-custom p {
+            margin: 0;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="row mb-3 align-items-center">
+        <div class="col-lg-6">
+            <h2>Receipt List</h2>
+        </div>
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+    </div>
     <a href="{{ route('receipt.create') }}" class="btn btn-success mb-3">Create New Receipt</a>
     <div class="card-body">
         <table id="example1" class="table table-bordered">
@@ -31,12 +79,12 @@
                         <td>{{ $recpt->customer->cCustDCompName ?? 'N/A' }}</td>
                         <td>{{ $recpt->customer->cCustDName ?? 'N/A'}}</td>
                         <td>{{ $recpt->dRecptdate }}</td>
-                        <td>{{ $recpt->yRecptTotalPayment }}</td>
+                        <td class="text-right">{{ $recpt->yRecptTotalPayment }}</td>
                         <td>
                             <a href="{{ route('receipt.show', $recpt->iRecptPk) }}" class="btn btn-info btn-sm">
                                 <i class="fa fa-eye"></i></a>
-                            <a href="{{ route('receipt.edit', $recpt->iRecptPk) }}" class="btn btn-custom-edit btn-sm"> <i
-                                    class="fa fa-edit"></i></a>
+                            <a href="{{ route('receipt.edit', $recpt->iRecptPk) }}" class="btn btn-custom-edit btn-sm">
+                                <i class="fa fa-edit"></i></a>
                             <form action="{{ route('receipt.destroy', $recpt->iRecptPk) }}" method="POST"
                                 style="display:inline-block;">
                                 @csrf
@@ -53,5 +101,7 @@
             </tbody>
         </table>
     </div>
-</div>
+    </div>
+</body>
+
 @endsection

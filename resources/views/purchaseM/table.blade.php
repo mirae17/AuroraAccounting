@@ -43,6 +43,7 @@
             color: #555;
         }
     </style>
+</head>
 
 <body>
     <div class="row mb-3 align-items-center">

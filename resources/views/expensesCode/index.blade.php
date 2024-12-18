@@ -1,5 +1,5 @@
 @extends('layouts.template')
 
 @section('content')
-@include('expenses.table')
+@include('expensesCode.table')
 @endsection
