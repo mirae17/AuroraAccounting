@@ -41,6 +41,10 @@ class CustomerDetail extends Model
     {
         return $this->hasMany(Receipt::class, 'iRecptCustDfk', 'iCustDPk');
     }
+    public function purchaseOrder()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'iPurchOrderCustDfk', 'iCustDPk');
+    }
     public function quotation()
     {
         return $this->hasMany(Quotation::class, 'iQuoCustDfk', 'iCustDPk');

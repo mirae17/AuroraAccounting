@@ -33,16 +33,17 @@
                         <td>{{ $quotation->dQuodate }}</td>
                         <td>{{ $quotation->yQuoTotalPayment }}</td>
                         <td>
-                            <a href="{{ route('quotations.show', $quotation->iQuoPk) }}"
-                                class="btn btn-info btn-sm">View</a>
-                            <a href="{{ route('quotations.edit', $quotation->iQuoPk) }}"
-                                class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{{ route('quotations.show', $quotation->iQuoPk) }}" class="btn btn-info btn-sm">
+                                <i class="fa fa-eye"></i></a>
+                            <a href="{{ route('quotations.edit', $quotation->iQuoPk) }}" class="btn btn-custom-edit btn-sm">
+                                <i class="fa fa-edit"></i></a>
                             <form action="{{ route('quotations.destroy', $quotation->iQuoPk) }}" method="POST"
                                 style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Are you sure?')">Delete</button>
+                                <button type="submit" class="btn btn-custom-delete btn-sm"
+                                    onclick="return confirm('Are you sure?')">
+                                    <i class="fa fa-trash"></i></button>
                             </form>
                         </td>
                     </tr>

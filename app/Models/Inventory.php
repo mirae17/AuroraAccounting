@@ -26,4 +26,8 @@ class Inventory extends Model
     {
         return $this->belongsTo(Company::class, 'iInvComfk');
     }
+    public function inventoryMaster()
+    {
+        return $this->hasMany(InventoryMaster::class);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Receipt;
+use App\Models\ReceiptItem;
 use Illuminate\Http\Request;
 use App\Models\Company;
 use App\Models\CompanyMaintenance;
@@ -10,12 +11,10 @@ use App\Models\CustomerDetail;
 use App\Models\Product;
 use App\Models\Inventory;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReceiptController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $user = Auth::user();
@@ -33,120 +32,215 @@ class ReceiptController extends Controller
 
         return view('receipt.index', compact('receipt', 'companies'));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        $user = auth()->user(); // Get the logged-in user
-
-        // Fetch customers
-        $customers = CustomerDetail::all();
+        $user = Auth::user();
 
         if ($user->role === 'system admin') {
-            // System admin: Fetch all companies, products, and inventory
             $companies = Company::select('id', 'description')->get();
             $products = Product::all();
             $inventory = Inventory::all();
-            $companyMaintenance = null; // System admins don't have specific company maintenance
+            $companyMaintenance = null;
+            $customers = CustomerDetail::all(); // Fetch all companies
         } else {
-            // Regular users: Fetch their associated company
-            $company = Company::select('id', 'description')->find($user->company_id);
-
-            if (!$company) {
-                return redirect()->route('receipts.index')->with('error', 'Your company details are not available.');
-            }
-
-            $companies = collect([$company]); // Wrap single company in a collection
-
-            // Fetch products and inventory based on the user's company ID
-            $products = Product::where('iProComfk', $company->id)->get();
-            $inventory = Inventory::where('iInvComfk', $company->id)->get();
-
-            // Fetch company maintenance details
-            $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
+            $products = Product::where('iProComfk', $user->company_id)->get(['iProPk', 'cProName', 'cProCode', 'yProPrice']);
+            $customers = CustomerDetail::where('iCustDCompfk', $user->company_id)->get(['iCustDPk', 'cCustDName', 'cCustDAddress', 'cCustDCompName', 'cCustDCompOfficeNo', 'cCustDCompEmail']);
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get(['iInvPK', 'cInvName', 'cInvCode', 'yInvPrice']);
+            $companyMaintenance = CompanyMaintenance::where('iCompMainName', $user->company_id)->get(['iCompMainPk', 'iCompMainAddress', 'iCompMainPhoneNo', 'iCompMainEmail', 'iCompMainLogo']);
+            $companies = [];
         }
-
-        // Generate a new invoice number
         $latestReceipt = Receipt::latest('iRecptPk')->first();
-        $newpurchaseOrderNumber = $latestReceipt ? 'RCPT' . str_pad((int) substr($latestReceipt->iRecptNo, 3) + 1, 5, '0', STR_PAD_LEFT)
+        $newReceiptNumber = $latestReceipt ? 'RCPT' . str_pad((int) substr($latestReceipt->iRecptNo, 3) + 1, 5, '0', STR_PAD_LEFT)
             : 'RCPT00001';
 
         return view('receipt.create', compact('companies', 'customers', 'companyMaintenance', 'newReceiptNumber', 'products', 'inventory'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $user = auth()->user();
-
-        // Validate request data
-        $request->validate([
+        // Validate input data
+        $validated = $request->validate([
             'iRecptComfk' => $user->role === 'system admin' ? 'required|exists:companies,id' : 'sometimes|exists:companies,id',
-            'iRecptCustDfk' => 'required|exists:customer_details,iCustDPk',
-            'iRecptNo' => 'required|unique:receipts',
+            'iRecptCustDfk' => 'required|exists:customer_details,iCustDPk', // Ensure customer exists
+            'iRecptNo' => 'required|unique:receipts,iRecptNo', // Recpttation number should be unique
             'dRecptdate' => 'required|date',
-            'yRecptSubtotal' => 'required|numeric',
-            'yRecptTotalPayment' => 'required|numeric',
-            'iRecptDiscount' => 'required|numeric',
-            'iRecptShipping' => 'required|numeric',
-            'iRecptTax' => 'required|numeric',
+            'iRecptTax' => 'nullable|numeric|min:0',
+            'iRecptDiscount' => 'nullable|numeric|min:0',
+            'iRecptShipping' => 'nullable|numeric|min:0',
+            'yRecptSubtotal' => 'required|numeric|min:0',
+            'yRecptTotalPayment' => 'required|numeric|min:0',
+            'items' => 'required|array', // List of items to be added to the receipt
+            'items.*.code' => 'required|string|max:255',
+            'items.*.description' => 'required|string|max:255',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.total' => 'required|numeric|min:0',
+
         ]);
 
+        // Create the new receipt
+        $receipt = Receipt::create([
+            'iRecptComfk' => Auth::user()->role === 'system admin' ? $request->iRecptComfk : Auth::user()->company_id,
+            'iRecptNo' => $request->input('iRecptNo'),
+            'iRecptCustDfk' => $request->input('iRecptCustDfk'),
+            'dRecptdate' => $request->input('dRecptdate'),
+            'iRecptTax' => $request->input('iRecptTax', 0),
+            'iRecptDiscount' => $request->input('iRecptDiscount', 0),
+            'iRecptShipping' => $request->input('iRecptShipping', 0),
+            'yRecptSubtotal' => $request->input('yRecptSubtotal'),
+            'yRecptTotalPayment' => $request->input('yRecptTotalPayment'),
+        ]);
 
-        $receipt = new Receipt();
-        if ($user->role === 'system admin') {
-            $receipt->iRecptComfk = $request->iRecptComfk;
-        } else {
-            $receipt->iRecptComfk = $user->company_id;
+        // Loop through the items and store them in the ReceiptItem table
+
+        foreach ($request->items as $item) {
+            ReceiptItem::create([
+                'iRecptItemRecptfk' => $receipt->iRecptPk, // Foreign key to the receipt table
+                'cRecptItemProductCode' => $item['code'], // Map 'code' to database column
+                'cRecptItemDescription' => $item['description'], // Map 'description' to database column
+                'iRecptItemQuantity' => $item['quantity'], // Map 'quantity' to database column
+                'yRecptItemPriceUnit' => $item['price'], // Map 'price' to database column
+                'yRecptItemTotal' => $item['quantity'] * $item['price'], // Calculate total
+            ]);
         }
 
-        $receipt->iRecptCustDfk = $request->iRecptCustDfk;
-        $receipt->iRecptNo = $request->iRecptNo;
-        $receipt->dRecptdate = $request->dRecptdate;
-        $receipt->yRecptSubtotal = $request->yRecptSubtotal;
-        $receipt->iRecptDiscount = $request->iRecptDiscount;
-        $receipt->iRecptTax = $request->iRecptTax;
-        $receipt->iRecptShipping = $request->iRecptShipping;
-        $receipt->yRecptTotalPayment = $request->yRecptTotalPayment;
-        $receipt->save();
-
-
-        return redirect()->route('receipt.index')->with('success', 'Receipt created successfully.');
+        return redirect()->route('receipt.index', $receipt->iRecptPk)->with('success', 'Receipt created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Receipt $receipt)
+    // Edit method to display the edit form for a specific receipt
+    public function edit($receipt)
     {
-        //
+        $receipt = Receipt::with('items')->findOrFail($receipt); // Fetch the receipt and related items
+        $user = Auth::user();
+
+        if ($user->role === 'system admin') {
+            $companies = Company::select('id', 'description')->get();
+            $customers = CustomerDetail::all();
+            $products = Product::all();
+            $inventory = Inventory::all();
+        } else {
+            $companies = [];
+            $customers = CustomerDetail::where('iCustDCompfk', $user->company_id)->get();
+            $products = Product::where('iProComfk', $user->company_id)->get();
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get();
+        }
+
+        return view('receipt.edit', compact('receipt', 'companies', 'customers', 'products', 'inventory'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Receipt $receipt)
+    // Update method to handle the form submission and update the receipt
+    public function update(Request $request, $receipt)
     {
-        //
+        $user = Auth::user();
+        // dd(request()->all());
+        $validated = $request->validate([
+            'iRecptCustDfk' => 'required|exists:customer_details,iCustDPk',
+            'dRecptdate' => 'required|date',
+            'iRecptTax' => 'nullable|numeric|min:0',
+            'iRecptDiscount' => 'nullable|numeric|min:0',
+            'iRecptShipping' => 'nullable|numeric|min:0',
+            'yRecptSubtotal' => 'required|numeric|min:0',
+            'yRecptTotalPayment' => 'required|numeric|min:0',
+            'items' => 'required|array',
+            'items.*.cRecptItemProductCode' => 'required|string|max:255',
+            'items.*.cRecptItemDescription' => 'required|string|max:255',
+            'items.*.iRecptItemQuantity' => 'required|numeric|min:1',
+            'items.*.yRecptItemPriceUnit' => 'required|numeric|min:0',
+            'items.*.yRecptItemTotal' => 'required|numeric|min:0',
+        ]);
+
+        $receipt = Receipt::findOrFail($receipt);
+
+        $receipt->update([
+            'iRecptCustDfk' => $request->input('iRecptCustDfk'),
+            'dRecptdate' => $request->input('dRecptdate'),
+            'iRecptTax' => $request->input('iRecptTax', 0),
+            'iRecptDiscount' => $request->input('iRecptDiscount', 0),
+            'iRecptShipping' => $request->input('iRecptShipping', 0),
+            'yRecptSubtotal' => $request->input('yRecptSubtotal'),
+            'yRecptTotalPayment' => $request->input('yRecptTotalPayment'),
+        ]);
+
+        // Delete existing items and replace with updated items
+        $receipt->items()->delete();
+        foreach ($request->items as $item) {
+            \Log::info('Creating Receipt Item', $item);
+            ReceiptItem::create([
+                'iRecptItemRecptfk' => $receipt->iRecptPk,
+                'cRecptItemProductCode' => $item['cRecptItemProductCode'],
+                'cRecptItemDescription' => $item['cRecptItemDescription'],
+                'iRecptItemQuantity' => $item['iRecptItemQuantity'],
+                'yRecptItemPriceUnit' => $item['yRecptItemPriceUnit'],
+                'yRecptItemTotal' => $item['yRecptItemTotal'],
+            ]);
+        }
+
+        return redirect()->route('receipt.index')->with('success', 'Receipt updated successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Receipt $receipt)
+    // Show method to display the details of a specific receipt
+    public function show($id)
     {
-        //
+        $user = auth()->user();
+        // Fetch the receipt by ID with its related data
+        $receipt = Receipt::with(['company', 'customer', 'items'])->findOrFail($id);
+        $company = Company::select('id', 'description')->find($user->company_id);
+
+        $companies = collect([$company]);
+
+        // Fetch products and inventory based on the user's company ID
+        $products = Product::where('iProComfk', $company->id)->get();
+        $inventory = Inventory::where('iInvComfk', $company->id)->get();
+        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
+
+        // Pass the data to the show view
+        return view('receipt.show', compact('receipt', 'products', 'inventory', 'companyMaintenance'));
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Receipt $receipt)
+    // Delete method to remove a specific receipt
+    public function destroy($iRecptPk)
     {
-        //
+        $receipt = Receipt::findOrFail($iRecptPk);
+
+        // Delete related items first to maintain integrity
+        $receipt->items()->delete();
+
+        // Delete the receipt
+        $receipt->delete();
+
+        return redirect()->route('receipt.index')->with('success', 'Receipt deleted successfully!');
+    }
+
+
+    public function generatePDF($receipt)
+    {
+        $user = auth()->user();
+        // Fetch the receipt by ID with its related data
+        $receipt = Receipt::with(['company', 'customer', 'items'])->findOrFail($receipt);
+        $company = Company::select('id', 'description')->find($user->company_id);
+
+        $companies = collect([$company]);
+
+        // Fetch products and inventory based on the user's company ID
+        $products = Product::where('iProComfk', $company->id)->get();
+        $inventory = Inventory::where('iInvComfk', $company->id)->get();
+        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
+
+        $signatureOption = request('signature', 'with');
+
+        $data = [
+            'receipt' => $receipt,
+            'companies' => $companies,
+            'products' => $products,
+            'inventory' => $inventory,
+            'companyMaintenance' => $companyMaintenance,
+            'signatureOption' => $signatureOption,
+        ];
+
+        $pdf = PDF::loadView('receipt.pdf', $data);
+
+        return $pdf->download('Receipt_' . ($receipt->iRecptNo) . '.pdf');
     }
 }

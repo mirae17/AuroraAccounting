@@ -1,193 +1,173 @@
 @extends('layouts.template')
 
 @section('content')
-<div class="container">
-    <div class="card shadow-lg p-4">
-        <h2 class="text-center mb-4">Create Quotation</h2>
+<div class="container py-4">
+    <div class="card shadow-lg">
+        <div class="card-header text-center bg-primary text-white">
+            <h2>Create Quotation</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('quotations.store') }}" method="POST" id="quotation-form">
+                @csrf
 
-        <form action="{{ route('quotations.store') }}" method="POST" id="quotation-form">
-            @csrf
+                <!-- Step 1: Customer & Quotation Details -->
+                <div id="step-1">
+                    <h4 class="text-primary">Step 1: Customer & Quotation Details</h4>
+                    <div class="row">
+                        <!-- Customer Details -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="customer-select">Select Customer:</label>
+                                <select name="iQuoCustDfk" id="customer-select" class="form-control" required
+                                    onchange="displayCustomerDetails(this)">
+                                    <option value="">-- Select Customer --</option>
+                                    @foreach($customers as $customer)
+                                        <option value="{{ $customer->iCustDPk }}" data-name="{{ $customer->cCustDName }}"
+                                            data-company="{{ $customer->cCustDCompName }}"
+                                            data-address="{{ $customer->cCustDAddress }}"
+                                            data-phone="{{ $customer->cCustDCompOfficeNo }}"
+                                            data-email="{{ $customer->cCustDCompEmail }}">
+                                            {{ $customer->cCustDName }} ({{ $customer->cCustDCompName }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div id="customer-details" class="mt-3" style="display: none;">
+                                <p><strong>Attention:</strong> <span id="customer-name"></span></p>
+                                <p><strong>Company:</strong> <span id="customer-company"></span></p>
+                                <p><strong>Address:</strong> <span id="customer-address"></span></p>
+                                <p><strong>Phone:</strong> <span id="customer-phone"></span></p>
+                                <p><strong>Email:</strong> <span id="customer-email"></span></p>
+                            </div>
+                        </div>
 
-            <!-- Step 1: Customer & Quotation Details -->
-            <div id="step-1">
-                <h4>Step 1: Customer & Quotation Details</h4>
-                <div class="row">
+                        <!-- Quotation Details -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Quotation No:</label>
+                                <input type="text" name="iQuoNo" class="form-control" value="{{ $newQuotationNumber }}"
+                                    readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Quotation Date:</label>
+                                <input type="date" name="dQuodate" class="form-control" value="{{ date('Y-m-d') }}"
+                                    required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-primary mt-3" onclick="nextStep(2)">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Quotation Items -->
+                <div id="step-2" style="display: none;">
+                    <h4 class="text-primary">Step 2: Add Quotation Items</h4>
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items-table"></tbody>
+                    </table>
+                    <div class="text-start">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#itemModal">+ Add Item</button>
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep(3)">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Summary & Submission -->
+                <div id="step-3" style="display: none;">
+                    <h4 class="text-primary">Step 3: Summary</h4>
+
                     <!-- Customer Details -->
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="customer-select">Select Customer:</label>
-                            <select name="iQuoCustDfk" id="customer-select" class="form-control"
-                                onchange="displayCustomerDetails(this)" required>
-                                <option value="">-- Select Customer --</option>
-                                @foreach($customers as $customer)
-                                    <option value="{{ $customer->iCustDPk }}" data-name="{{ $customer->cCustDName }}"
-                                        data-company="{{ $customer->cCustDCompName }}"
-                                        data-address="{{ $customer->cCustDAddress }}"
-                                        data-phone="{{ $customer->cCustDCompOfficeNo }}"
-                                        data-email="{{ $customer->cCustDCompEmail }}">
-                                        {{ $customer->cCustDName }} ({{ $customer->cCustDCompName }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div id="customer-details" class="mt-3" style="display: none;">
-                            <p><strong>Attention:</strong> <span id="customer-name"></span></p>
-                            <p><strong>Company:</strong> <span id="customer-company"></span></p>
-                            <p><strong>Address:</strong> <span id="customer-address"></span></p>
-                            <p><strong>Phone:</strong> <span id="customer-phone"></span></p>
-                            <p><strong>Email:</strong> <span id="customer-email"></span></p>
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">Customer Details</div>
+                        <div class="card-body">
+                            <p><strong>Attention:</strong> <span id="summary-customer-name"></span></p>
+                            <p><strong>Company:</strong> <span id="summary-customer-company"></span></p>
+                            <p><strong>Address:</strong> <span id="summary-customer-address"></span></p>
+                            <p><strong>Phone:</strong> <span id="summary-customer-phone"></span></p>
+                            <p><strong>Email:</strong> <span id="summary-customer-email"></span></p>
                         </div>
                     </div>
-
-                    <!-- Quotation Details -->
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Quotation No:</label>
-                            <input type="text" name="iQuoNo" class="form-control" value="{{ $newQuotationNumber }}"
-                                readonly>
+                    <!-- Items List -->
+                    <div class="card mb-3">
+                        <div class="card-header">Items</div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Code</th>
+                                        <th>Description</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="summary-items-table"></tbody>
+                            </table>
                         </div>
-                        <div class="form-group">
-                            <label>Quotation Date:</label>
-                            <input type="date" name="dQuodate" class="form-control" value="{{ date('Y-m-d') }}"
-                                required>
-                        </div>
                     </div>
-                </div>
-                <button type="button" class="btn btn-primary mt-3" onclick="nextStep(2)">Next Step</button>
-            </div>
-
-            <!-- Step 2: Quotation Items -->
-            <div id="step-2" style="display: none;">
-                <h4>Step 2: Add Quotation Items</h4>
-
-                <!-- Items Table -->
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Code</th>
-                            <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="items-table"></tbody>
-                </table>
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#itemModal">+ Add
-                    Item</button>
-
-                <!-- Next & Back Buttons -->
-                <button type="button" class="btn btn-secondary mt-3" onclick="prevStep(1)">Back</button>
-                <button type="button" class="btn btn-primary mt-3" onclick="nextStep(3)">Next Step</button>
-            </div>
-
-            <!-- Step 3: Summary & Submission -->
-            <!-- Step 3: Summary & Submission -->
-            <div id="step-3" style="display: none;">
-                <h4>Step 3: Summary</h4>
-
-                <!-- Company Details -->
-                <div class="card mb-3">
-                    <div class="card-header">Company Details</div>
-                    <div class="card-body">
-                        <p><strong>Logged-in User:</strong> {{ auth()->user()->name }}</p>
-                        <p><strong>Company:</strong> {{ auth()->user()->description }}</p>
-                        <p><strong>Email:</strong> {{ auth()->user()->email }}</p>
-                    </div>
-                </div>
-
-                <!-- Customer Details -->
-                <div class="card mb-3">
-                    <div class="card-header">Customer Details</div>
-                    <div class="card-body">
-                        <p><strong>Attention:</strong> <span id="summary-customer-name"></span></p>
-                        <p><strong>Company:</strong> <span id="summary-customer-company"></span></p>
-                        <p><strong>Address:</strong> <span id="summary-customer-address"></span></p>
-                        <p><strong>Phone:</strong> <span id="summary-customer-phone"></span></p>
-                        <p><strong>Email:</strong> <span id="summary-customer-email"></span></p>
-                    </div>
-                </div>
-
-                <!-- Quotation Details -->
-                <div class="card mb-3">
-                    <div class="card-header">Quotation Details</div>
-                    <div class="card-body">
-                        <p><strong>Quotation No:</strong> {{ $newQuotationNumber }}</p>
-                        <p><strong>Quotation Date:</strong> {{ date('Y-m-d') }}</p>
-                    </div>
-                </div>
-
-                <!-- Items List -->
-                <div class="card mb-3">
-                    <div class="card-header">Items</div>
-                    <div class="card-body">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Code</th>
-                                    <th>Description</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="summary-items-table"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Totals -->
-                <div class="card">
-                    <div class="card-header">Totals</div>
-                    <div class="card-body">
-                        <div class="row mb-2">
-                            <div class="col-md-6"><strong>Subtotal:</strong></div>
-                            <div class="col-md-6 text-right" name="yQuoSubtotal ">RM <span
-                                    id="summary-subtotal">0.00</span></div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-6"><strong>Tax (%) :</strong></div>
-                            <div class="col-md-6 text-right">
-                                <input type="number" id="iQuoTax" name="iQuoTax" class="form-control" min="0" value="0"
-                                    oninput="calculateFinalTotal()">
+                    <!-- Totals -->
+                    <div class="card">
+                        <div class="card-header bg-light">Totals</div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6"><strong>Subtotal:</strong></div>
+                                <div class="col-md-6 text-end" name="yQuoSubtotal">RM <span
+                                        id="summary-subtotal">0.00</span></div>
                             </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-6"><strong>Discount (%) :</strong></div>
-                            <div class="col-md-6 text-right">
-                                <input type="number" id="iQuoDiscount" name="iQuoDiscount" class="form-control" min="0"
-                                    value="0" oninput="calculateFinalTotal()">
+                            <div class="row">
+                                <div class="col-md-6"><strong>Tax (%):</strong></div>
+                                <div class="col-md-6 text-end">
+                                    <input type="number" id="iQuoTax" name="iQuoTax" class="form-control" min="0"
+                                        value="0" oninput="calculateFinalTotal()">
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-2">
-                            <div class="col-md-6"><strong>Shipping (RM):</strong></div>
-                            <div class="col-md-6 text-right">
-                                <input type="number" id="iQuoShipping" name="iQuoShipping" class="form-control" min="0"
-                                    value="0" oninput="calculateFinalTotal()">
+                            <div class="row">
+                                <div class="col-md-6"><strong>Discount (%):</strong></div>
+                                <div class="col-md-6 text-end">
+                                    <input type="number" id="iQuoDiscount" name="iQuoDiscount" class="form-control"
+                                        min="0" value="0" oninput="calculateFinalTotal()">
+                                </div>
                             </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-6"><strong>Total:</strong></div>
-                            <div class="col-md-6 text-right" id="yQuoTotalPayment" name="yQuoTotalPayment"><strong>RM
-                                    <span id="final-total">0.00</span></strong>
+                            <div class="row">
+                                <div class="col-md-6"><strong>Shipping:</strong></div>
+                                <div class="col-md-6 text-end">
+                                    <input type="number" id="iQuoShipping" name="iQuoShipping" class="form-control"
+                                        min="0" value="0" oninput="calculateFinalTotal()">
+                                </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-6"><strong>Total:</strong></div>
+                                <div class="col-md-6 text-end"><strong>RM <span id="final-total">0.00</span></strong>
+                                </div>
+                            </div>
+                            <input type="hidden" name="yQuoSubtotal" id="hidden-subtotal">
+                            <input type="hidden" name="yQuoTotalPayment" id="hidden-total-payment">
+
                         </div>
                     </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-secondary" onclick="prevStep(2)">Back</button>
+                        <button type="submit" class="btn btn-success">Submit Quotation</button>
+                    </div>
                 </div>
-                <!-- Hidden inputs for subtotal and total -->
-                <input type="hidden" name="yQuoSubtotal" id="hidden-subtotal">
-                <input type="hidden" name="yQuoTotalPayment" id="hidden-total-payment">
-
-                <!-- Navigation Buttons -->
-                <button type="button" class="btn btn-secondary mt-3" onclick="prevStep(2)">Back</button>
-                <button type="submit" class="btn btn-success mt-3">Submit Quotation</button>
-            </div>
-
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 @if ($errors->any())
@@ -294,19 +274,42 @@
     </div>
 </div>
 <script>
-    // Call `updateSummary` when navigating to Step 3
     function nextStep(step) {
+        // Validation for Step 1 (Customer Selection)
+        if (step === 2) {
+            const customerSelect = document.getElementById('customer-select'); // Replace with your dropdown ID
+            if (!customerSelect || customerSelect.value.trim() === '') {
+                alert('Please select a customer before proceeding to the next step.');
+                return; // Stop navigation to the next step
+            }
+        }
+
+        // Validation for Step 2 (Items Table)
+        if (step === 3) {
+            const itemsTable = document.getElementById('items-table');
+            const rows = itemsTable.querySelectorAll('tr');
+            if (!rows || rows.length <= 1) { // Check if only the header row is present
+                alert('Please add at least one item before proceeding to the summary.');
+                return; // Stop navigation to the next step
+            }
+        }
+
+        // If validations pass, proceed to the next step
         document.getElementById(`step-${step - 1}`).style.display = 'none';
         document.getElementById(`step-${step}`).style.display = 'block';
 
+        // Update summary when moving to Step 3
         if (step === 3) {
             updateSummary();
         }
     }
+
     function prevStep(step) {
+        // Go back to the previous step
         document.getElementById(`step-${step + 1}`).style.display = 'none';
         document.getElementById(`step-${step}`).style.display = 'block';
     }
+
 
     // Add Items to Table
     function addItemToTable(code, name, price) {

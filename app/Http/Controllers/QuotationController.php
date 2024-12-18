@@ -182,11 +182,11 @@ class QuotationController extends Controller
     }
 
     // Show method to display the details of a specific quotation
-    public function show($id)
+    public function show($quotation)
     {
         $user = auth()->user();
         // Fetch the quotation by ID with its related data
-        $quotation = Quotation::with(['company', 'customer', 'items'])->findOrFail($id);
+        $quotation = Quotation::with(['company', 'customer', 'items'])->findOrFail($quotation);
         $company = Company::select('id', 'description')->find($user->company_id);
 
         $companies = collect([$company]);
@@ -216,25 +216,35 @@ class QuotationController extends Controller
     }
 
 
-    public function pdf($id, Request $request)
+    public function generatePDF($quotation)
     {
-        // Fetch the quotation with related data
-        $quotation = Quotation::with(['company', 'customer', 'items'])->findOrFail($id);
+        $user = auth()->user();
+        // Fetch the quotations by ID with its related data
+        $quotation = Quotation::with(['company', 'customer', 'items'])->findOrFail($quotation);
+        $company = Company::select('id', 'description')->find($user->company_id);
 
-        // Determine whether to include a signature (from request input)
-        $includeSignature = $request->has('include_signature') && $request->include_signature == 'yes';
+        $companies = collect([$company]);
 
-        // Load the view for the PDF (e.g., quotations/pdf.blade.php)
-        $pdf = Pdf::loadView('quotations.pdf', [
+        // Fetch products and inventory based on the user's company ID
+        $products = Product::where('iProComfk', $company->id)->get();
+        $inventory = Inventory::where('iInvComfk', $company->id)->get();
+        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
+
+        $signatureOption = request('signature', 'with');
+
+        $data = [
             'quotation' => $quotation,
-            'includeSignature' => $includeSignature,
-        ]);
+            'companies' => $companies,
+            'products' => $products,
+            'inventory' => $inventory,
+            'companyMaintenance' => $companyMaintenance,
+            'signatureOption' => $signatureOption,
+        ];
 
-        // Set filename for download
-        $fileName = "Quotation-{$quotation->quotation_no}.pdf";
+        $pdf = PDF::loadView('quotations.pdf', $data);
 
-        // Return PDF as a download
-        return $pdf->download($fileName);
+        return $pdf->download('Quotation_' . $quotation->iQuoNo . '.pdf');
     }
+
 
 }

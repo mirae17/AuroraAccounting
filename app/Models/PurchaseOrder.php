@@ -36,4 +36,9 @@ class PurchaseOrder extends Model
         return $this->belongsTo(CompanyMaintenance::class);
 
     }
+
+    public function items()
+    {
+        return $this->hasMany(PurchaseOrderItem::class, 'iPurchOrderItemPurchOrderfk', 'iPurchOrderPk');
+    }
 }

@@ -63,10 +63,10 @@ class InventoryMasterController extends Controller
             $suppliers = Supplier::all(['iSuppPk', 'iSuppDesc']);
             $companies = Company::with(['payments', 'suppliers', 'employees', 'inventories'])->get(['id', 'description']);
         } else {
-            $paymentMethods = PaymentMethod::where('cInvmasCompfk', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
-            $suppliers = Supplier::where('cInvmasCompfk', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
-            $inventories = Inventory::where('cInvmasCompfk', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
-            $employees = Employee::where('cInvmasCompfk', $user->company_id)->get(['iEmpmasPk', 'cEmpName']);
+            $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
+            $suppliers = Supplier::where('company_id', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
+            $inventories = Inventory::where('iInvComfk', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
+            $employees = Employee::where('company_id', $user->company_id)->get(['iEmpmasPk', 'cEmpName']);
             $companies = [];
         }
         return view('inventoryM.create', compact('paymentMethods', 'suppliers', 'companies', 'inventories', 'employees'));
@@ -76,7 +76,7 @@ class InventoryMasterController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-
+        \Log::info('Submitted iInvmasInvPricefk: ' . $request->iInvmasInvPricefk);
         $request->validate([
 
             'dInvmasDate' => 'required|date',
@@ -85,7 +85,7 @@ class InventoryMasterController extends Controller
             'cInvmasSuppfk' => 'required|exists:suppliers,iSuppPk',
             'iInvmasQuanIn' => 'required|numeric',
             'iInvmasQuanOut' => 'required|numeric',
-            'iInvmasInvPricefk' => 'required|inventories,iInvPK',
+            'iInvmasInvPricefk' => 'nullable|numeric|exists:inventories,iInvPK',
             'yInvmasDeposit' => 'required|numeric',
             'yInvmasPayment' => 'required|numeric',
             'cInvmasPymtdfk' => 'required|exists:payments,iPymtdPk',
@@ -117,7 +117,7 @@ class InventoryMasterController extends Controller
         } // Set the user_id based on the authenticated user
 
         $inventory = Inventory::findOrFail($request->cInvmasInvCodefk);
-        $inventoryM->yInvmasPrice = $inventory->yInvPrice;
+        $inventoryM->iInvmasInvPricefk = $inventory->yInvPrice;
         $inventoryM->save();
 
 
@@ -143,10 +143,10 @@ class InventoryMasterController extends Controller
             $suppliers = Supplier::all(['iSuppPk', 'iSuppDesc']);
             $companies = Company::with(['payments', 'suppliers', 'employees', 'inventories'])->get(['id', 'description']);
         } else {
-            $paymentMethods = PaymentMethod::where('cInvmasCompfk', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
-            $suppliers = Supplier::where('cInvmasCompfk', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
-            $inventories = Inventory::where('cInvmasCompfk', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
-            $employees = Employee::where('cInvmasCompfk', $user->company_id)->get(['iEmpmasPk', 'cInvName']);
+            $paymentMethods = PaymentMethod::where('company_id', $user->company_id)->get(['iPymtdPk', 'cPymtdDesc']);
+            $suppliers = Supplier::where('company_id', $user->company_id)->get(['iSuppPk', 'iSuppDesc']);
+            $inventories = Inventory::where('iInvComfk', $user->company_id)->get(['iInvPK', 'cInvCode', 'cInvName', 'yInvPrice']);
+            $employees = Employee::where('company_id', $user->company_id)->get(['iEmpmasPk', 'cEmpName']);
             $companies = [];
         }
 
@@ -164,7 +164,7 @@ class InventoryMasterController extends Controller
             'cInvmasSuppfk' => 'required|exists:suppliers,iSuppPk',
             'iInvmasQuanIn' => 'required|numeric',
             'iInvmasQuanOut' => 'required|numeric',
-            'iInvmasInvPricefk' => 'required|inventories,iInvPK',
+            'iInvmasInvPricefk' => 'nullable|integer|exists:inventories,iInvPK',
             'yInvmasDeposit' => 'required|numeric',
             'yInvmasPayment' => 'required|numeric',
             'cInvmasPymtdfk' => 'required|exists:payments,iPymtdPk',
@@ -186,7 +186,7 @@ class InventoryMasterController extends Controller
             'iInvmasQuanOut' => $request->iInvmasQuanOut,
             'iInvmasInvPricefk' => $request->iInvmasInvPricefk,
             'yInvmasDeposit' => $request->yInvmasDeposit,
-            ' yInvmasPayment' => $request->yInvmasPayment,
+            'yInvmasPayment' => $request->yInvmasPayment,
             'cInvmasPymtdfk' => $request->cInvmasPymtdfk,
             'cInvmasInvoice' => $request->cInvmasInvoice,
             'cInvmasEmpfk' => $request->cInvmasEmpfk,

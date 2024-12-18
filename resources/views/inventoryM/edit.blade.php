@@ -3,7 +3,7 @@
 @section('content')
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="card shadow-lg p-4" style="max-width: 600px; width: 100%; border-radius: 15px;">
-        <h2 class="text-center mb-4">Edit Purchase</h2>
+        <h2 class="text-center mb-4">Edit Inventory Master</h2>
 
         <form action="{{ route('inventoryM.update', $inventoryM->iInvmasPk) }}" method="POST">
             @csrf
@@ -147,7 +147,15 @@
         </form>
     </div>
 </div>
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <!-- JavaScript to auto-detect Cara Jualan -->
 <script>
     document.getElementById('cInvmasCompfk')?.addEventListener('change', function () {

@@ -50,10 +50,13 @@
                 <select id="cInvmasInvCodefk" name="cInvmasInvCodefk" class="form-select" required>
                     <option value="">Select Product/Service Code & Name</option>
                     @foreach($inventories as $inv)
-                        <option value="{{ $inv->iInvPK }}"> {{ $inv->cInvCode }}-{{ $inv->cInvName}} </option>
+                        <option value="{{ $inv->iInvPK }}" data-price="{{ $inv->yInvPrice }}">
+                            {{ $inv->cInvCode }} - {{ $inv->cInvName }}
+                        </option>
                     @endforeach
                 </select>
             </div>
+
 
             <!-- supplier-->
             <div class="form-group mb-3">
@@ -82,9 +85,10 @@
 
             <div class="form-group mb-3">
                 <label for="iInvmasInvPricefk" class="form-label">Price Per Unit</label>
-                <input type="number" class="form-control" id="iInvmasInvPricefk" name="iInvmasInvPricefk" step="0.01"
+                <input type="number" class="form-control" id="iInvmasInvPricefk" name="iInvmasInvPricefk" step="1"
                     readonly>
             </div>
+
             <!-- Deposit -->
             <div class="form-group mb-3">
                 <label for="yInvmasDeposit" class="form-label">Deposit Purchase(RM)</label>
@@ -95,8 +99,8 @@
             <!-- Total Payment -->
             <div class="form-group mb-3">
                 <label for="yInvmasPayment" class="form-label">Total Payment</label>
-                <input type="text" name="total_amount" id="total_amount" class="form-control" placeholder="Total Amount"
-                    readonly>
+                <input type="text" name="yInvmasPayment" id="yInvmasPayment" class="form-control"
+                    placeholder="Total Amount" readonly>
             </div>
 
             <!-- Payment Method -->
@@ -143,7 +147,15 @@
         </form>
     </div>
 </div>
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <!-- JavaScript to auto-detect Cara Jualan -->
 <script>
     document.getElementById('cInvmasCompfk')?.addEventListener('change', function () {
@@ -184,58 +196,31 @@
     });
 
 
+    // Populate price per unit when product/service is selected
     document.getElementById('cInvmasInvCodefk')?.addEventListener('change', function () {
         const selectedOption = this.options[this.selectedIndex];
-
-        // Parse the selected inventory details
-        const inventories = JSON.parse(selectedOption.getAttribute('data-inventory') || '[]');
-
-        // Check if the inventory exists
-        if (inventories.length > 0) {
-            const selectedInventory = inventories[0]; // Assuming the inventory is unique and selected
-            const pricePerUnit = selectedInventory.yInvPrice; // Price per unit from the database
-
-            // Show price per unit (optional)
-            const pricePerUnitInput = document.getElementById('iInvmasInvPricefk');
-            if (pricePerUnitInput) {
-                pricePerUnitInput.value = pricePerUnit; // Update a field with price per unit (optional)
-            }
-
-            // Calculate total amount when quantity changes
-            const quantityInput = document.getElementById('iInvmasQuanIn');
-            if (quantityInput) {
-                quantityInput.addEventListener('input', function () {
-                    const quantity = parseFloat(quantityInput.value) || 0;
-                    const totalAmount = pricePerUnit * quantity; // Calculate total
-
-                    // Show the total amount in the total field
-                    const totalAmountInput = document.getElementById('yInvmasPayment');
-                    if (totalAmountInput) {
-                        totalAmountInput.value = totalAmount.toFixed(2); // Display total amount with 2 decimal places
-                    }
-                });
-            }
+        const pricePerUnit = parseFloat(selectedOption.getAttribute('data-price')) || 0;
+        if (pricePerUnit === 0) {
+            alert('Price is missing for the selected item.');
         }
+        // Update the price per unit field
+        document.getElementById('iInvmasInvPricefk').value = pricePerUnit.toFixed(2);
+
+        // Recalculate total payment
+        calculateTotalPayment();
     });
 
-    // Optionally, if the page is already loaded and the inventory is pre-selected
-    document.addEventListener('DOMContentLoaded', function () {
-        const selectedOption = document.getElementById('cInvmasInvCodefk').selectedOptions[0];
-        if (selectedOption) {
-            const inventories = JSON.parse(selectedOption.getAttribute('data-inventory') || '[]');
-            if (inventories.length > 0) {
-                const selectedInventory = inventories[0];
-                const pricePerUnit = selectedInventory.yInvPrice;
+    // Recalculate total payment on quantity input change
+    document.getElementById('iInvmasQuanIn')?.addEventListener('input', calculateTotalPayment);
 
-                // Set initial price per unit
-                const pricePerUnitInput = document.getElementById('iInvmasInvPricefk');
-                if (pricePerUnitInput) {
-                    pricePerUnitInput.value = pricePerUnit;
-                }
-            }
-        }
-    });
+    function calculateTotalPayment() {
+        const quantity = parseFloat(document.getElementById('iInvmasQuanIn').value) || 0;
+        const pricePerUnit = parseFloat(document.getElementById('iInvmasInvPricefk').value) || 0;
+        const totalPayment = quantity * pricePerUnit;
 
+        // Update the total payment field
+        document.getElementById('yInvmasPayment').value = totalPayment.toFixed(2);
+    }
 
 </script>
 

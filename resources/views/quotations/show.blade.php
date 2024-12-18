@@ -3,25 +3,27 @@
 @section('content')
 <br>
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow-lg p-4" style="max-width: 2500px; width: 100%; border-radius: 15px;">
-        <div class="text-center mb-4">
-            <!-- Display Company Information -->
-            @if(isset($companyMaintenance))
+    <div class="card shadow-lg p-5"
+        style="max-width: 1200px; width: 100%; border-radius: 15px; background-color: #f9f9f9;">
+        <!-- Company Information -->
+        @if(isset($companyMaintenance))
+            <div class="text-center mb-5">
                 <img id="company-logo" src="{{ asset('storage/' . $companyMaintenance->iCompMainLogo) }}" alt="Company Logo"
                     class="mb-3" style="max-height: 100px;">
-                <h2 id="company-name">{{ $companyMaintenance->company->description }}</h2>
-                <p id="company-address">{{ $companyMaintenance->iCompMainAddress }}</p>
-                <p id="company-contact">{{ $companyMaintenance->iCompMainPhoneNo }} |
-                    {{ $companyMaintenance->iCompMainEmail }}
+                <h3 id="company-name" class="mb-1">{{ $companyMaintenance->company->description }}</h3>
+                <p id="company-address" class="mb-1 text-muted">{{ $companyMaintenance->iCompMainAddress }}</p>
+                <p id="company-contact" class="text-muted">
+                    {{ $companyMaintenance->iCompMainPhoneNo }} | {{ $companyMaintenance->iCompMainEmail }}
                 </p>
-            @endif
-        </div>
+            </div>
+        @endif
 
-        <div class="row mb-4">
-            <!-- Left: Customer Details -->
+        <!-- Details Section -->
+        <div class="row mb-5">
+            <!-- Customer Details -->
             <div class="col-md-6">
-                <h5>Bill To:</h5>
-                <div id="customer-details" class="mt-3">
+                <h5 class="text-primary mb-3">Bill To:</h5>
+                <div id="customer-details">
                     <p><strong>Attention:</strong> {{ $quotation->customer->cCustDName }}</p>
                     <p><strong>Company:</strong> {{ $quotation->customer->cCustDCompName }}</p>
                     <p><strong>Address:</strong> {{ $quotation->customer->cCustDAddress }}</p>
@@ -29,19 +31,18 @@
                     <p><strong>Email:</strong> {{ $quotation->customer->cCustDCompEmail }}</p>
                 </div>
             </div>
-
-            <!-- Right: Quotation Details -->
+            <!-- Quotation Details -->
             <div class="col-md-6 text-end">
-                <h5>Quotation Details</h5>
+                <h5 class="text-primary mb-3">Quotation Details:</h5>
                 <p><strong>Quotation No:</strong> {{ $quotation->iQuoNo }}</p>
                 <p><strong>Date:</strong> {{ $quotation->dQuodate }}</p>
             </div>
         </div>
 
         <!-- Items Table -->
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
+        <div class="table-responsive mb-5">
+            <table class="table table-striped table-bordered">
+                <thead class="table-primary text-center">
                     <tr>
                         <th>#</th>
                         <th>Code</th>
@@ -54,43 +55,55 @@
                 <tbody>
                     @foreach($quotation->items as $item)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td class="text-center">{{ $loop->iteration }}</td>
                             <td>{{ $item->cQuoItemProductCode }}</td>
                             <td>{{ $item->cQuoItemDescription }}</td>
-                            <td>{{ $item->iQuoItemQuantity }}</td>
-                            <td>{{ number_format($item->yQuoItemPriceUnit, 2) }}</td>
-                            <td>{{ number_format($item->yQuoItemTotal, 2) }}</td>
+                            <td class="text-center">{{ $item->iQuoItemQuantity }}</td>
+                            <td class="text-end">{{ number_format($item->yQuoItemPriceUnit, 2) }}</td>
+                            <td class="text-end">{{ number_format($item->yQuoItemTotal, 2) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
                         <td colspan="5" class="text-end"><strong>Subtotal:</strong></td>
-                        <td>{{ number_format($quotation->yQuoSubtotal, 2) }}</td>
+                        <td class="text-end">{{ number_format($quotation->yQuoSubtotal, 2) }}</td>
                     </tr>
                     <tr>
                         <td colspan="5" class="text-end"><strong>Discount:</strong></td>
-                        <td>{{ $quotation->iQuoDiscount }}%</td>
+                        <td class="text-end">{{ $quotation->iQuoDiscount }}%</td>
                     </tr>
                     <tr>
                         <td colspan="5" class="text-end"><strong>Tax:</strong></td>
-                        <td>{{ $quotation->iQuoTax }}%</td>
+                        <td class="text-end">{{ $quotation->iQuoTax }}%</td>
                     </tr>
                     <tr>
                         <td colspan="5" class="text-end"><strong>Shipping:</strong></td>
-                        <td>{{ number_format($quotation->iQuoShipping, 2) }}</td>
+                        <td class="text-end">{{ number_format($quotation->iQuoShipping, 2) }}</td>
                     </tr>
-                    <tr>
+                    <tr class="table-secondary">
                         <td colspan="5" class="text-end"><strong>Total:</strong></td>
-                        <td>{{ number_format($quotation->yQuoTotalPayment, 2) }}</td>
+                        <td class="text-end"><strong>{{ number_format($quotation->yQuoTotalPayment, 2) }}</strong></td>
                     </tr>
                 </tfoot>
             </table>
         </div>
+        <!-- Buttons -->
+        <div class="text-center">
+            <!-- Signature Option -->
+            <form action="{{ route('quotations.pdf', ['quotation' => $quotation->iQuoPk]) }}" method="GET"
+                class="d-inline">
+                <label class="me-2"><strong>Include Signature:</strong></label>
+                <select name="signature" class="form-select d-inline w-auto">
+                    <option value="with">With Signature</option>
+                    <option value="without">Without Signature</option>
+                </select>
+                <button type="submit" class="btn btn-primary ms-2">Save as PDF</button>
+            </form>
 
-
+            <a href="{{ route('quotations.index') }}" class="btn btn-secondary ms-2">Back</a>
+        </div>
     </div>
 </div>
 <br>
-
 @endsection

@@ -38,5 +38,9 @@ class Invoice extends Model
         return $this->belongsTo(CompanyMaintenance::class);
     }
 
+    public function items()
+    {
+        return $this->hasMany(InvoiceItem::class, 'iInvcItemInvcfk', 'iInvcPk');
+    }
 
 }

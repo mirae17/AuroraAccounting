@@ -112,15 +112,22 @@ Route::delete('/inventory/{inventory}', [InventoryController::class, 'destroy'])
 Route::resource('product', ProductController::class);
 Route::delete('/product/{product}', [ProductController::class, 'destroy'])->name('product.destroy');
 
+Route::get('/quotations/pdf{quotation}', [QuotationController::class, 'generatePDF'])->name('quotations.pdf');
 Route::resource('quotations', QuotationController::class);
+
 // Invoice Routes
+Route::get('/invoice/pdf{invoice}', [InvoiceController::class, 'generatePDF'])->name('invoice.pdf');
 Route::resource('invoice', InvoiceController::class);
 
 // Purchase Order Routes
+Route::get('/purchaseOrder/pdf{purchaseOrder}', [PurchaseOrderController::class, 'generatePDF'])->name('purchaseOrder.pdf');
 Route::resource('purchaseOrder', PurchaseOrderController::class);
 
 // Receipt Routes
+Route::get('/receipt/pdf{receipt}', [ReceiptController::class, 'generatePDF'])->name('receipt.pdf');
 Route::resource('receipt', ReceiptController::class);
+
+
 
 
 

@@ -44,7 +44,7 @@ class InventoryMaster extends Model
     }
     public function inventories()
     {
-        return $this->belongsTo(Inventory::class, 'cInvmasInvCodefk');
+        return $this->belongsTo(Inventory::class);
     }
     public function supplier()
     {

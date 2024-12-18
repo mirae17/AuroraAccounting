@@ -66,215 +66,207 @@
       </a>
 
       <div class="sidebar">
-        <nav class="mt-2">
+        <nav class="mt-3">
           <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
             <!-- Dashboard -->
             <li class="nav-item">
               <a href="{{ route('dashboard.index') }}"
                 class="nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
-                <i class="fas fa-home"></i>
-                <p> Dashboard</p>
-              </a>
-
-            </li>
-
-            <li class="nav-header text-uppercase font-weight-bold"
-              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
-
-            </li>
-
-            <!-- Customer Database-->
-            <li class="nav-item">
-              <a href="{{ route('customerDetail.index') }}"
-                class="nav-link {{ request()->routeIs('customerDetail.index') ? 'active' : '' }}">
-                <i class="fas fa-address-book"></i>
-                <p> Customer Database</p>
+                <i class="nav-icon fas fa-home text-white"></i>
+                <p>Dashboard</p>
               </a>
             </li>
 
-            <!-- Manage Users (System Admin Only) -->
-            <li class="nav-item">
-              <a href="{{ route('companyMaintenance.index') }}"
-                class="nav-link {{ request()->routeIs('companyMaintenance.index') ? 'active' : '' }}">
-                <i class="fas fa-briefcase"></i>
-                <p> Company Maintenance</p>
+            <!-- Database -->
+            <li
+              class="nav-item has-treeview {{ request()->routeIs('customerDetail.index') || request()->is('companyMaintenance*') ? 'menu-open' : '' }}">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-database text-success"></i>
+                <p>Database<i class="right fas fa-angle-left"></i></p>
               </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{ route('customerDetail.index') }}"
+                    class="nav-link {{ request()->routeIs('customerDetail.index') ? 'active' : '' }}">
+                    <i class="fas fa-address-book nav-icon"></i>
+                    <p>Customer Database</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('companyMaintenance.index') }}"
+                    class="nav-link {{ request()->routeIs('companyMaintenance.index') ? 'active' : '' }}">
+                    <i class="fas fa-briefcase nav-icon"></i>
+                    <p>Company Maintenance</p>
+                  </a>
+                </li>
+              </ul>
             </li>
 
-            <li class="nav-header text-uppercase font-weight-bold"
-              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
-            </li>
-
-            <!-- Payment Method -->
-            <li class="nav-item">
-              <a href="{{ route('payments.index') }}"
-                class="nav-link {{ request()->routeIs('payments.index') ? 'active' : '' }}">
-                <i class="fas fa-credit-card"></i>
-                <p> Payment Method Code</p>
+            <!-- Basic Code -->
+            <li
+              class="nav-item has-treeview {{ request()->is('payments*') || request()->is('expenses*') || request()->is('suppliers*') || request()->is('inventory*') || request()->is('product*') ? 'menu-open' : '' }}">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-tools text-warning"></i>
+                <p>Basic Code<i class="right fas fa-angle-left"></i></p>
               </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{ route('payments.index') }}"
+                    class="nav-link {{ request()->routeIs('payments.index') ? 'active' : '' }}">
+                    <i class="fas fa-credit-card nav-icon"></i>
+                    <p>Payment Method Code</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('expenses.index') }}"
+                    class="nav-link {{ request()->routeIs('expenses.index') ? 'active' : '' }}">
+                    <i class="fas fa-receipt nav-icon"></i>
+                    <p>Expenses Code</p>
+                  </a>
+                </li>
+                <!-- Suppliers -->
+                <li class="nav-item">
+                  <a href="{{ route('suppliers.index') }}"
+                    class="nav-link {{ request()->routeIs('suppliers.index') ? 'active' : '' }}">
+                    <i class="fas fa-people-carry nav-icon"></i>
+                    <p> Suppliers Code</p>
+                  </a>
+                </li>
+
+                <!-- Debtor Code -->
+                <li class="nav-item">
+                  <a href="{{ route('debtor.index') }}"
+                    class="nav-link {{ request()->routeIs('debtor.index') ? 'active' : '' }}">
+                    <i class="fas fa-users nav-icon"></i> <!-- Icon for Debtor Code -->
+                    <p> Debtor Code</p>
+                  </a>
+                </li>
+
+                <!-- Inventory Code -->
+                <li class="nav-item">
+                  <a href="{{ route('inventory.index') }}"
+                    class="nav-link {{ request()->routeIs('inventory.index') ? 'active' : '' }}">
+                    <i class="fas fa-boxes nav-icon"></i>
+                    <p> Inventory Code</p>
+                  </a>
+                </li>
+
+                <!-- Product Code -->
+                <li class="nav-item">
+                  <a href="{{ route('product.index') }}"
+                    class="nav-link {{ request()->routeIs('product.index') ? 'active' : '' }}">
+                    <i class="fas fa fa-cogs nav-icon"></i>
+                    <p> Product/Service Code</p>
+                  </a>
+                </li>
+              </ul>
             </li>
 
-            <!-- Code Expenses -->
-            <li class="nav-item">
-              <a href="{{ route('expenses.index') }}"
-                class="nav-link {{ request()->routeIs('expenses.index') ? 'active' : '' }}">
-                <i class="fas fa-receipt"></i>
-                <p> Expenses Code</p>
+            <!-- Master Table -->
+            <li
+              class="nav-item has-treeview {{ request()->is('sales*') || request()->is('purchaseM*') || request()->is('expensesM*') || request()->is('inventoryM*') ? 'menu-open' : '' }}">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-table text-info"></i>
+                <p>Master Table<i class="right fas fa-angle-left"></i></p>
               </a>
+              <ul class="nav nav-treeview">
+                <!-- Sales -->
+                <li class="nav-item">
+                  <a href="{{ route('sales.index') }}"
+                    class="nav-link {{ request()->routeIs('sales.index') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line nav-icon"></i>
+                    <p> Sales</p>
+                  </a>
+                </li>
+
+                <!-- Purchase -->
+                <li class="nav-item">
+                  <a href="{{ route('purchaseM.index') }}"
+                    class="nav-link {{ request()->routeIs('purchaseM.index') ? 'active' : '' }}">
+                    <i class="fas fa-shopping-bag nav-icon"></i>
+                    <p> Purchase</p>
+                  </a>
+                </li>
+
+                <!-- Expenses -->
+                <li class="nav-item">
+                  <a href="{{ route('expensesM.index') }}"
+                    class="nav-link {{ request()->routeIs('expensesM.index') ? 'active' : '' }}">
+                    <i class="fas fa-receipt nav-icon"></i>
+                    <p> Expenses</p>
+                  </a>
+                </li>
+
             </li>
 
-            <!-- Suppliers -->
-            <li class="nav-item">
-              <a href="{{ route('suppliers.index') }}"
-                class="nav-link {{ request()->routeIs('suppliers.index') ? 'active' : '' }}">
-                <i class="fas fa-people-carry"></i>
-                <p> Suppliers Code</p>
+            <!-- Documents -->
+            <li
+              class="nav-item has-treeview {{ request()->is('quotations*') || request()->is('invoice*') || request()->is('receipt*') || request()->is('purchaseOrder*') ? 'menu-open' : '' }}">
+              <a href="#" class="nav-link ">
+                <i class="nav-icon fas fa-file-alt text-info"></i>
+                <p>Documents<i class="right fas fa-angle-left"></i></p>
               </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="{{ route('quotations.index') }}"
+                    class="nav-link {{ request()->routeIs('quotations.index') ? 'active' : '' }}">
+                    <i class="fas fa-sticky-note nav-icon"></i>
+                    <p>Quotation</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('invoice.index') }}"
+                    class="nav-link {{ request()->routeIs('invoice.index') ? 'active' : '' }}">
+                    <i class="fas fa-file-invoice nav-icon"></i>
+                    <p>Invoice</p>
+                  </a>
+                </li>
+                <!-- Receipt -->
+                <li class="nav-item">
+                  <a href="{{ route('receipt.index') }}"
+                    class="nav-link {{ request()->routeIs('receipt.index') ? 'active' : '' }}">
+                    <i class="fas fa-file-invoice-dollar nav-icon"></i>
+                    <p> Receipt</p>
+                  </a>
+                </li>
+                <!-- Purchase Order -->
+                <li class="nav-item">
+                  <a href="{{ route('purchaseOrder.index') }}"
+                    class="nav-link {{ request()->routeIs('purchaseOrder.index') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-check nav-icon"></i>
+                    <p> Purchase Order</p>
+                  </a>
+                </li>
+              </ul>
             </li>
 
-            <!-- Debtor Code -->
-            <li class="nav-item">
-              <a href="{{ route('debtor.index') }}"
-                class="nav-link {{ request()->routeIs('debtor.index') ? 'active' : '' }}">
-                <i class="fas fa-users"></i> <!-- Icon for Debtor Code -->
-                <p> Debtor Code</p>
+            <!-- Security -->
+            <li
+              class="nav-item has-treeview {{ request()->routeIs('users.index') || request()->is('employees*') ? 'menu-open' : '' }}">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-user-shield text-danger"></i>
+                <p>Security<i class="right fas fa-angle-left"></i></p>
               </a>
+              <ul class="nav nav-treeview">
+                @if(Auth::user()->role === 'system admin')
+          <li class="nav-item">
+            <a href="{{ route('users.index') }}"
+            class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
+            <i class="fas fa-user-cog nav-icon"></i>
+            <p>Manage Users</p>
+            </a>
+          </li>
+        @endif
+                <li class="nav-item">
+                  <a href="{{ route('employees.index') }}"
+                    class="nav-link {{ request()->routeIs('employees.index') ? 'active' : '' }}">
+                    <i class="fas fa-users nav-icon"></i>
+                    <p>Manage Employees</p>
+                  </a>
+                </li>
+              </ul>
             </li>
-
-            <!-- Inventory Code -->
-            <li class="nav-item">
-              <a href="{{ route('inventory.index') }}"
-                class="nav-link {{ request()->routeIs('inventory.index') ? 'active' : '' }}">
-                <i class="fas fa-boxes"></i>
-                <p> Inventory Code</p>
-              </a>
-            </li>
-
-            <!-- Product Code -->
-            <li class="nav-item">
-              <a href="{{ route('product.index') }}"
-                class="nav-link {{ request()->routeIs('product.index') ? 'active' : '' }}">
-                <i class="fas fa fa-cogs"></i>
-                <p> Product/Service Code</p>
-              </a>
-            </li>
-
-
-            <li class="nav-header text-uppercase font-weight-bold"
-              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
-            </li>
-
-            <!-- Sales -->
-            <li class="nav-item">
-              <a href="{{ route('sales.index') }}"
-                class="nav-link {{ request()->routeIs('sales.index') ? 'active' : '' }}">
-                <i class="fas fa-chart-line"></i>
-                <p> Sales</p>
-              </a>
-            </li>
-
-            <!-- Purchase -->
-            <li class="nav-item">
-              <a href="{{ route('purchaseM.index') }}"
-                class="nav-link {{ request()->routeIs('purchaseM.index') ? 'active' : '' }}">
-                <i class="fas fa-shopping-bag "></i>
-                <p> Purchase</p>
-              </a>
-            </li>
-
-            <!-- Expenses -->
-            <li class="nav-item">
-              <a href="{{ route('expensesM.index') }}"
-                class="nav-link {{ request()->routeIs('expensesM.index') ? 'active' : '' }}">
-                <i class="fas fa-receipt"></i>
-                <p> Expenses</p>
-              </a>
-            </li>
-
-            <!-- Expenses -->
-            <li class="nav-item">
-              <a href="{{ route('inventoryM.index') }}"
-                class="nav-link {{ request()->routeIs('inventoryM.index') ? 'active' : '' }}">
-                <i class="fas fa-box"></i>
-                <p> Inventory</p>
-              </a>
-            </li>
-
-            <li class="nav-header text-uppercase font-weight-bold"
-              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
-
-            </li>
-
-            <!-- Quotation -->
-            <li class="nav-item">
-              <a href="{{ route('quotations.index') }}"
-                class="nav-link {{ request()->routeIs('quotations.index') ? 'active' : '' }} ">
-                <i class="fas fa-sticky-note"></i>
-                <p> Quotation</p>
-              </a>
-            </li>
-
-            <!-- Invoice -->
-            <li class="nav-item">
-              <a href="{{ route('invoice.index') }}"
-                class="nav-link {{ request()->routeIs('invoice.index') ? 'active' : '' }}">
-                <i class="fas fa-file-invoice"></i>
-                <p> Invoice</p>
-              </a>
-            </li>
-
-            <!-- Receipt -->
-            <li class="nav-item">
-              <a href="{{ route('receipt.index') }}"
-                class="nav-link {{ request()->routeIs('receipt.index') ? 'active' : '' }}">
-                <i class="fas fa-file-invoice-dollar "></i>
-                <p> Receipt</p>
-              </a>
-            </li>
-
-            <!-- Purchase Order -->
-            <li class="nav-item">
-              <a href="{{ route('purchaseOrder.index') }}"
-                class="nav-link {{ request()->routeIs('purchaseOrder.index') ? 'active' : '' }}">
-                <i class="fas fa-clipboard-check "></i>
-                <p> Purchase Order</p>
-              </a>
-            </li>
-
-
-            <li class="nav-header text-uppercase font-weight-bold"
-              style="color: #333333; font-size: 1rem; padding-top: 10px; border-top: 1px solid #dddddd; margin-top: 10px;">
-
-            </li>
-
-            <!-- Manage Users (System Admin Only) -->
-            @if(Auth::user()->role === 'system admin')
-        <li class="nav-item">
-          <a href="{{ route('users.index') }}"
-          class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
-          <i class="fas fa-user-shield"></i>
-          <p> Manage Users</p>
-          </a>
-        </li>
-
-
-      @endif
-            <li class="nav-item">
-              <a href="{{ route('employees.index') }}"
-                class="nav-link {{ request()->routeIs('employees.index') ? 'active' : '' }} ">
-                <i class="fas fa-user-cog"></i>
-                <p> Manage Employee</p>
-              </a>
-            </li>
-            @if(Auth::user()->role === 'system admin')
-        <li class="nav-item">
-          <a href="#" class="nav-link ">
-          <i class="fas fa-user-lock"></i>
-          <p> Manage Admin</p>
-          </a>
-        </li>
-      @endif
 
             <!-- Logout -->
             <li class="nav-item">
@@ -291,6 +283,7 @@
         </nav>
       </div>
     </aside>
+
 
     <!-- Content Wrapper -->
     <div class="content-wrapper">

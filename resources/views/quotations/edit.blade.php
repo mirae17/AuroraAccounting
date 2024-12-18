@@ -18,108 +18,118 @@
                         @csrf
                         @method('PUT')
 
-                        <!-- Quotation Number -->
-                        <div class="form-group">
-                            <label for="iQuoNo">Quotation Number</label>
-                            <input type="text" id="iQuoNo" name="iQuoNo" class="form-control"
-                                value="{{ $quotation->iQuoNo }}" readonly>
-                        </div>
+                        <!-- General Details -->
+                        <fieldset class="border p-3 mb-4">
+                            <legend class="float-none w-auto px-2">Quotation Details</legend>
 
-                        <!-- Quotation Date -->
-                        <div class="form-group">
-                            <label for="dQuodate">Quotation Date</label>
-                            <input type="date" id="dQuodate" name="dQuodate" class="form-control"
-                                value="{{ $quotation->dQuodate }}" required>
-                        </div>
-
-                        <!-- Customer Details -->
-                        <div class="form-group">
-                            <label for="iQuoCustDfk">Customer</label>
-                            <select id="iQuoCustDfk" name="iQuoCustDfk" class="form-control" required>
-                                <option value="">-- Select Customer --</option>
-                                @foreach ($customers as $customer)
-                                    <option value="{{ $customer->iCustDPk}}" {{ $quotation->iQuoCustDfk == $customer->iCustDPk ? 'selected' : '' }}>
-                                        {{ $customer->cCustDName }} ({{ $customer->cCustDCompName }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Item Details -->
-                        <div id="item-container">
-                            <label>Items</label>
-                            @foreach ($quotation->items as $index => $item)
-                                <div class="row mb-3 item-row" data-index="{{ $index }}">
-                                    <div class="col-md-3">
-                                        <input type="text" name="items[{{ $index }}][cQuoItemProductCode]"
-                                            class="form-control" value="{{ $item->cQuoItemProductCode }}"
-                                            placeholder="Item Code" readonly>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <input type="text" name="items[{{ $index }}][cQuoItemDescription]"
-                                            class="form-control" value="{{ $item->cQuoItemDescription }}"
-                                            placeholder="Description" readonly>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="number" name="items[{{ $index }}][iQuoItemQuantity]"
-                                            class="form-control quantity" value="{{ $item->iQuoItemQuantity }}"
-                                            placeholder="Quantity" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="number" name="items[{{ $index }}][yQuoItemPriceUnit]"
-                                            class="form-control price" value="{{ $item->yQuoItemPriceUnit }}"
-                                            placeholder="Price Per Unit" required>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="number" name="items[{{ $index }}][yQuoItemTotal]"
-                                            class="form-control total" value="{{ $item->yQuoItemTotal }}"
-                                            placeholder="Total" readonly>
-                                    </div>
+                            <div class="row g-3">
+                                <!-- Quotation Number -->
+                                <div class="col-md-6">
+                                    <label for="iQuoNo" class="form-label">Quotation Number</label>
+                                    <input type="text" id="iQuoNo" name="iQuoNo" class="form-control" 
+                                        value="{{ $quotation->iQuoNo }}" readonly>
                                 </div>
-                            @endforeach
-                        </div>
 
-                        <button type="button" data-toggle="modal" data-target="#itemModal"
-                            class="btn btn-secondary mb-3">Add Item</button>
+                                <!-- Quotation Date -->
+                                <div class="col-md-6">
+                                    <label for="dQuodate" class="form-label">Quotation Date</label>
+                                    <input type="date" id="dQuodate" name="dQuodate" class="form-control" 
+                                        value="{{ $quotation->dQuodate }}" required>
+                                </div>
 
-                        <!-- Totals -->
-                        <div class="form-group">
-                            <label for="yQuoSubtotal">Subtotal</label>
-                            <input type="number" id="yQuoSubtotal" name="yQuoSubtotal" class="form-control"
-                                value="{{ $quotation->yQuoSubtotal }}" readonly>
-                        </div>
+                                <!-- Customer Details -->
+                                <div class="col-md-12">
+                                    <label for="iQuoCustDfk" class="form-label">Customer</label>
+                                    <select id="iQuoCustDfk" name="iQuoCustDfk" class="form-select" required>
+                                        <option value="">-- Select Customer --</option>
+                                        @foreach ($customers as $customer)
+                                            <option value="{{ $customer->iCustDPk }}" 
+                                                {{ $quotation->iQuoCustDfk == $customer->iCustDPk ? 'selected' : '' }}>
+                                                {{ $customer->cCustDName }} ({{ $customer->cCustDCompName }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </fieldset>
 
-                        <div class="form-group">
-                            <label for="iQuoDiscount">Discount (%)</label>
-                            <input type="number" id="iQuoDiscount" name="iQuoDiscount" class="form-control"
-                                value="{{ $quotation->iQuoDiscount }}">
-                        </div>
+                        <!-- Items Section -->
+                        <fieldset class="border p-3 mb-4">
+                            <legend class="float-none w-auto px-2">Item Details</legend>
+                            <div id="item-container">
+                                @foreach ($quotation->items as $index => $item)
+                                    <div class="row g-3 mb-3 item-row" data-index="{{ $index }}">
+                                        <div class="col-md-3">
+                                            <input type="text" name="items[{{ $index }}][cQuoItemProductCode]" 
+                                                class="form-control" value="{{ $item->cQuoItemProductCode }}" readonly>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" name="items[{{ $index }}][cQuoItemDescription]" 
+                                                class="form-control" value="{{ $item->cQuoItemDescription }}" readonly>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" name="items[{{ $index }}][iQuoItemQuantity]" 
+                                                class="form-control quantity" value="{{ $item->iQuoItemQuantity }}" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" name="items[{{ $index }}][yQuoItemPriceUnit]" 
+                                                class="form-control price" value="{{ $item->yQuoItemPriceUnit }}" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <input type="number" name="items[{{ $index }}][yQuoItemTotal]" 
+                                                class="form-control total" value="{{ $item->yQuoItemTotal }}" readonly>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#itemModal">
+                                Add Item
+                            </button>
+                        </fieldset>
 
-                        <div class="form-group">
-                            <label for="iQuoTax">Tax (%)</label>
-                            <input type="number" id="iQuoTax" name="iQuoTax" class="form-control"
-                                value="{{ $quotation->iQuoTax }}">
-                        </div>
-                        <div class="form-group">
-                            <label for="iQuoTax">Shipping</label>
-                            <input type="number" id="iQuoShipping" name="iQuoShipping" class="form-control"
-                                value="{{ $quotation->iQuoShipping }}">
-                        </div>
+                        <!-- Financial Details -->
+                        <fieldset class="border p-3 mb-4">
+                            <legend class="float-none w-auto px-2">Financial Details</legend>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="yQuoSubtotal" class="form-label">Subtotal</label>
+                                    <input type="number" id="yQuoSubtotal" name="yQuoSubtotal" class="form-control" 
+                                        value="{{ $quotation->yQuoSubtotal }}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="iQuoDiscount" class="form-label">Discount (%)</label>
+                                    <input type="number" id="iQuoDiscount" name="iQuoDiscount" class="form-control" 
+                                        value="{{ $quotation->iQuoDiscount }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="iQuoTax" class="form-label">Tax (%)</label>
+                                    <input type="number" id="iQuoTax" name="iQuoTax" class="form-control" 
+                                        value="{{ $quotation->iQuoTax }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="iQuoShipping" class="form-label">Shipping</label>
+                                    <input type="number" id="iQuoShipping" name="iQuoShipping" class="form-control" 
+                                        value="{{ $quotation->iQuoShipping }}">
+                                </div>
+                                <div class="col-md-12">
+                                    <label for="yQuoTotalPayment" class="form-label">Total Amount</label>
+                                    <input type="number" id="yQuoTotalPayment" name="yQuoTotalPayment" class="form-control" 
+                                        value="{{ $quotation->yQuoTotalPayment }}" readonly>
+                                </div>
+                            </div>
+                        </fieldset>
 
-                        <div class="form-group">
-                            <label for="yQuoTotalPayment">Total Amount</label>
-                            <input type="number" id="yQuoTotalPayment" name="yQuoTotalPayment" class="form-control"
-                                value="{{ $quotation->yQuoTotalPayment }}" readonly>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success me-2">Update Quotation</button>
+                            <a href="{{ route('quotations.index') }}" class="btn btn-secondary">Cancel</a>
                         </div>
-
-                        <button type="submit" class="btn btn-primary">Update Quotation</button>
-                        <a href="{{ route('quotations.index') }}" class="btn btn-secondary">Cancel</a>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @if ($errors->any())
     <div class="alert alert-danger">
         <ul>
@@ -227,81 +237,87 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const itemContainer = document.getElementById('item-container');
+    const itemContainer = document.getElementById('item-container');
 
-        // Add Item to the Items Container
-        window.addItemToTable = function (itemCode, description, pricePerUnit) {
-            const index = itemContainer.querySelectorAll('.item-row').length;
+    // Add Item to the Items Container
+    window.addItemToTable = function (itemCode, description, pricePerUnit) {
+        const index = itemContainer.querySelectorAll('.item-row').length;
 
-            // Create a new row
-            const row = document.createElement('div');
-            row.classList.add('row', 'mb-3', 'item-row');
-            row.dataset.index = index;
+        // Create a new row
+        const row = document.createElement('div');
+        row.classList.add('row', 'mb-3', 'item-row');
+        row.dataset.index = index;
 
-            row.innerHTML = `
-            <div class="col-md-3">
-                <input type="text" name="items[${index}][cQuoItemProductCode]" class="form-control" value="${itemCode}" placeholder="Item Code" readonly>
-            </div>
-            <div class="col-md-3">
-                <input type="text" name="items[${index}][cQuoItemDescription]" class="form-control" value="${description}" placeholder="Description" readonly>
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="items[${index}][iQuoItemQuantity]" class="form-control quantity" value="1" placeholder="Quantity" required>
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="items[${index}][yQuoItemPriceUnit]" class="form-control price" value="${pricePerUnit}" placeholder="Price Per Unit" required>
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="items[${index}][yQuoItemTotal]" class="form-control total" value="${pricePerUnit}" placeholder="Total" readonly>
-            </div>
-            <div class="col-md-1">
-                <button type="button" class="btn btn-danger btn-sm remove-item">Remove</button>
-            </div>
-        `;
+        row.innerHTML = `
+        <div class="col-md-3">
+            <input type="text" name="items[${index}][cQuoItemProductCode]" class="form-control" value="${itemCode}" placeholder="Item Code" readonly>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="items[${index}][cQuoItemDescription]" class="form-control" value="${description}" placeholder="Description" readonly>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="items[${index}][iQuoItemQuantity]" class="form-control quantity" value="1" placeholder="Quantity" required>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="items[${index}][yQuoItemPriceUnit]" class="form-control price" value="${pricePerUnit}" placeholder="Price Per Unit" required>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="items[${index}][yQuoItemTotal]" class="form-control total" value="${pricePerUnit}" placeholder="Total" readonly>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger btn-sm remove-item">Remove</button>
+        </div>
+    `;
 
-            itemContainer.appendChild(row);
+        itemContainer.appendChild(row);
+        calculateTotals();
+    };
+
+    // Calculate Totals
+    function calculateTotals() {
+        let subtotal = 0;
+
+        itemContainer.querySelectorAll('.item-row').forEach(row => {
+            const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+            const price = parseFloat(row.querySelector('.price').value) || 0;
+            const totalField = row.querySelector('.total');
+            const total = quantity * price;
+
+            totalField.value = total.toFixed(2);
+            subtotal += total;
+        });
+
+        // Update subtotal and total payment
+        document.getElementById('yQuoSubtotal').value = subtotal.toFixed(2);
+
+        const discount = parseFloat(document.getElementById('iQuoDiscount').value) || 0;
+        const tax = parseFloat(document.getElementById('iQuoTax').value) || 0;
+        const shipping = parseFloat(document.getElementById('iQuoShipping').value) || 0;
+
+        const totalPayment = subtotal - (subtotal * discount / 100) + (subtotal * tax / 100) + shipping;
+        document.getElementById('yQuoTotalPayment').value = totalPayment.toFixed(2);
+    }
+
+    // Recalculate totals on input change
+    itemContainer.addEventListener('input', function (e) {
+        if (e.target.classList.contains('quantity') || e.target.classList.contains('price')) {
             calculateTotals();
-        };
-
-        // Calculate Totals
-        function calculateTotals() {
-            let subtotal = 0;
-
-            itemContainer.querySelectorAll('.item-row').forEach(row => {
-                const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
-                const price = parseFloat(row.querySelector('.price').value) || 0;
-                const totalField = row.querySelector('.total');
-                const total = quantity * price;
-
-                totalField.value = total.toFixed(2);
-                subtotal += total;
-            });
-
-            // Update subtotal and total payment
-            document.getElementById('yQuoSubtotal').value = subtotal.toFixed(2);
-
-            const discount = parseFloat(document.getElementById('iQuoDiscount').value) || 0;
-            const tax = parseFloat(document.getElementById('iQuoTax').value) || 0;
-
-            const totalPayment = subtotal - (subtotal * discount / 100) + (subtotal * tax / 100);
-            document.getElementById('yQuoTotalPayment').value = totalPayment.toFixed(2);
         }
-
-        // Recalculate totals on input change
-        itemContainer.addEventListener('input', function (e) {
-            if (e.target.classList.contains('quantity') || e.target.classList.contains('price')) {
-                calculateTotals();
-            }
-        });
-
-        // Remove item row
-        itemContainer.addEventListener('click', function (e) {
-            if (e.target.classList.contains('remove-item')) {
-                e.target.closest('.item-row').remove();
-                calculateTotals();
-            }
-        });
     });
+
+    // Recalculate totals when discount, tax, or shipping fields change
+    document.getElementById('iQuoDiscount').addEventListener('input', calculateTotals);
+    document.getElementById('iQuoTax').addEventListener('input', calculateTotals);
+    document.getElementById('iQuoShipping').addEventListener('input', calculateTotals);
+
+    // Remove item row
+    itemContainer.addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-item')) {
+            e.target.closest('.item-row').remove();
+            calculateTotals();
+        }
+    });
+});
 
 </script>
 @endsection
