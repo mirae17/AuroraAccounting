@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="admin/dist/img/logo-aurora.png">
   <title>Aurora Ledger</title>
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet"
@@ -203,7 +204,7 @@
 
             <!-- Documents -->
             <li
-              class="nav-item has-treeview {{ request()->is('quotations*') || request()->is('invoice*') || request()->is('receipt*') || request()->is('purchaseOrder*') ? 'menu-open' : '' }}">
+              class="nav-item has-treeview {{ request()->is('quotations*') || request()->is('invoice*') || request()->is('receipt*') || request()->is('purchaseOrder*') || request()->is('paymentVoucher*') ? 'menu-open' : '' }}">
               <a href="#" class="nav-link ">
                 <i class="nav-icon fas fa-file-alt text-info"></i>
                 <p>Documents<i class="right fas fa-angle-left"></i></p>
@@ -237,6 +238,13 @@
                     class="nav-link {{ request()->routeIs('purchaseOrder.index') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-check nav-icon"></i>
                     <p> Purchase Order</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('paymentVoucher.index') }}"
+                    class="nav-link {{ request()->routeIs('paymentVoucher.index') ? 'active' : '' }}">
+                    <i class="fas fa-money-check-alt nav-icon"></i>
+                    <p> Payment Voucher</p>
                   </a>
                 </li>
               </ul>

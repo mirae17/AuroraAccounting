@@ -56,7 +56,8 @@
             </div>
         @endif
     </div>
-    <a href="{{ route('purchaseOrder.create') }}" class="btn btn-success mb-3">Create New Purchase Order</a>
+    <a href="{{ route('purchaseOrder.create') }}" class="btn btn-success mb-3"><i class="fas fa-plus-circle"></i> Add
+        New Purchase Order</a>
     <div class="card-body">
         <table id="example1" class="table table-bordered">
             <thead>

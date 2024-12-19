@@ -57,7 +57,8 @@
             </div>
         @endif
     </div>
-    <a href="{{ route('receipt.create') }}" class="btn btn-success mb-3">Create New Receipt</a>
+    <a href="{{ route('receipt.create') }}" class="btn btn-success mb-3"><i class="fas fa-plus-circle"></i> Add New
+        Receipt</a>
     <div class="card-body">
         <table id="example1" class="table table-bordered">
             <thead>
@@ -81,7 +82,7 @@
                         <td>{{ $recpt->dRecptdate }}</td>
                         <td class="text-right">{{ $recpt->yRecptTotalPayment }}</td>
                         <td>
-                            <a href="{{ route('receipt.show', $recpt->iRecptPk) }}" class="btn btn-info btn-sm">
+                            <a href="{{ route('receipt.show', $recpt->iRecptPk) }}" class="btn btn-custom-info btn-sm">
                                 <i class="fa fa-eye"></i></a>
                             <a href="{{ route('receipt.edit', $recpt->iRecptPk) }}" class="btn btn-custom-edit btn-sm">
                                 <i class="fa fa-edit"></i></a>

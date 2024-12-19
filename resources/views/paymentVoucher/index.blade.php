@@ -48,7 +48,7 @@
 <body>
     <div class="row mb-3 align-items-center">
         <div class="col-lg-6">
-            <h2>Quotations List</h2>
+            <h2>Payment Voucher Records </h2>
         </div>
         @if(session('success'))
             <div class="alert alert-success">
@@ -56,36 +56,38 @@
             </div>
         @endif
     </div>
-    <a href="{{ route('quotations.create') }}" class="btn btn-success mb-3"><i class="fas fa-plus-circle"></i> Add New
-        Quotation</a>
+    <a href="{{ route('paymentVoucher.create') }}" class="btn btn-success mb-3"><i class="fas fa-plus-circle"></i> Add
+        New Payment Voucher</a>
     <div class="card-body">
         <table id="example1" class="table table-bordered">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Quotation No</th>
-                    <th>Company</th>
-                    <th>Customer</th>
                     <th>Date</th>
+                    <th>Payment Voucher No</th>
+                    <th>Description</th>
+                    <th>Bank Account Number</th>
+                    <th>Bank Name</th>
+                    <th>Payment Method</th>
+                    <th>Reference No</th>
                     <th>Total Payment</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse($quotations as $quotation)
+                @forelse($paymentVouchers as $PymtVchr)
                     <tr>
-                        <td>{{ $quotation->id }}</td>
-                        <td>{{ $quotation->iQuoNo }}</td>
-                        <td>{{ $quotation->customer->cCustDCompName ?? 'N/A' }}</td>
-                        <td>{{ $quotation->customer->cCustDName ?? 'N/A'}}</td>
-                        <td>{{ $quotation->dQuodate }}</td>
-                        <td class="text-right">{{ $quotation->yQuoTotalPayment }}</td>
+                        <td>{{ $PymtVchr->dPymtVchrDate }}</td>
+                        <td>{{ $PymtVchr->cPymtVchrNo}}</td>
+                        <td>{{ $PymtVchr->cPymtVchrDesc  }}</td>
+                        <td>{{ $PymtVchr->cPymtVchrDesc  }}</td>
+                        <td>{{ $PymtVchr->cPymtVchrNoAcc}}</td>
+                        <td>{{ $PymtVchr->paymentMethod->cPymtdDesc ?? 'N/A'  }}</td>
+                        <td>{{ $PymtVchr->cPymtVchrRefNo}}</td>
+                        <td class="text-right">{{ $PymtVchr->yPymtVchrTotal }}</td>
                         <td>
-                            <a href="{{ route('quotations.show', $quotation->iQuoPk) }}" class="btn btn-info btn-sm">
-                                <i class="fa fa-eye"></i></a>
-                            <a href="{{ route('quotations.edit', $quotation->iQuoPk) }}" class="btn btn-custom-edit btn-sm">
-                                <i class="fa fa-edit"></i></a>
-                            <form action="{{ route('quotations.destroy', $quotation->iQuoPk) }}" method="POST"
+                            <a href="{{ route('paymentVoucher.edit', $PymtVchr->iPymtVchrPk) }}"
+                                class="btn btn-custom-edit btn-sm"> <i class="fa fa-edit"></i></a>
+                            <form action="{{ route('paymentVoucher.destroy', $PymtVchr->iPymtVchrPk) }}" method="POST"
                                 style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')

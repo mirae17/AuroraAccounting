@@ -26,4 +26,9 @@ class PaymentMethod extends Model
         return $this->belongsTo(Company::class, 'company_id');
     }
 
+    public function paymentVoucher()
+    {
+        return $this->hasMany(PaymentMethod::class, 'iPymtVchrPymtdfk', 'iPymtdPk');
+    }
+
 }

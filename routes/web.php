@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\PaymentVoucher;
 use App\Models\Quotation;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SalesController;
@@ -18,7 +19,7 @@ use App\Http\Controllers\InventoryMasterController;
 use App\Http\Controllers\CustomerDetailController;
 use App\Http\Controllers\CompanyMaintenanceController;
 use App\Http\Controllers\QuotationController;
-use App\Http\Controllers\QuotationItemController;
+use App\Http\Controllers\PaymentVoucherController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\ReceiptController;
@@ -126,6 +127,10 @@ Route::resource('purchaseOrder', PurchaseOrderController::class);
 // Receipt Routes
 Route::get('/receipt/pdf{receipt}', [ReceiptController::class, 'generatePDF'])->name('receipt.pdf');
 Route::resource('receipt', ReceiptController::class);
+
+//payment voucher
+Route::get('/paymentVoucher/pdf{paymentVoucher}', [PaymentVoucherController::class, 'generatePDF'])->name('paymentVoucher.pdf');
+Route::resource('paymentVoucher', PaymentVoucherController::class);
 
 
 
