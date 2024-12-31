@@ -14,6 +14,31 @@
                 <div id="step-1">
                     <h4 class="text-primary">Step 1: Customer & Quotation Details</h4>
                     <div class="row">
+                        <div class="col-md-6">
+                            @if(Auth::user()->role === 'system admin')
+                                <label for="iQuoComfk" class="form-label">COMPANY</label>
+
+                                <select class="form-control" id="iQuoComfk" name="iQuoComfk" required>
+                                    <option value="">Select a Company</option>
+                                    @foreach($companies as $company)
+                                        <option value="{{ $company->id }}">{{ $company->description }}</option>
+                                    @endforeach
+                                </select>
+
+                                <div id="company-details" style="margin-top: 20px; display: none;">
+                                    <label for="company-id" class="form-label">ID</label>
+                                    <input type="text" id="company-id" class="form-control" readonly>
+
+                                    <label for="company-code" class="form-label">Code</label>
+                                    <input type="text" id="company-code" class="form-control" readonly>
+
+                                    <label for="company-description" class="form-label">Description</label>
+                                    <input type="text" id="company-description" class="form-control" readonly>
+                                </div>
+                            @else
+                                <input type="hidden" name="iInvComfk" value="{{ Auth::user()->iInvComfk }}">
+                            @endif
+                        </div>
                         <!-- Customer Details -->
                         <div class="col-md-6">
                             <div class="form-group">
@@ -79,7 +104,8 @@
                     </table>
                     <div class="text-start">
                         <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                            data-bs-target="#itemModal">+ Add Item</button>
+                            data-bs-target="#itemModal">+ Add
+                            Item</button>
                     </div>
                     <div class="d-flex justify-content-between mt-3">
                         <button type="button" class="btn btn-secondary" onclick="prevStep(1)">Back</button>
@@ -128,7 +154,8 @@
                             <div class="row">
                                 <div class="col-md-6"><strong>Subtotal:</strong></div>
                                 <div class="col-md-6 text-end" name="yQuoSubtotal">RM <span
-                                        id="summary-subtotal">0.00</span></div>
+                                        id="summary-subtotal">0.00</span>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6"><strong>Tax (%):</strong></div>
@@ -274,6 +301,22 @@
     </div>
 </div>
 <script>
+    function fetchCompanyDetails() {
+        const companyId = document.getElementById('iQuoComfk').value;
+        if (companyId) {
+            fetch(`/company-details/${companyId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('company-id').textContent = data.id;
+                    document.getElementById('company-code').textContent = data.code;
+                    document.getElementById('company-description').textContent = data.description;
+                    document.getElementById('company-details').style.display = 'block';
+                })
+                .catch(error => console.error('Error fetching company details:', error));
+        } else {
+            document.getElementById('company-details').style.display = 'none';
+        }
+    }
     function nextStep(step) {
         // Validation for Step 1 (Customer Selection)
         if (step === 2) {

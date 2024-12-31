@@ -58,7 +58,7 @@
                     </div>
                     <div class="form-group mb-3">
                         @if(Auth::user()->role === 'system admin')
-                            <label for="iInvComfk" class="form-label">Company</label>
+                            <label for="iInvComfk" class="form-label">COMPANY</label>
 
                             <select class="form-control" id="iInvComfk" name="iInvComfk" required>
                                 <option value="">Select a Company</option>
@@ -200,10 +200,10 @@
                             <input type="number" class="form-control" id="yProPrice{{ $item->iInvPK }}" name="yInvPrice"
                                 value="{{ $item->yInvPrice }}" step="0.01" required>
                         </div>
-                        <!-- Company -->
+                        <!-- COMPANY -->
                         @if(Auth::user()->role === 'system admin')
                             <div class="form-group mb-3">
-                                <label for="iInvComfk{{ $item->iInvPK}}" class="form-label">Company</label>
+                                <label for="iInvComfk{{ $item->iInvPK}}" class="form-label">COMPANY</label>
                                 <select class="form-control" id="iInvComfk{{ $item->iInvPK}}" name="iInvComfk" required>
                                     <option value="">Select a Company</option>
                                     @foreach($companies as $company)

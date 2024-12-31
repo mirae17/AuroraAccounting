@@ -52,7 +52,7 @@
 
           <div class="form-group mb-3">
             @if(Auth::user()->role === 'system admin')
-        <label for="company_id" class="form-label">Company</label>
+        <label for="company_id" class="form-label">COMPANY</label>
 
         <select class="form-control" id="company_id" name="company_id" required>
           <option value="">Select a Company</option>
@@ -108,7 +108,7 @@
 
         <div class="form-group mb-3">
         @if(Auth::user()->role === 'system admin')
-      <label for="company_id{{ $expenses->iExpPk }}" class="form-label">Company</label>
+      <label for="company_id{{ $expenses->iExpPk }}" class="form-label">COMPANY</label>
 
       <select class="form-control" id="company_id{{ $expenses->iExpPk}}" name="company_id" required>
         @foreach($companies as $company)
