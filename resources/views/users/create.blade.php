@@ -140,7 +140,7 @@
         const code = document.getElementById('code').value;
         const description = document.getElementById('description').value;
 
-        fetch("{{ route('companies.store') }}", {
+        fetch("{{ route('company.store') }}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
