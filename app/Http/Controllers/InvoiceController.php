@@ -153,7 +153,7 @@ class InvoiceController extends Controller
             'items.*.yInvcItemTotal' => 'required|numeric|min:0',
         ]);
 
-        $invoice = InvoiceItem::findOrFail($invoice);
+        $invoice = Invoice::findOrFail($invoice);
 
         $invoice->update([
             'iInvcCustDfk' => $request->input('iInvcCustDfk'),
@@ -167,9 +167,8 @@ class InvoiceController extends Controller
 
         // Delete existing items and replace with updated items
         $invoice->items()->delete();
-
         foreach ($request->items as $item) {
-            \Log::info('Creating Invctation Item', $item);
+            \Log::info('Creating Invoice Item', $item);
             InvoiceItem::create([
                 'iInvcItemInvcfk' => $invoice->iInvcPk,
                 'cInvcItemProductCode' => $item['cInvcItemProductCode'],
