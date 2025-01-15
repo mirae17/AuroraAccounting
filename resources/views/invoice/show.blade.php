@@ -7,15 +7,29 @@
         style="max-width: 1200px; width: 100%; border-radius: 15px; background-color: #f9f9f9;">
         <!-- Company Information -->
         @if(isset($companyMaintenance))
-            <div class="text-center mb-5">
-                <img id="company-logo" src="{{ asset('storage/' . $companyMaintenance->iCompMainLogo) }}" alt="Company Logo"
-                    class="mb-3" style="max-height: 100px;">
-                <h3 id="company-name" class="mb-1">{{ $companyMaintenance->company->description }}</h3>
-                <p id="company-address" class="mb-1 text-muted">{{ $companyMaintenance->iCompMainAddress }}</p>
-                <p id="company-contact" class="text-muted">
-                    {{ $companyMaintenance->iCompMainPhoneNo }} | {{ $companyMaintenance->iCompMainEmail }}
-                </p>
-            </div>
+            @if($companyMaintenance instanceof \Illuminate\Database\Eloquent\Collection)
+                @foreach($companyMaintenance as $maintenance)
+                    <div class="text-center mb-5">
+                        <img id="company-logo" src="{{ asset('storage/' . $maintenance->iCompMainLogo) }}" alt="Company Logo"
+                            class="mb-3" style="max-height: 100px;">
+                        <h3 id="company-name" class="mb-1">{{ $maintenance->company->description }}</h3>
+                        <p id="company-address" class="mb-1 text-muted">{{ $maintenance->iCompMainAddress }}</p>
+                        <p id="company-contact" class="text-muted">
+                            {{ $maintenance->iCompMainPhoneNo }} | {{ $maintenance->iCompMainEmail }}
+                        </p>
+                    </div>
+                @endforeach
+            @else
+                <div class="text-center mb-5">
+                    <img id="company-logo" src="{{ asset('storage/' . $companyMaintenance->iCompMainLogo) }}" alt="Company Logo"
+                        class="mb-3" style="max-height: 100px;">
+                    <h3 id="company-name" class="mb-1">{{ $companyMaintenance->company->description }}</h3>
+                    <p id="company-address" class="mb-1 text-muted">{{ $companyMaintenance->iCompMainAddress }}</p>
+                    <p id="company-contact" class="text-muted">
+                        {{ $companyMaintenance->iCompMainPhoneNo }} | {{ $companyMaintenance->iCompMainEmail }}
+                    </p>
+                </div>
+            @endif
         @endif
 
         <!-- Details Section -->

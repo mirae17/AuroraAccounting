@@ -108,7 +108,7 @@ class InvoiceController extends Controller
             ]);
         }
 
-        return redirect()->route('quotations.index', $invoice->iInvcPk)->with('success', 'Invoice created successfully!');
+        return redirect()->route('invoice.index', $invoice->iInvcPk)->with('success', 'Invoice created successfully!');
     }
 
     // Edit method to display the edit form for a specific quotation
@@ -183,20 +183,23 @@ class InvoiceController extends Controller
         return redirect()->route('invoice.index')->with('success', 'Invoice updated successfully!');
     }
 
-    // Show method to display the details of a specific quotation
     public function show($invoice)
     {
         $user = auth()->user();
-        // Fetch the quotation by ID with its related data
         $invoice = Invoice::with(['company', 'customer', 'items'])->findOrFail($invoice);
-        $company = Company::select('id', 'description')->find($user->company_id);
+        // Fetch the quotation by ID with its related data
+        if ($user->role === 'system admin') {
+            $companies = Company::select('id', 'description')->get();
+            $products = Product::all();
+            $inventory = Inventory::all();
+            $companyMaintenance = CompanyMaintenance::with('company')->get();
+        } else {
+            $companies = [];
+            $products = Product::where('iProComfk', $user->company_id)->get();
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get();
+            $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $user->company_id)->first();
+        }
 
-        $companies = collect([$company]);
-
-        // Fetch products and inventory based on the user's company ID
-        $products = Product::where('iProComfk', $company->id)->get();
-        $inventory = Inventory::where('iInvComfk', $company->id)->get();
-        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
 
         // Pass the data to the show view
         return view('invoice.show', compact('invoice', 'products', 'inventory', 'companyMaintenance'));

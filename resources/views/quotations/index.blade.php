@@ -81,7 +81,7 @@
                         <td>{{ $quotation->dQuodate }}</td>
                         <td class="text-right">{{ $quotation->yQuoTotalPayment }}</td>
                         <td>
-                            <a href="{{ route('quotations.show', $quotation->iQuoPk) }}" class="btn btn-info btn-sm">
+                            <a href="{{ route('quotations.show', $quotation->iQuoPk) }}" class="btn btn-custom-info btn-sm">
                                 <i class="fa fa-eye"></i></a>
                             <a href="{{ route('quotations.edit', $quotation->iQuoPk) }}" class="btn btn-custom-edit btn-sm">
                                 <i class="fa fa-edit"></i></a>

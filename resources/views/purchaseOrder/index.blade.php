@@ -82,7 +82,8 @@
                         <td class="text-right">{{ $PurchOrder->yPurchOrderTotalPayment }}</td>
                         <td>
                             <a href="{{ route('purchaseOrder.show', $PurchOrder->iPurchOrderPk) }}"
-                                class="btn btn-info btn-sm"><i class="fa fa-eye"></i></a>
+                                class="btn btn-custom-info btn-sm">
+                                <i class="fa fa-eye"></i></a>
                             <a href="{{ route('purchaseOrder.edit', $PurchOrder->iPurchOrderPk) }}"
                                 class="btn btn-custom-edit btn-sm"> <i class="fa fa-edit"></i></a>
                             <form action="{{ route('purchaseOrder.destroy', $PurchOrder->iPurchOrderPk) }}" method="POST"

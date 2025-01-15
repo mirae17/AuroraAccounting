@@ -156,6 +156,8 @@
                                 <div class="col-md-6 text-end"><strong>RM <span id="final-total">0.00</span></strong>
                                 </div>
                             </div>
+                            <input type="hidden" name="yInvcSubtotal" id="hidden-subtotal">
+                            <input type="hidden" name="yInvcTotalPayment" id="hidden-total-payment">
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mt-3">

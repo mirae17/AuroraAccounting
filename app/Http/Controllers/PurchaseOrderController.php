@@ -184,16 +184,20 @@ class PurchaseOrderController extends Controller
         $user = auth()->user();
         // Fetch the purchaseOrder by ID with its related data
         $purchaseOrder = PurchaseOrder::with(['company', 'customer', 'items'])->findOrFail($purchaseOrder);
-        $company = Company::select('id', 'description')->find($user->company_id);
+        if ($user->role === 'system admin') {
+            $companies = Company::select('id', 'description')->get();
+            $customers = CustomerDetail::all();
+            $products = Product::all();
+            $inventory = Inventory::all();
+            $companyMaintenance = CompanyMaintenance::with('company')->get();
+        } else {
+            $companies = [];
+            $customers = CustomerDetail::where('iCustDCompfk', $user->company_id)->get();
+            $products = Product::where('iProComfk', $user->company_id)->get();
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get();
+            $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $user->company_id)->first();
+        }
 
-        $companies = collect([$company]);
-
-        // Fetch products and inventory based on the user's company ID
-        $products = Product::where('iProComfk', $company->id)->get();
-        $inventory = Inventory::where('iInvComfk', $company->id)->get();
-        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
-
-        // Pass the data to the show view
         return view('purchaseOrder.show', compact('purchaseOrder', 'products', 'inventory', 'companyMaintenance'));
 
     }

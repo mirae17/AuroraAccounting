@@ -82,8 +82,8 @@
                         <td>{{ $invc->dInvcdate }}</td>
                         <td class="text-right">{{ $invc->yInvcTotalPayment }}</td>
                         <td>
-                            <a href="{{ route('invoice.show', $invc->iInvcPk) }}" class="btn btn-info btn-sm"><i
-                                    class="fa fa-eye"></i></a>
+                            <a href="{{ route('invoice.show', $invc->iInvcPk) }}" class="btn btn-custom-info btn-sm">
+                                <i class="fa fa-eye"></i></a>
                             <a href="{{ route('invoice.edit', $invc->iInvcPk) }}" class="btn btn-custom-edit btn-sm"> <i
                                     class="fa fa-edit"></i></a>
                             <form action="{{ route('invoice.destroy', $invc->iInvcPk) }}" method="POST"

@@ -185,14 +185,20 @@ class ReceiptController extends Controller
         $user = auth()->user();
         // Fetch the receipt by ID with its related data
         $receipt = Receipt::with(['company', 'customer', 'items'])->findOrFail($id);
-        $company = Company::select('id', 'description')->find($user->company_id);
+        if ($user->role === 'system admin') {
+            $companies = Company::select('id', 'description')->get();
+            $products = Product::all();
+            $inventory = Inventory::all();
+            $companyMaintenance = CompanyMaintenance::with('company')->get();
 
-        $companies = collect([$company]);
+        } else {
+            $products = Product::where('iProComfk', $user->company_id)->get(['iProPk', 'cProName', 'cProCode', 'yProPrice']);
+            $customers = CustomerDetail::where('iCustDCompfk', $user->company_id)->get(['iCustDPk', 'cCustDName', 'cCustDAddress', 'cCustDCompName', 'cCustDCompOfficeNo', 'cCustDCompEmail']);
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get(['iInvPK', 'cInvName', 'cInvCode', 'yInvPrice']);
+            $companyMaintenance = CompanyMaintenance::where('iCompMainName', $user->company_id)->get(['iCompMainPk', 'iCompMainAddress', 'iCompMainPhoneNo', 'iCompMainEmail', 'iCompMainLogo']);
+            $companies = [];
+        }
 
-        // Fetch products and inventory based on the user's company ID
-        $products = Product::where('iProComfk', $company->id)->get();
-        $inventory = Inventory::where('iInvComfk', $company->id)->get();
-        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
 
         // Pass the data to the show view
         return view('receipt.show', compact('receipt', 'products', 'inventory', 'companyMaintenance'));

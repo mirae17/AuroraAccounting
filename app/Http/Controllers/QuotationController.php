@@ -185,17 +185,20 @@ class QuotationController extends Controller
     public function show($quotation)
     {
         $user = auth()->user();
-        // Fetch the quotation by ID with its related data
         $quotation = Quotation::with(['company', 'customer', 'items'])->findOrFail($quotation);
-        $company = Company::select('id', 'description')->find($user->company_id);
 
-        $companies = collect([$company]);
+        if ($user->role === 'system admin') {
+            $companies = Company::select('id', 'description')->get();
+            $products = Product::all();
+            $inventory = Inventory::all();
+            $companyMaintenance = CompanyMaintenance::with('company')->get();
+        } else {
+            $companies = [];
+            $products = Product::where('iProComfk', $user->company_id)->get();
+            $inventory = Inventory::where('iInvComfk', $user->company_id)->get();
+            $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $user->company_id)->first();
 
-        // Fetch products and inventory based on the user's company ID
-        $products = Product::where('iProComfk', $company->id)->get();
-        $inventory = Inventory::where('iInvComfk', $company->id)->get();
-        $companyMaintenance = CompanyMaintenance::with('company')->where('iCompMainName', $company->id)->first();
-
+        }
         // Pass the data to the show view
         return view('quotations.show', compact('quotation', 'products', 'inventory', 'companyMaintenance'));
 
