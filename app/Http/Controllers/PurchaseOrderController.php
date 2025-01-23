@@ -175,7 +175,7 @@ class PurchaseOrderController extends Controller
             ]);
         }
 
-        return redirect()->route('purchaseOrder.index')->with('success', 'PurchaseOrder updated successfully!');
+        return redirect()->route('purchaseOrder.index')->with('success', 'Purchase Order updated successfully!');
     }
 
     // Show method to display the details of a specific purchaseOrder

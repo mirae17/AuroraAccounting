@@ -42,6 +42,36 @@
             font-size: 16px;
             color: #555;
         }
+
+        .action-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-text {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #000;
+            color: #fff;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .action-btn:hover .action-text {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -82,20 +112,28 @@
                         <td>{{ $recpt->dRecptdate }}</td>
                         <td class="text-right">{{ $recpt->yRecptTotalPayment }}</td>
                         <td>
-                            <a href="{{ route('receipt.show', $recpt->iRecptPk) }}" class="btn btn-custom-info btn-sm">
-                                <i class="fa fa-eye"></i></a>
-                            <a href="{{ route('receipt.edit', $recpt->iRecptPk) }}" class="btn btn-custom-edit btn-sm">
-                                <i class="fa fa-edit"></i></a>
+                            <a href="{{ route('receipt.show', $recpt->iRecptPk) }}"
+                                class="btn btn-custom-info btn-sm action-btn">
+                                <i class="fa fa-eye"></i>
+                                <span class="action-text">View</span>
+                            </a>
+                            <a href="{{ route('receipt.edit', $recpt->iRecptPk) }}"
+                                class="btn btn-custom-edit btn-sm action-btn">
+                                <i class="fa fa-edit"></i>
+                                <span class="action-text">Edit</span>
+                            </a>
                             <form action="{{ route('receipt.destroy', $recpt->iRecptPk) }}" method="POST"
                                 style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-custom-delete btn-sm"
+                                <button type="submit" class="btn btn-custom-delete btn-sm action-btn"
                                     onclick="return confirm('Are you sure?')">
-                                    <i class="fa fa-trash"></i></button>
+                                    <i class="fa fa-trash"></i>
+                                    <span class="action-text">Delete</span>
+                                </button>
                             </form>
                         </td>
-                    </tr>
+
                 @empty
 
                 @endforelse

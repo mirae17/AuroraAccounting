@@ -26,7 +26,7 @@ class PaymentVoucherController extends Controller
             $companies = Company::all(); // Get all companies
         } else {
 
-            $paymentVouchers = PaymentVoucher::with('company')->where('iProComfk', $user->company_id)->get();
+            $paymentVouchers = PaymentVoucher::with('company')->where('iPymtVchrPymtdfk', $user->company_id)->get();
             $companies = [];
         }
         return view('paymentVoucher.index', compact('paymentVouchers'));
